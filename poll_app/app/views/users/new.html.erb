@@ -1,0 +1,31 @@
+<h2>新規登録</h2>
+
+<% if @user && @user.errors.any? %>
+  <div class="alert alert-danger">
+    <ul>
+      <% @user.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with(model: @user, url: users_path, local: true, class: 'p-4 border rounded shadow-sm') do |f| %>
+
+  <div class="mb-3">
+    <%= f.label :email, "メールアドレス", class: 'form-label' %>
+    <%= f.email_field :email, class: 'form-control', placeholder: 'メールアドレスを入力', required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :password, "パスワード (8文字以上)", class: 'form-label' %>
+    <%= f.password_field :password, class: 'form-control', required: true %>
+  </div>
+  
+  <div class="mb-3">
+    <%= f.label :password_confirmation, "パスワード (確認用)", class: 'form-label' %>
+    <%= f.password_field :password_confirmation, class: 'form-control', required: true %>
+  </div>
+
+  <%= f.submit "登録する", class: 'btn btn-primary btn-lg mt-3' %>
+<% end %>

@@ -1,0 +1,28 @@
+<h2><%= @poll.title %></h2>
+<p class="text-secondary">
+    作成者: <%= @poll.user.email %> | 
+    作成日時: <%= l @poll.created_at, format: :short %>
+</p>
+
+<div class="card p-4 shadow-sm">
+    <h4 class="card-title mb-3">投票フォーム</h4>
+
+    <%= form_with(url: poll_vote_path(@poll), method: :post, local: true) do %>
+        
+        <p class="mb-3">いずれか一つの選択肢を選んで投票してください。</p>
+        
+        <% @poll.options.each_with_index do |option, index| %>
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="radio" name="chosen_option" id="option_<%= index %>" value="<%= option %>" required>
+                <label class="form-check-label" for="option_<%= index %>">
+                    <%= option %>
+                </label>
+            </div>
+        <% end %>
+
+        <hr>
+        <button type="submit" class="btn btn-primary btn-lg mt-3">投票する</button>
+    <% end %>
+    
+    <p class="mt-3 text-danger"><small>※ 投票は一回限りです。</small></p>
+</div>

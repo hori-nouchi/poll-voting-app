@@ -1,0 +1,12 @@
+class CreatePolls < ActiveRecord::Migration[8.0]
+  def change
+    create_table :polls do |t|
+      t.references :user, null: false, foreign_key: true
+      t.string :title
+      t.string :status
+      t.json :options
+
+      t.timestamps
+    end
+  end
+end

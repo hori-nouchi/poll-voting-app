@@ -1,0 +1,14 @@
+<h2>ログイン</h2>
+<p>ログインフォーム [cite: 35]</p>
+<form action="/login" method="POST">
+    <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+    
+    <label>メールアドレス</label><br>
+    <input type="email" name="email"><br><br>
+    
+    <label>パスワード</label><br>
+    <input type="password" name="password"><br><br>
+    
+    <button type="submit">ログイン</button>
+</form>
+<p>アカウントをお持ちでないですか？ <a href="/register">新規登録はこちら</a></p>

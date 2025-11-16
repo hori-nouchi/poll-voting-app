@@ -1,0 +1,35 @@
+<div class="row">
+    
+    <div class="col-12">
+        
+        <div class="p-4 rounded-3 border border-3 border-info-subtle bg-light shadow-sm position-relative">
+            
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="h5 mb-0">アンケート一覧</h2>
+                
+                <a href="<%= new_poll_path %>" class="btn btn-warning text-dark fw-bold position-absolute top-0 end-0 translate-middle-y me-3">
+                    +アンケート作成
+                </a>
+            </div>
+            
+            <ul class="list-group list-group-flush mt-3">
+                <% 10.times do |i| %>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="/polls/<%= i+1 %>" class="text-decoration-none text-primary">
+                            ダミーアンケートタイトル <%= i+1 %>: [人気のアンケート例]
+                        </a>
+                        <span class="badge bg-primary rounded-pill"><%= 1000 - i * 50 %> 票</span>
+                    </li>
+                <% end %>
+            </ul>
+        </div>
+        
+        <div class="mt-4 p-3 border border-dark bg-light shadow-sm">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="検索バー (タイトルでアンケートを検索)">
+                <button class="btn btn-dark" type="button" id="button-addon2">検索</button>
+            </div>
+        </div>
+        
+    </div>
+</div>

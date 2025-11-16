@@ -1,0 +1,34 @@
+<h2>アンケート作成</h2>
+
+<% if @poll.errors.any? %>
+  <div class="alert alert-danger">
+    <ul>
+      <% @poll.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with(model: @poll, local: true, class: 'p-4 border rounded shadow-sm') do |f| %>
+
+  <div class="mb-3">
+    <%= f.label :title, "タイトル (必須)", class: 'form-label' %>
+    <%= f.text_field :title, class: 'form-control', placeholder: '例：今日のランチは何を食べたい？' %>
+  </div>
+
+  <div class="mb-4" id="options-area">
+    <label class="form-label d-block">選択肢 (必須、2個以上) [cite: 25]</label>
+    
+    <div class="input-group mb-2">
+      <%= f.text_field :options, multiple: true, name: 'poll[options][]', class: 'form-control', placeholder: '選択肢 1' %>
+    </div>
+    <div class="input-group mb-2">
+      <%= f.text_field :options, multiple: true, name: 'poll[options][]', class: 'form-control', placeholder: '選択肢 2' %>
+    </div>
+    
+    <button type="button" class="btn btn-outline-secondary btn-sm mt-1" disabled>+ 選択肢を追加 (機能未実装)</button>
+  </div>
+  
+  <%= f.submit "公開", class: 'btn btn-success btn-lg' %>
+<% end %>

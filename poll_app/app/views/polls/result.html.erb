@@ -1,0 +1,61 @@
+<h2>投票結果</h2>
+<p class="text-secondary">アンケートタイトル:</p>
+<h3><%= @poll.title %></h3>
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card text-center bg-info text-white shadow-sm p-3">
+            <div class="card-body">
+                <h5 class="card-title">総投票数</h5>
+                <p class="card-text fs-1 fw-bold"><%= @total_votes %> 票</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card shadow-sm p-3 h-100">
+            <h5 class="card-title">グラフ表示エリア</h5>
+            <div style="height: 200px; background-color: #f8f9fa; border: 1px dashed #ccc; display: flex; align-items: center; justify-content: center; font-style: italic;">
+                投票結果のグラフ（棒グラフまたは円グラフ）
+            </div>
+        </div>
+    </div>
+</div>
+
+<h4 class="mt-5 mb-3">結果内訳</h4>
+
+<div class="list-group">
+    <% if @total_votes > 0 %>
+        <% @results.each do |option, count| %>
+            <% 
+                # 割合を計算 (小数点以下1桁まで)
+                percentage = (@total_votes > 0) ? (count.to_f / @total_votes * 100).round(1) : 0
+                # プログレスバーの色を設定 (Bootstrapのユーティリティクラス)
+                color_class = case option.hash % 4
+                              when 0 then "bg-primary"
+                              when 1 then "bg-success"
+                              when 2 then "bg-warning"
+                              when 3 then "bg-danger"
+                              end
+            %>
+            <div class="list-group-item p-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <strong class="text-truncate" style="max-width: 70%;"><%= option %></strong>
+                    <span>
+                        <span class="badge bg-secondary me-2"><%= percentage %>%</span>
+                        <span class="badge bg-dark"><%= count %> 票</span>
+                    </span>
+                </div>
+                <div class="progress" role="progressbar" style="height: 10px;">
+                    <div class="progress-bar <%= color_class %>" style="width: <%= percentage %>%"></div>
+                </div>
+            </div>
+        <% end %>
+    <% else %>
+        <p class="p-3 text-center text-muted">まだ投票がありません。</p>
+    <% end %>
+</div>
+
+<div class="mt-5">
+    <%= link_to 'アンケート一覧へ戻る', polls_path, class: 'btn btn-outline-secondary' %>
+</div>
