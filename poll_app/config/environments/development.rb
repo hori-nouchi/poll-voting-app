@@ -38,7 +38,7 @@ Rails.application.configure do
   config.action_mailer.perform_caching = false
 
   # Set localhost to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
+  #config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
@@ -73,5 +73,24 @@ Rails.application.configure do
 
   # 既存のコード群の中に、以下の行を追加します
   # Codespacesのホスト名を受け入れ、CSRFトークンの検証を許可する
-  config.action_controller.default_url_options = { host: ENV.fetch('GITHUB_CODESPACES_PORT_3000_URL', 'localhost:3000') }
+  # 🚨 【ここから追加・修正】ホスト設定の統合 🚨
+
+  # Codespaces環境で生成されるURLが正しいホスト名を含むように設定
+  # リダイレクト時にホスト名が一致しない問題を解消します
+  codespaces_host = ENV.fetch('GITHUB_CODESPACES_PORT_3000_URL', 'localhost:3000')
+  config.action_controller.default_url_options = { host: codespaces_host }
+  config.action_mailer.default_url_options = { host: codespaces_host }
+
+
+  # CSRF保護がCodespacesのホスト名からのリクエストを許可するように設定
+  # CodespacesのプレビューURLパターン (例: https://*.github.dev, https://*.app.github.dev) を許可
+  config.hosts.clear
+  config.hosts << codespaces_host.sub('https://', '').sub('http://', '').split(':').first
+  config.hosts << /.*\.github\.dev/
+  config.hosts << /.*\.app\.github\.dev/
+  config.hosts << "localhost"
+  config.hosts << "127.0.0.1"
+  
+  # 🚨 【ここまで追加・修正】 🚨
+
 end

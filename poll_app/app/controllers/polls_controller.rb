@@ -1,19 +1,29 @@
 class PollsController < ApplicationController
   # new, create, show, create_vote アクションにログイン必須の制限を適用
-  before_action :require_user, only: [:new, :create, :show, :create_vote]
+  skip_before_action :verify_authenticity_token, only: [:create, :create_vote]
+  
+  before_action :require_user, except: [:index, :show]
+  #before_action :require_user, only: [:new, :create, :show, :create_vote]
   
   # show (投票ページ), result (結果ページ), create_vote (投票処理) でアンケートを特定
   before_action :set_poll, only: [:show, :result, :create_vote] 
 
   # GET /polls (アンケート一覧ページ)
   def index
-    # 「公開中」のアンケートを取得し、作成日時の降順で表示
-    @polls = Poll.where(status: '公開中').includes(:user).order(created_at: :desc)
+      # 「公開中」のアンケートを取得し、作成日時の降順で表示 (通常の一覧)
+      @polls = Poll.where(status: '公開中').includes(:user).order(created_at: :desc)
+
+      # 検索機能の実装（タイトル検索）
+      if params[:search].present?
+        @polls = @polls.where("title LIKE ?", "%#{params[:search]}%")
+      end
     
-    # 検索機能の実装（タイトル検索）
-    if params[:search].present?
-      @polls = @polls.where("title LIKE ?", "%#{params[:search]}%")
-    end
+     # 🚨 【ここを追加】人気ランキングデータの取得 🚨
+      @ranking_polls = Poll.left_joins(:votes)
+                           .group(:id)
+                           .order('COUNT(votes.id) DESC')
+                           .limit(5)
+    # これで、投票数が多い順に最大5件のアンケートが @ranking_polls に入ります。
   end
 
   # GET /polls/:id (投票ページ)
@@ -21,7 +31,7 @@ class PollsController < ApplicationController
     # 【機能要件】ログインしていて、かつ投票済みの場合、結果ページへリダイレクト
     if logged_in? && Vote.exists?(user_id: current_user.id, poll_id: @poll.id)
       flash[:notice] = "すでにこのアンケートに投票済みです。"
-      redirect_to poll_result_path(@poll) and return
+      redirect_to result_poll_path(@poll) and return
     end
     # 未投票の場合はそのまま投票フォームを表示
   end
@@ -54,7 +64,7 @@ class PollsController < ApplicationController
     
     if @vote.save
       flash[:success] = "投票が完了しました！"
-      redirect_to poll_result_path(@poll) # 投票成功後、結果ページへ
+      redirect_to result_poll_path(@poll) # 投票成功後、結果ページへ
     else
       # バリデーションエラー（主に二重投票防止）
       flash[:error] = "投票に失敗しました。#{@vote.errors.full_messages.to_sentence}"

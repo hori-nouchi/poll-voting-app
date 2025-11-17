@@ -1,5 +1,11 @@
 <h2>全アンケート一覧</h2>
 <p class="text-secondary">公開中のアンケートが <%= @polls.count %> 件あります。</p>
+<div class="d-flex justify-content-end mb-4">
+    <% if current_user %>
+        <%# ログインしている場合のみボタンを表示 %>
+        <%= link_to "アンケート新規作成", new_poll_path, class: "btn btn-warning btn-lg" %>
+    <% end %>
+</div>
 
 <%= form_with(url: polls_path, method: :get, local: true, class: 'mb-4 p-3 border rounded bg-light shadow-sm') do |f| %>
   <div class="input-group">

@@ -7,7 +7,7 @@
 <div class="card p-4 shadow-sm">
     <h4 class="card-title mb-3">投票フォーム</h4>
 
-    <%= form_with(url: poll_vote_path(@poll), method: :post, local: true) do %>
+    <%= form_with(url: vote_poll_path(@poll), method: :post, local: true) do %>
         
         <p class="mb-3">いずれか一つの選択肢を選んで投票してください。</p>
         

@@ -1,0 +1,7 @@
+<% # 各選択肢の入力フィールド %>
+<% # name="poll[options][]" とすることで、コントローラで options: [] として配列で受け取れる %>
+<div class="input-group mb-3" data-options-target="field">
+    <input type="text" name="poll[options][]" class="form-control" placeholder="選択肢のテキスト" required>
+    <%# 削除ボタン。Stimulusで処理 %>
+    <button type="button" class="btn btn-outline-danger" data-action="options#removeField">削除</button>
+</div>
