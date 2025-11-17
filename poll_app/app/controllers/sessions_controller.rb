@@ -1,4 +1,5 @@
 class SessionsController < ApplicationController
+  #skip_before_action :verify_authenticity_token, only: [:create, :destroy]
   # ログインフォームの表示 (GET /login)
   def new
     # フォームを表示するだけ

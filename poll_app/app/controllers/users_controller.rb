@@ -1,6 +1,6 @@
 # app/controllers/users_controller.rb
 class UsersController < ApplicationController
-  skip_before_action :verify_authenticity_token, only: [:create]
+  #skip_before_action :verify_authenticity_token, only: [:create]
   # GET /users/new (新規登録フォームの表示)
   def new
     @user = User.new 

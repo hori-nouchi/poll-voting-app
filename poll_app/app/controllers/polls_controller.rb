@@ -1,6 +1,6 @@
 class PollsController < ApplicationController
   # new, create, show, create_vote アクションにログイン必須の制限を適用
-  skip_before_action :verify_authenticity_token, only: [:create, :create_vote]
+  #skip_before_action :verify_authenticity_token, only: [:create, :create_vote]
   
   before_action :require_user, except: [:index, :show]
   #before_action :require_user, only: [:new, :create, :show, :create_vote]
