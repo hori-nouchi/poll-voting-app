@@ -1,38 +1,9 @@
-<h1 class="text-center mb-4">アンケート新規作成</h1>
-
 <div class="row justify-content-center">
-    <div class="col-md-8">
-        <%# data-controller="options"でStimulusコントローラーと連携 %>
-        <div data-controller="options">
-            <%= form_with(model: @poll) do |form| %>
-                <%= render 'shared/error_messages', object: form.object %>
+  <div class="col-lg-8">
+    <h1 class="mb-4">新しいアンケートを作成</h1>
 
-                <div class="mb-3">
-                    <%= form.label :title, "アンケートタイトル", class: "form-label" %>
-                    <%= form.text_field :title, class: "form-control", placeholder: "例：今夜の夕食は？", required: true %>
-                </div>
-
-                <h4 class="mt-4">選択肢の設定（最低2つ）</h4>
-                
-                <%# ここに動的に選択肢フィールドが追加される (data-options-target="fields") %>
-                <div data-options-target="fields">
-                    <%# 初期表示の選択肢を2つレンダリング %>
-                    <%= render 'option_field' %>
-                    <%= render 'option_field' %>
-                </div>
-
-                <%# 選択肢追加ボタン (data-action="options#addField"でStimulusメソッド呼び出し) %>
-                <button type="button" data-action="options#addField" class="btn btn-secondary mb-3">選択肢を追加</button>
-
-                <div class="d-grid gap-2 mt-4">
-                    <%= form.submit "公開", class: "btn btn-primary btn-lg" %>
-                </div>
-            <% end %>
-
-            <%# 隠されたテンプレート：新規フィールド追加時にコピーするHTML %>
-            <template data-options-target="template">
-                <%= render 'option_field' %>
-            </template>
-        </div>
-    </div>
+    <%# フォーム全体をレンダリングします。_form.html.erbがネストされたフォームロジックを保持します %>
+    <%# data-controllerは_form.html.erb内で設定されるため、ここでは不要です %>
+    <%= render "form", poll: @poll %>
+  </div>
 </div>

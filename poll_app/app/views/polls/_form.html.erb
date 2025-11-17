@@ -1,0 +1,45 @@
+<%# 🚨 data-controller="nested-form"を追加してJavaScriptと連携 🚨 %>
+<%= form_with(model: poll, class: "mb-5 p-4 border rounded shadow-sm bg-light", data: { controller: "nested-form" }) do |form| %>
+  <% if poll.errors.any? %>
+    <div id="error_explanation" class="alert alert-danger">
+      <h2 class="alert-heading"><%= pluralize(poll.errors.count, "error") %> が原因でこのアンケートは保存できませんでした:</h2>
+      <ul>
+        <% poll.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= form.label :title, "アンケートのタイトル", class: "form-label fs-5 fw-bold" %>
+    <%= form.text_field :title, class: "form-control form-control-lg", placeholder: "例: 今週のランチは何にする？" %>
+  </div>
+
+  <h3 class="mt-4 mb-3 fs-5">選択肢</h3>
+
+  <%# 🚨 【修正】data-nested-form-target="container" を追加 🚨 %>
+  <div id="choices-container" data-nested-form-target="container">
+    <%# 既存の選択肢、または空のフィールドがここに追加されます %>
+    <%= form.fields_for :choices do |choice_fields| %>
+      <%= render 'choices/choice_fields', form: choice_fields %>
+    <% end %>
+  </div>
+
+  <div class="mb-4">
+    <%# data-action はこのままでOK %>
+    <%= link_to '選択肢を追加', '#', data: { action: 'click->nested-form#add' }, class: "btn btn-outline-secondary" %>
+  </div>
+
+  <div class="d-grid gap-2">
+    <%= form.submit poll.persisted? ? "アンケートを更新" : "アンケートを作成", class: "btn btn-primary btn-lg" %>
+  </div>
+
+  <%# 🚨 【修正】テンプレートをフォームの内側に移動させ、Stimulusのスコープ内に入れます 🚨 %>
+  <%# fields_for の呼び出しを、親フォーム (form) から行い、Choice.newを明示的に渡します。 🚨 %>
+  <template data-nested-form-target="add_item">
+    <%= form.fields_for :choices, Choice.new, child_index: "NEW_RECORD" do |choice_fields| %>
+      <%= render "choices/choice_fields", form: choice_fields %>
+    <% end %>
+  </template>
+<% end %>

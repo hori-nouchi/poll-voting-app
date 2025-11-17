@@ -1,0 +1,15 @@
+<div class="input-group mb-2" data-nested-form-target="item">
+  <%= form.text_field :content, class: "form-control", placeholder: "選択肢の内容を入力" %>
+  
+  <%# 削除用の隠しフィールド %>
+  <% if form.object.persisted? %>
+    <%= form.check_box :_destroy, { class: 'd-none', data: { nested_form_target: 'destroy' } } %>
+  <% end %>
+
+  <%# 削除ボタン %>
+  <button type="button" class="btn btn-outline-danger" data-action="nested-form#remove">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+      <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5m4 0a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5"/>
+    </svg>
+  </button>
+</div>
