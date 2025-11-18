@@ -21,42 +21,46 @@
       }
     </script>
     
-    <%# 🚨 冗長なコアライブラリのインポートを削除しました 🚨 %>
-    
   </head>
   <body class="bg-light">
     <!-- ナビゲーションバーや共通ヘッダーの想定 -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-4">
       <div class="container">
-        <a class="navbar-brand" href="/">アンケートアプリ</a>
+        <%# Navbar BrandをRootに戻します %>
+        <%= link_to "アンケートアプリ", root_path, class: "navbar-brand" %>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto">
             
-            <%# 🚨 ログイン状態に応じたリンク 🚨 %>
+            <%# アンケート作成を黄色いボタンにし、ホームとヘルプを通常のnav-itemとして配置します %>
             <li class="nav-item">
-              <%= link_to 'アンケート作成', new_poll_path, class: "btn btn-outline-light me-2" %>
+              <%= link_to 'ホーム', root_path, class: "nav-link" %>
             </li>
             <li class="nav-item">
-              <%= link_to 'ヘルプ', '#', class: "nav-link" %>
+              <%= link_to 'ヘルプ', help_path, class: "nav-link" %>
+            </li>
+            <li class="nav-item ms-2">
+              <%# アンケート作成ボタンを黄色 (warning) に変更 %>
+              <%= link_to 'アンケート作成', new_poll_path, class: "btn btn-warning" %>
             </li>
             
             <%# ユーザー認証リンク %>
             <%# logged_in? と current_user が定義されていることを前提とします %>
             <% if defined?(logged_in?) && logged_in? %>
               <li class="nav-item">
-                <%= link_to "ログアウト", logout_path, data: { turbo_method: :delete }, class: "nav-link" %>
+                <span class="nav-link text-white-50 ms-2">ようこそ, <%= defined?(current_user) && current_user.respond_to?(:email) ? current_user.email : 'ユーザー' %></span>
               </li>
               <li class="nav-item">
-                <span class="nav-link text-white-50 ms-2">ようこそ, <%= defined?(current_user) && current_user.respond_to?(:email) ? current_user.email : 'ユーザー' %></span>
+                <%= link_to "ログアウト", logout_path, data: { turbo_method: :delete }, class: "nav-link" %>
               </li>
             <% else %>
               <li class="nav-item">
                 <%= link_to "ログイン", login_path, class: "nav-link" %>
               </li>
               <li class="nav-item">
+                <%# 修正: signup_path を使用 (config/routes.rb の変更に準拠) %>
                 <%= link_to "新規登録", signup_path, class: "nav-link" %>
               </li>
             <% end %>
@@ -67,9 +71,10 @@
     </nav>
     
     <main class="container">
+      <%# フラッシュメッセージの表示ロジックは維持 %>
       <% if flash[:notice] || flash[:alert] || flash[:success] || flash[:error] %>
         <div class="alert <%= flash[:notice] || flash[:success] ? 'alert-success' : 'alert-danger' %> alert-dismissible fade show" role="alert">
-          <%= flash[:notice] || flash[:alert] || flash[:success] ? 'alert-success' : 'alert-danger' %>
+          <%= flash[:notice] || flash[:alert] || flash[:success] || flash[:error] %>
           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
       <% end %>
@@ -94,7 +99,7 @@
         static targets = ["add_item", "item", "destroy", "container"];
 
         connect() {
-          
+          // 本番環境用
         }
 
         add(event) {

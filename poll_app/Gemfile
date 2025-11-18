@@ -42,13 +42,13 @@ gem "thruster", require: false
 
 # Codespaces (開発) およびテスト環境では SQLite を使用
 group :development, :test do
-  # Codespacesで使っているバージョンに合わせて修正
-  gem "sqlite3", "~> 1.6" 
+  # 🚨 【修正】Rails 8 が要求するバージョン (>= 2.1) に対応するため、バージョン指定を (~> 2.0) に引き上げます 🚨
+  gem "sqlite3", "~> 2.0" 
 
   # デバッグ用
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
 
-  # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
+  # Static analysis for security vulnerabilities [https://brakemanscanne...
   gem "brakeman", require: false
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
@@ -63,7 +63,6 @@ group :development, :test do
 end
 
 # Render (本番) 環境では PostgreSQL を使用
-# 🚨 これが以前のエラーの原因でした 🚨
 group :production do
   gem "pg", "~> 1.0"
 end
