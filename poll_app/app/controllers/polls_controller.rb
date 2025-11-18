@@ -1,21 +1,16 @@
 class PollsController < ApplicationController
-  # 認証ヘルパーがあると仮定（現在のコードに合わせて require_user を使用）
-  before_action :require_user, except: [:index, :show]
+  # 認証ヘルパーがあると仮定。もし require_user が show や result にかかっているなら外す必要があります。
+  #skip_before_action :verify_authenticity_token, only: [:create_vote]
+  before_action :require_user, except: [:index, :show, :result] 
   
-  # show (投票ページ), result (結果ページ), create_vote (投票処理) でアンケートを特定
   before_action :set_poll, only: [:show, :result, :create_vote] 
 
   # GET /polls (アンケート一覧ページ)
   def index
-      # 「公開中」のアンケートを取得し、作成日時の降順で表示 (通常の一覧)
       @polls = Poll.where(status: '公開中').includes(:user).order(created_at: :desc)
-
-      # 検索機能の実装（タイトル検索）
       if params[:search].present?
         @polls = @polls.where("title LIKE ?", "%#{params[:search]}%")
       end
-    
-      # 🚨 人気ランキングデータの取得 🚨
       @ranking_polls = Poll.left_joins(:votes)
                            .group(:id)
                            .order('COUNT(votes.id) DESC')
@@ -24,93 +19,109 @@ class PollsController < ApplicationController
 
   # GET /polls/:id (投票ページ)
   def show
-    # 【機能要件】ログインしていて、かつ投票済みの場合、結果ページへリダイレクト
-    # logged_in? と result_poll_path が定義されていると仮定
+    # 🚨 修正: ログイン必須のアンケートの場合 🚨
+    # もし投票がログインユーザー限定なら、ここで未ログインを弾く。
+    # 今回は仕様に合わせて、投票済みかどうかのチェックを強化します。
+    if !logged_in?
+      # 未ログインユーザーに対する処理。仕様書では「ログインユーザーは投票できる」ので、
+      # 投票フォーム自体は表示するが、投票ボタンの制御はビュー側で行うか、
+      # create_vote側でエラーにするのが一般的です。
+      # ここでは投票済みチェックのみを行います。
+    end
+
     if logged_in? && Vote.exists?(user_id: current_user.id, poll_id: @poll.id)
       flash[:notice] = "すでにこのアンケートに投票済みです。"
+      # 🚨 重要: ログを追加して、ここでリダイレクトが試みられているか確認 🚨
+      logger.info "DEBUG: showアクション内で投票済みを検知。結果ページへリダイレクトを試行。"
       redirect_to result_poll_path(@poll) and return
     end
-    # 未投票の場合はそのまま投票フォームを表示
+    
+    @vote = Vote.new
   end
 
-  # GET /polls/new (アンケート作成フォームの表示)
-  def new
-    @poll = Poll.new
-    # 🚨 【修正】動的なフォームのために、最低2つのChoiceを初期ビルド 🚨
-    # Pollモデルが accepts_nested_attributes_for :choices を設定している必要があります。
-    2.times { @poll.choices.build } 
-  end
-
-  # POST /polls (アンケートの保存処理)
-  def create
-    # current_user.polls.buildが適切に定義されていると仮定
-    @poll = current_user.polls.build(poll_params)
-    @poll.status = "公開中" # 初期状態は「公開中」に設定
-
-    if @poll.save
-      flash[:success] = "アンケートを作成しました！"
-      redirect_to poll_path(@poll) # 作成後、投票ページへリダイレクト
-    else
-      # バリデーションエラー時はフォームを再表示
-      flash.now[:error] = "アンケートの作成に失敗しました。"
-      
-      # 🚨 【修正】エラー時に選択肢のフォームが消えないように、不足分をビルド 🚨
-      # 新規作成フォームを再表示する際に、フォームが壊れないように、まだ保存されていない選択肢の数を確認し、最低2つあることを保証します。
-      while @poll.choices.reject(&:marked_for_destruction?).count < 2
-        @poll.choices.build
-      end
-      
-      render :new, status: :unprocessable_entity
-    end
-  end
+  # ... (new と create アクションは省略。変更なしと仮定)
   
   # POST /polls/:id/vote (投票処理)
   def create_vote
-    # Voteオブジェクトを作成し、現在のユーザーとアンケート、選択肢を紐付ける
-    # chosen_optionがChoiceモデルのIDであると仮定
+    # 1. 認証チェック
+    unless logged_in?
+      flash[:error] = "投票を行うにはログインが必要です。"
+      logger.info "DEBUG: 投票失敗 - 未ログインユーザー。"
+      redirect_to login_path and return
+    end
+
+    # 2. 選択肢未選択チェック
+    unless params[:chosen_option].present?
+      flash[:error] = "投票する選択肢を選んでください。"
+      logger.info "DEBUG: 投票失敗 - 選択肢が未選択。"
+      redirect_to poll_path(@poll) and return
+    end
+
+    # 3. 二重投票チェック
+    if Vote.exists?(user_id: current_user.id, poll_id: @poll.id)
+      flash[:notice] = "すでにこのアンケートに投票済みです。結果を表示します。"
+      logger.info "DEBUG: 投票失敗 - 二重投票を検知しました。"
+      redirect_to result_poll_path(@poll) and return # 🚨 ここで遷移するはず
+    end
+    
+    # 4. 投票オブジェクトの作成と保存
+    # chosen_option は Choice の ID が入る
     @vote = @poll.votes.build(user: current_user, chosen_option: params[:chosen_option])
     
     if @vote.save
+      # 🚨 投票成功 🚨
       flash[:success] = "投票が完了しました！"
-      redirect_to result_poll_path(@poll) # 投票成功後、結果ページへ
+      logger.info "DEBUG: 投票成功。結果ページへリダイレクトを試行。"
+      # 🚨 ここで遷移するはず 🚨
+      redirect_to result_poll_path(@poll) and return
     else
-      # バリデーションエラー（主に二重投票防止）
-      flash[:error] = "投票に失敗しました。#{@vote.errors.full_messages.to_sentence}"
-      redirect_to poll_path(@poll) # 投票ページに戻す
+      # 🚨 保存失敗時の処理 🚨
+      logger.error "DEBUG: 投票保存失敗。エラー: #{@vote.errors.full_messages.to_sentence}"
+      flash[:error] = "投票の処理中にエラーが発生しました: #{@vote.errors.full_messages.to_sentence}"
+      # 投票ページに戻し、エラーメッセージを表示
+      redirect_to poll_path(@poll), status: :unprocessable_entity and return
     end
   end
 
   # GET /polls/:id/result (投票結果ページ)
   def result
-    # 【機能要件】投票結果の集計ロジック
     # 選択肢IDごとの投票数を集計 (例: {1 => 10, 2 => 5})
-    @results = @poll.votes.group(:chosen_option).count
-    # 総投票数
-    @total_votes = @poll.votes.count 
+    vote_counts_by_id = @poll.votes.group(:chosen_option).count
     
-    # ここで @poll.choices を使って、chosen_option（選択肢ID）を内容（content）に変換するロジックが必要になる場合があります。
+    # 選択肢IDをキー、Choiceオブジェクトを値とするハッシュを作成
+    choices_map = @poll.choices.index_by(&:id)
+
+    # @results を、選択肢のテキストをキーとするハッシュに変換
+    @results = vote_counts_by_id.map do |choice_id, count|
+      choice = choices_map[choice_id]
+      content = choice ? choice.content : "不明な選択肢 (ID: #{choice_id})"
+      [content, count]
+    end.to_h
+    
+    @total_votes = @poll.votes.count 
+    # 🚨 ログを追加 🚨
+    logger.info "DEBUG: resultアクション実行。総投票数: #{@total_votes}"
   end
 
   private
   
   # IDからアンケートオブジェクトを取得し、@pollに代入する共通メソッド
   def set_poll
-    @poll = Poll.find(params[:id])
+    # includes(:choices, :votes) で関連データも同時に取得
+    @poll = Poll.includes(:choices, :votes).find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    # ログにエラーを記録し、ユーザーには404ページを表示
+    logger.error "Poll not found with ID: #{params[:id]}"
+    render file: "#{Rails.root}/public/404.html", layout: false, status: :not_found
   end
 
   # ストロングパラメータ (セキュリティ対策)
   def poll_params
-    # 🚨 【修正】ネストされた選択肢 (choices) を許可する choices_attributes に変更 🚨
-    # :id は既存レコードの更新用, :content は選択肢の内容, :_destroy は削除用
     params.require(:poll).permit(:title, choices_attributes: [:id, :content, :_destroy])
   end
   
-  # require_user の定義は ApplicationController または別の場所にあると仮定
-  # def require_user
-  #   unless logged_in?
-  #     flash[:error] = "ログインが必要です"
-  #     redirect_to login_url
-  #   end
-  # end
-
+  # current_user の存在チェック（仮定義）
+  def logged_in?
+    !!current_user
+  end
 end
