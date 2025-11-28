@@ -1,45 +1,68 @@
 class PollsController < ApplicationController
-  # 認証ヘルパーがあると仮定。もし require_user が show や result にかかっているなら外す必要があります。
+  # CSRFトークンの検証スキップは、フォーム送信を伴うアクションでのみ必要
   #skip_before_action :verify_authenticity_token, only: [:create_vote]
+  
+  # ログイン必須のアクションを定義
   before_action :require_user, except: [:index, :show, :result] 
   
+  # 特定のアンケートが必要なアクション
   before_action :set_poll, only: [:show, :result, :create_vote] 
 
   # GET /polls (アンケート一覧ページ)
   def index
-      @polls = Poll.where(status: '公開中').includes(:user).order(created_at: :desc)
-      if params[:search].present?
-        @polls = @polls.where("title LIKE ?", "%#{params[:search]}%")
+    @polls = Poll.where(status: '公開中').includes(:user).order(created_at: :desc)
+    if params[:search].present?
+      @polls = @polls.where("title LIKE ?", "%#{params[:search]}%")
+    end
+    
+    # 投票数ランキング (上位5件)
+    @ranking_polls = Poll.left_joins(:votes)
+                         .group(:id)
+                         .order('COUNT(votes.id) DESC')
+                         .limit(5)
+  end
+
+  # GET /polls/new (新規作成フォーム)
+  def new
+    # 🚨 修正点: @poll インスタンス変数を初期化する 🚨
+    # これが _form.html.erb で必要とされていたオブジェクトです。
+    @poll = Poll.new 
+    
+    # フォームに最低2つの選択肢を持たせるため、関連付けも初期化します。
+    # アンケートの仕様に合わせて適切な数（例：2つ）を初期化してください。
+    2.times { @poll.choices.build } 
+  end
+
+  # POST /polls (新規ユーザーの作成)
+  def create
+    # current_userと関連付けてアンケートを構築
+    @poll = current_user.polls.build(poll_params)
+    
+    if @poll.save
+      flash[:success] = "新しいアンケートを作成しました！"
+      redirect_to @poll
+    else
+      # 失敗した場合、render :new でフォームを再表示
+      # choices の build がないとフォームが崩れる可能性があるため、再度初期化
+      if @poll.choices.empty?
+        2.times { @poll.choices.build } 
       end
-      @ranking_polls = Poll.left_joins(:votes)
-                           .group(:id)
-                           .order('COUNT(votes.id) DESC')
-                           .limit(5)
+      flash.now[:error] = "アンケートの作成に失敗しました。"
+      render :new, status: :unprocessable_entity
+    end
   end
 
   # GET /polls/:id (投票ページ)
   def show
-    # 🚨 修正: ログイン必須のアンケートの場合 🚨
-    # もし投票がログインユーザー限定なら、ここで未ログインを弾く。
-    # 今回は仕様に合わせて、投票済みかどうかのチェックを強化します。
-    if !logged_in?
-      # 未ログインユーザーに対する処理。仕様書では「ログインユーザーは投票できる」ので、
-      # 投票フォーム自体は表示するが、投票ボタンの制御はビュー側で行うか、
-      # create_vote側でエラーにするのが一般的です。
-      # ここでは投票済みチェックのみを行います。
-    end
-
+    # 投票済みチェック
     if logged_in? && Vote.exists?(user_id: current_user.id, poll_id: @poll.id)
       flash[:notice] = "すでにこのアンケートに投票済みです。"
-      # 🚨 重要: ログを追加して、ここでリダイレクトが試みられているか確認 🚨
       logger.info "DEBUG: showアクション内で投票済みを検知。結果ページへリダイレクトを試行。"
       redirect_to result_poll_path(@poll) and return
     end
     
     @vote = Vote.new
   end
-
-  # ... (new と create アクションは省略。変更なしと仮定)
   
   # POST /polls/:id/vote (投票処理)
   def create_vote
@@ -61,24 +84,19 @@ class PollsController < ApplicationController
     if Vote.exists?(user_id: current_user.id, poll_id: @poll.id)
       flash[:notice] = "すでにこのアンケートに投票済みです。結果を表示します。"
       logger.info "DEBUG: 投票失敗 - 二重投票を検知しました。"
-      redirect_to result_poll_path(@poll) and return # 🚨 ここで遷移するはず
+      redirect_to result_poll_path(@poll) and return
     end
     
     # 4. 投票オブジェクトの作成と保存
-    # chosen_option は Choice の ID が入る
     @vote = @poll.votes.build(user: current_user, chosen_option: params[:chosen_option])
     
     if @vote.save
-      # 🚨 投票成功 🚨
       flash[:success] = "投票が完了しました！"
       logger.info "DEBUG: 投票成功。結果ページへリダイレクトを試行。"
-      # 🚨 ここで遷移するはず 🚨
       redirect_to result_poll_path(@poll) and return
     else
-      # 🚨 保存失敗時の処理 🚨
       logger.error "DEBUG: 投票保存失敗。エラー: #{@vote.errors.full_messages.to_sentence}"
       flash[:error] = "投票の処理中にエラーが発生しました: #{@vote.errors.full_messages.to_sentence}"
-      # 投票ページに戻し、エラーメッセージを表示
       redirect_to poll_path(@poll), status: :unprocessable_entity and return
     end
   end
@@ -94,12 +112,12 @@ class PollsController < ApplicationController
     # @results を、選択肢のテキストをキーとするハッシュに変換
     @results = vote_counts_by_id.map do |choice_id, count|
       choice = choices_map[choice_id]
+      # 存在しない選択肢IDがvotesテーブルに残っている可能性を考慮
       content = choice ? choice.content : "不明な選択肢 (ID: #{choice_id})"
       [content, count]
     end.to_h
     
     @total_votes = @poll.votes.count 
-    # 🚨 ログを追加 🚨
     logger.info "DEBUG: resultアクション実行。総投票数: #{@total_votes}"
   end
 
@@ -107,20 +125,20 @@ class PollsController < ApplicationController
   
   # IDからアンケートオブジェクトを取得し、@pollに代入する共通メソッド
   def set_poll
-    # includes(:choices, :votes) で関連データも同時に取得
     @poll = Poll.includes(:choices, :votes).find(params[:id])
   rescue ActiveRecord::RecordNotFound
-    # ログにエラーを記録し、ユーザーには404ページを表示
     logger.error "Poll not found with ID: #{params[:id]}"
     render file: "#{Rails.root}/public/404.html", layout: false, status: :not_found
   end
 
   # ストロングパラメータ (セキュリティ対策)
   def poll_params
-    params.require(:poll).permit(:title, choices_attributes: [:id, :content, :_destroy])
+    # 🚨 修正: choices_attributes を通して、ネストした選択肢の作成を許可 🚨
+    params.require(:poll).permit(:title, :description, choices_attributes: [:id, :content, :_destroy])
   end
   
   # current_user の存在チェック（仮定義）
+  # NOTE: この定義は ApplicaionController に移動するのがベストプラクティスです。
   def logged_in?
     !!current_user
   end

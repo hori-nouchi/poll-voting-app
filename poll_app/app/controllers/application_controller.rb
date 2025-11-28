@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   # 以下のメソッドをすべてのコントローラーとビューで利用可能にする
+  protect_from_forgery with: :exception
   helper_method :current_user, :logged_in?
   
   # 現在ログインしているユーザーを取得する

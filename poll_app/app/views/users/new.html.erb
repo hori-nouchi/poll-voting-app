@@ -1,41 +1,49 @@
 <div class="row justify-content-center mt-5">
   <div class="col-md-6 col-lg-4">
-    <div class="card shadow-lg border-0">
+    <div class="card shadow-lg border-0 rounded-3">
       <div class="card-body p-4 p-md-5">
-        <h1 class="card-title text-center mb-4 fs-3 fw-bold">新規登録</h1>
+        <h1 class="card-title text-center mb-4 fs-3 fw-bold text-primary">新規ユーザー登録</h1>
         
-        <%# 🚨 修正: form_with の URLを signup_path に変更 🚨 %>
-        <%= form_with(model: @user, url: signup_path, local: true) do |form| %>
+        <%# 🚨 修正点: フォームの送信先を users_path に設定 🚨 %>
+        <%# users_path は POST /users を指し、users#create にマッピングされます。 %>
+        <%= form_with(model: @user, url: signup_path, data: { turbo: false }, local: true) do |form| %>
           
+          <%# エラーメッセージの表示 %>
           <% if @user.errors.any? %>
-            <div class="alert alert-danger">
-              <%= @user.errors.full_messages.to_sentence %>
+            <div class="alert alert-danger fade show rounded-3" role="alert">
+              <h4 class="alert-heading fs-6 fw-bold">入力内容にエラーがあります</h4>
+              <ul>
+                <% @user.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
             </div>
           <% end %>
 
           <div class="mb-3">
-            <%= form.label :email, "メールアドレス", class: "form-label" %>
-            <%= form.email_field :email, class: "form-control", placeholder: "your@example.com", required: true %>
+            <%= form.label :email, "メールアドレス", class: "form-label fw-bold" %>
+            <%= form.email_field :email, class: "form-control form-control-lg rounded-3", placeholder: "your@example.com", required: true %>
           </div>
 
           <div class="mb-3">
-            <%= form.label :password, "パスワード", class: "form-label" %>
-            <%= form.password_field :password, class: "form-control", required: true %>
-            <div class="form-text">8文字以上</div>
+            <%= form.label :password, "パスワード", class: "form-label fw-bold" %>
+            <%= form.password_field :password, class: "form-control form-control-lg rounded-3", required: true %>
+            <div class="form-text text-muted">最低8文字以上で設定してください。</div>
           </div>
 
           <div class="mb-4">
-            <%= form.label :password_confirmation, "パスワード確認", class: "form-label" %>
-            <%= form.password_field :password_confirmation, class: "form-control", required: true %>
+            <%= form.label :password_confirmation, "パスワード確認", class: "form-label fw-bold" %>
+            <%= form.password_field :password_confirmation, class: "form-control form-control-lg rounded-3", required: true %>
           </div>
 
           <div class="d-grid">
-            <%= form.submit "登録する", class: "btn btn-primary btn-lg" %>
+            <%= form.submit "登録して始める", class: "btn btn-primary btn-lg fw-bold rounded-3" %>
           </div>
         <% end %>
         
         <div class="text-center mt-4">
-          <%= link_to "既にアカウントをお持ちの方はこちら (ログイン)", login_path, class: "text-muted" %>
+          <p class="text-muted mb-0">アカウントをお持ちですか？</p>
+          <%= link_to "ログインはこちら", login_path, class: "text-decoration-none fw-bold" %>
         </div>
       </div>
     </div>
