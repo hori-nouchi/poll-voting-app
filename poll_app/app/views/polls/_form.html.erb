@@ -26,23 +26,21 @@
       <%# 2. 選択肢コンテナ %>
       <h3 class="mt-4 mb-3 fs-5 fw-bold border-bottom pb-2">選択肢</h3>
 
-      <%# 🚨 Stimulusターゲット: 選択肢フィールドを格納するコンテナ 🚨 %>
+      <%# 🚨 Stimulusターゲット: 選択肢フィールドを格納するコンテナ (container) 🚨 %>
       <div id="choices-container" data-nested-form-target="container">
-        <% form.fields_for :choices do |choice_fields| %>
-          <%# パーシャルパスを 'choices/choice_fields' に合わせる %>
+        <%# コントローラーでビルドされた既存の/空の選択肢がレンダリングされる %>
+        <%= form.fields_for :choices do |choice_fields| %>
           <%= render 'choices/choice_fields', form: choice_fields %>
         <% end %>
       </div>
 
       <%# 3. 選択肢追加ボタン %>
       <div class="mb-4 text-center">
-        <%# data-action: 'click->nested-form#add' でJavaScriptと連携 %>
-        <%# data-nested-form-target: "add_item" はテンプレートを参照するために使用 %>
         <%= link_to '選択肢を追加', '#', 
             data: { 
                 action: 'click->nested-form#add',
-                # テンプレートを参照するためにターゲット名を指定
-                nested_form_template_target: "add_item" 
+                # 🚨 修正点: テンプレートを参照するためにターゲット名を "template" に統一 🚨
+                nested_form_template_target: "newTemplate" 
             }, 
             class: "btn btn-outline-primary rounded-pill fw-bold" %>
       </div>
@@ -53,10 +51,9 @@
       </div>
 
       <%# 🚨 5. テンプレートの定義 🚨 %>
-      <%# Stimulusターゲット: フォーム要素追加時にコピーされるテンプレート %>
-      <template data-nested-form-target="add_item">
+      <%# 🚨 修正点: Stimulusターゲットを "template" に統一 🚨 %>
+      <template data-nested-form-target="template">
         <%= form.fields_for :choices, Choice.new, child_index: "NEW_RECORD" do |choice_fields| %>
-          <%# パーシャルパスを 'choices/choice_fields' に合わせる %>
           <%= render "choices/choice_fields", form: choice_fields %>
         <% end %>
       </template>
