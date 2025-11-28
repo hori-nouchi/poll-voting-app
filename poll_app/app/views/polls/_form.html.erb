@@ -1,45 +1,65 @@
-<%# 🚨 data-controller="nested-form"を追加してJavaScriptと連携 🚨 %>
-<%= form_with(model: poll, class: "mb-5 p-4 border rounded shadow-sm bg-light", data: { controller: "nested-form" }) do |form| %>
-  <% if poll.errors.any? %>
-    <div id="error_explanation" class="alert alert-danger">
-      <h2 class="alert-heading"><%= pluralize(poll.errors.count, "error") %> が原因でこのアンケートは保存できませんでした:</h2>
-      <ul>
-        <% poll.errors.each do |error| %>
-          <li><%= error.full_message %></li>
+<%# poll: Pollオブジェクト, フォームに渡されることを想定 %>
+
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <%# フォーム全体に Stimulus コントローラーを適用し、デザインを統一 %>
+    <%= form_with(model: poll, class: "mb-5 p-5 border rounded shadow-lg bg-white", data: { controller: "nested-form" }) do |form| %>
+
+      <%# エラーメッセージ表示 %>
+      <% if poll.errors.any? %>
+        <div id="error_explanation" class="alert alert-danger rounded-3">
+          <h2 class="alert-heading"><%= pluralize(poll.errors.count, "error") %> が原因でこのアンケートは保存できませんでした:</h2>
+          <ul>
+            <% poll.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <%# 1. タイトルフィールド %>
+      <div class="mb-4">
+        <%= form.label :title, "アンケートのタイトル", class: "form-label fs-5 fw-bold" %>
+        <%= form.text_field :title, class: "form-control form-control-lg rounded-3", placeholder: "例: 今週のランチは何にする？", required: true %>
+      </div>
+
+      <%# 2. 選択肢コンテナ %>
+      <h3 class="mt-4 mb-3 fs-5 fw-bold border-bottom pb-2">選択肢</h3>
+
+      <%# 🚨 Stimulusターゲット: 選択肢フィールドを格納するコンテナ 🚨 %>
+      <div id="choices-container" data-nested-form-target="container">
+        <% form.fields_for :choices do |choice_fields| %>
+          <%# パーシャルパスを 'choices/choice_fields' に合わせる %>
+          <%= render 'choices/choice_fields', form: choice_fields %>
         <% end %>
-      </ul>
-    </div>
-  <% end %>
+      </div>
 
-  <div class="mb-3">
-    <%= form.label :title, "アンケートのタイトル", class: "form-label fs-5 fw-bold" %>
-    <%= form.text_field :title, class: "form-control form-control-lg", placeholder: "例: 今週のランチは何にする？" %>
-  </div>
+      <%# 3. 選択肢追加ボタン %>
+      <div class="mb-4 text-center">
+        <%# data-action: 'click->nested-form#add' でJavaScriptと連携 %>
+        <%# data-nested-form-target: "add_item" はテンプレートを参照するために使用 %>
+        <%= link_to '選択肢を追加', '#', 
+            data: { 
+                action: 'click->nested-form#add',
+                # テンプレートを参照するためにターゲット名を指定
+                nested_form_template_target: "add_item" 
+            }, 
+            class: "btn btn-outline-primary rounded-pill fw-bold" %>
+      </div>
 
-  <h3 class="mt-4 mb-3 fs-5">選択肢</h3>
+      <%# 4. 送信ボタン %>
+      <div class="d-grid gap-2 mt-5">
+        <%= form.submit poll.persisted? ? "アンケートを更新" : "アンケートを作成", class: "btn btn-primary btn-lg fw-bold rounded-3" %>
+      </div>
 
-  <%# 🚨 【修正】data-nested-form-target="container" を追加 🚨 %>
-  <div id="choices-container" data-nested-form-target="container">
-    <%# 既存の選択肢、または空のフィールドがここに追加されます %>
-    <%= form.fields_for :choices do |choice_fields| %>
-      <%= render 'choices/choice_fields', form: choice_fields %>
+      <%# 🚨 5. テンプレートの定義 🚨 %>
+      <%# Stimulusターゲット: フォーム要素追加時にコピーされるテンプレート %>
+      <template data-nested-form-target="add_item">
+        <%= form.fields_for :choices, Choice.new, child_index: "NEW_RECORD" do |choice_fields| %>
+          <%# パーシャルパスを 'choices/choice_fields' に合わせる %>
+          <%= render "choices/choice_fields", form: choice_fields %>
+        <% end %>
+      </template>
     <% end %>
   </div>
-
-  <div class="mb-4">
-    <%# data-action はこのままでOK %>
-    <%= link_to '選択肢を追加', '#', data: { action: 'click->nested-form#add' }, class: "btn btn-outline-secondary" %>
-  </div>
-
-  <div class="d-grid gap-2">
-    <%= form.submit poll.persisted? ? "アンケートを更新" : "アンケートを作成", class: "btn btn-primary btn-lg" %>
-  </div>
-
-  <%# 🚨 【修正】テンプレートをフォームの内側に移動させ、Stimulusのスコープ内に入れます 🚨 %>
-  <%# fields_for の呼び出しを、親フォーム (form) から行い、Choice.newを明示的に渡します。 🚨 %>
-  <template data-nested-form-target="add_item">
-    <%= form.fields_for :choices, Choice.new, child_index: "NEW_RECORD" do |choice_fields| %>
-      <%= render "choices/choice_fields", form: choice_fields %>
-    <% end %>
-  </template>
-<% end %>
+</div>
