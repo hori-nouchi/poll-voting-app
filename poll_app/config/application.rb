@@ -17,6 +17,7 @@ module PollApp
     # config.autoload_lib(ignore: %w[assets tasks])
     # lib フォルダを自動読み込み対象にする場合
     config.autoload_paths << Rails.root.join('lib')
+    config.assets.initialize_on_precompile = false
 
 
     # Configuration for the application, engines, and railties goes here.
