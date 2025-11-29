@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   # 認証済みユーザーのみが実行できるアクションの制限を、このコントローラーでは解除します。
   # ログインや新規登録は、未認証ユーザーが行うためです。
-  skip_before_action :verify_authenticity_token, only: [:create]
+  #skip_before_action :verify_authenticity_token, only: [:create]
 
   # GET /users/new (新規登録フォームの表示)
   def new

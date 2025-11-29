@@ -1,14 +1,12 @@
-<%# poll: Pollオブジェクト, フォームに渡されることを想定 %>
-
 <div class="row justify-content-center">
-  <div class="col-md-8">
-    <%# フォーム全体に Stimulus コントローラーを適用し、デザインを統一 %>
-    <%= form_with(model: poll, class: "mb-5 p-5 border rounded shadow-lg bg-white", data: { controller: "nested-form" }) do |form| %>
+  <div class="col-lg-8">
+    <%# 🚨 修正: data-controller="nested-form" を設定 🚨 %>
+    <%= form_with model: poll, class: "mb-5", data: { controller: "nested-form" } do |form| %>
 
-      <%# エラーメッセージ表示 %>
+      <%# エラー表示 %>
       <% if poll.errors.any? %>
-        <div id="error_explanation" class="alert alert-danger rounded-3">
-          <h2 class="alert-heading"><%= pluralize(poll.errors.count, "error") %> が原因でこのアンケートは保存できませんでした:</h2>
+        <div class="alert alert-danger">
+          <h4 class="alert-heading">以下のエラーにより保存できませんでした:</h4>
           <ul>
             <% poll.errors.full_messages.each do |message| %>
               <li><%= message %></li>
@@ -16,47 +14,72 @@
           </ul>
         </div>
       <% end %>
+      
+      <%# ---------------------------------------------------------------- %>
+      <%# 1. アンケートタイトルと説明 %>
+      <%# ---------------------------------------------------------------- %>
+      <div class="card p-4 shadow-sm mb-4">
+        <h5 class="card-title text-primary fw-bold">アンケートの基本情報</h5>
+        
+        <div class="mb-3">
+          <%= form.label :title, "タイトル", class: "form-label fw-bold" %>
+          <%= form.text_field :title, class: "form-control form-control-lg", required: true, placeholder: "例: 次のプロジェクトで使いたい技術は？" %>
+        </div>
 
-      <%# 1. タイトルフィールド %>
-      <div class="mb-4">
-        <%= form.label :title, "アンケートのタイトル", class: "form-label fs-5 fw-bold" %>
-        <%= form.text_field :title, class: "form-control form-control-lg rounded-3", placeholder: "例: 今週のランチは何にする？", required: true %>
+        <div class="mb-3">
+          <%= form.label :description, "説明 (オプション)", class: "form-label fw-bold" %>
+          <%= form.text_area :description, class: "form-control", rows: 3, placeholder: "このアンケートの目的や詳細を記述します。" %>
+        </div>
+        
+        <%# NOTE: status フィールドは削除済みのため含めません %>
       </div>
 
-      <%# 2. 選択肢コンテナ %>
-      <h3 class="mt-4 mb-3 fs-5 fw-bold border-bottom pb-2">選択肢</h3>
 
-      <%# 🚨 Stimulusターゲット: 選択肢フィールドを格納するコンテナ (container) 🚨 %>
-      <div id="choices-container" data-nested-form-target="container">
-        <%# コントローラーでビルドされた既存の/空の選択肢がレンダリングされる %>
-        <%= form.fields_for :choices do |choice_fields| %>
-          <%= render 'choices/choice_fields', form: choice_fields %>
-        <% end %>
-      </div>
+      <%# ---------------------------------------------------------------- %>
+      <%# 2. 選択肢コンテナ（動的に追加・削除される部分） %>
+      <%# ---------------------------------------------------------------- %>
+      <div class="card p-4 shadow-sm mb-4">
+        <h5 class="card-title text-primary fw-bold mb-3 d-flex justify-content-between align-items-center">
+          選択肢 <span class="badge bg-secondary ms-2" data-nested-form-target="count">0</span>
+        </h5>
+        
+        <div data-nested-form-target="container" class="list-group mb-3">
+          <%# 既存の/バリデーションで失敗した選択肢のフィールドをレンダリング %>
+          <%= form.fields_for :choices do |choice_fields| %>
+            <%= render 'choice_fields', form: choice_fields %>
+          <% end %>
+        </div>
 
-      <%# 3. 選択肢追加ボタン %>
-      <div class="mb-4 text-center">
+        <%# 🚨 選択肢追加ボタン 🚨 %>
         <%= link_to '選択肢を追加', '#', 
-            data: { 
-                action: 'click->nested-form#add',
-                # 🚨 修正点: テンプレートを参照するためにターゲット名を "template" に統一 🚨
-                nested_form_template_target: "newTemplate" 
-            }, 
-            class: "btn btn-outline-primary rounded-pill fw-bold" %>
+          data: { 
+              action: 'click->nested-form#add'
+          }, 
+          class: "btn btn-outline-primary rounded-pill fw-bold" %>
+          
+        <p class="form-text text-muted mt-2">※ 最低2つ以上の選択肢が必要です。</p>
       </div>
 
-      <%# 4. 送信ボタン %>
-      <div class="d-grid gap-2 mt-5">
-        <%= form.submit poll.persisted? ? "アンケートを更新" : "アンケートを作成", class: "btn btn-primary btn-lg fw-bold rounded-3" %>
+
+      <%# ---------------------------------------------------------------- %>
+      <%# 3. フォーム送信ボタン %>
+      <%# ---------------------------------------------------------------- %>
+      <div class="text-center">
+        <%= form.submit "アンケートを保存", class: "btn btn-primary btn-lg fw-bold px-5" %>
+        <%= link_to 'キャンセル', polls_path, class: "btn btn-outline-secondary btn-lg ms-3" %>
       </div>
 
-      <%# 🚨 5. テンプレートの定義 🚨 %>
-      <%# 🚨 修正点: Stimulusターゲットを "template" に統一 🚨 %>
+
+      <%# ---------------------------------------------------------------- %>
+      <%# 4. テンプレート（非表示） 🚨 【重要】 🚨 %>
+      <%# ---------------------------------------------------------------- %>
       <template data-nested-form-target="template">
+        <%# テンプレートの内容は、新規レコードのプレースホルダー 'NEW_RECORD' を持つ必要があります %>
         <%= form.fields_for :choices, Choice.new, child_index: "NEW_RECORD" do |choice_fields| %>
-          <%= render "choices/choice_fields", form: choice_fields %>
+          <%= render 'choice_fields', form: choice_fields %>
         <% end %>
       </template>
+
     <% end %>
   </div>
 </div>

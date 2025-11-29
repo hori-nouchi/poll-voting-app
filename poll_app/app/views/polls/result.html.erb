@@ -1,61 +1,74 @@
-<h2>投票結果</h2>
-<p class="text-secondary">アンケートタイトル:</p>
-<h3><%= @poll.title %></h3>
-
-<div class="row mt-4">
-    <div class="col-md-4">
-        <div class="card text-center bg-info text-white shadow-sm p-3">
-            <div class="card-body">
-                <h5 class="card-title">総投票数</h5>
-                <p class="card-text fs-1 fw-bold"><%= @total_votes %> 票</p>
-            </div>
-        </div>
-    </div>
+<!-- app/views/polls/result.html.erb -->
+<div class="container my-5">
     
-    <div class="col-md-8">
-        <div class="card shadow-sm p-3 h-100">
-            <h5 class="card-title">グラフ表示エリア</h5>
-            <div style="height: 200px; background-color: #f8f9fa; border: 1px dashed #ccc; display: flex; align-items: center; justify-content: center; font-style: italic;">
-                投票結果のグラフ（棒グラフまたは円グラフ）
+    <h2>投票結果</h2>
+    <p class="text-secondary">アンケートタイトル:</p>
+    <h3><%= @poll.title %></h3>
+
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card text-center bg-info text-white shadow-sm p-3 rounded-3">
+                <div class="card-body">
+                    <h5 class="card-title">総投票数</h5>
+                    <p class="card-text fs-1 fw-bold"><%= @total_votes %> 票</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card shadow-sm p-3 h-100 rounded-3">
+                <h5 class="card-title">グラフ表示エリア</h5>
+                <div style="height: 200px; background-color: #f8f9fa; border: 1px dashed #ccc; display: flex; align-items: center; justify-content: center; font-style: italic; border-radius: 0.5rem;">
+                    投票結果のグラフ（棒グラフまたは円グラフ）<br>（注: グラフライブラリがないため、プレースホルダーです）
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<h4 class="mt-5 mb-3">結果内訳</h4>
+    <h4 class="mt-5 mb-3">結果内訳</h4>
 
-<div class="list-group">
-    <% if @total_votes > 0 %>
-        <% @results.each do |option, count| %>
-            <% 
-                # 割合を計算 (小数点以下1桁まで)
-                percentage = (@total_votes > 0) ? (count.to_f / @total_votes * 100).round(1) : 0
-                # プログレスバーの色を設定 (Bootstrapのユーティリティクラス)
-                color_class = case option.hash % 4
-                              when 0 then "bg-primary"
-                              when 1 then "bg-success"
-                              when 2 then "bg-warning"
-                              when 3 then "bg-danger"
-                              end
-            %>
-            <div class="list-group-item p-3">
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                    <strong class="text-truncate" style="max-width: 70%;"><%= option %></strong>
-                    <span>
-                        <span class="badge bg-secondary me-2"><%= percentage %>%</span>
-                        <span class="badge bg-dark"><%= count %> 票</span>
-                    </span>
+    <div class="list-group">
+        <% if @total_votes > 0 %>
+            <% # @results は、キーが選択肢のテキスト、値が投票数のハッシュ (例: {"はい" => 10, "いいえ" => 5}) %>
+            <% @results.each_with_index do |(option_text, count), index| %>
+                <% 
+                    # 割合を計算 (小数点以下1桁まで)
+                    percentage = (@total_votes > 0) ? (count.to_f / @total_votes * 100).round(1) : 0
+                    # プログレスバーの色を設定 (Bootstrapのユーティリティクラス)
+                    # indexを使って色のバリエーションを確保します
+                    color_class = case index % 4
+                                  when 0 then "bg-primary"
+                                  when 1 then "bg-success"
+                                  when 2 then "bg-warning"
+                                  when 3 then "bg-danger"
+                                  end
+                %>
+                <div class="list-group-item p-3 rounded-3 mb-2 shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <strong class="text-truncate text-wrap me-3" style="max-width: 70%;"><%= option_text %></strong>
+                        <span>
+                            <span class="badge bg-secondary me-2"><%= percentage %>%</span>
+                            <span class="badge bg-dark"><%= count %> 票</span>
+                        </span>
+                    </div>
+                    <div class="progress" role="progressbar" style="height: 10px;">
+                        <div class="progress-bar <%= color_class %>" style="width: <%= percentage %>%"></div>
+                    </div>
                 </div>
-                <div class="progress" role="progressbar" style="height: 10px;">
-                    <div class="progress-bar <%= color_class %>" style="width: <%= percentage %>%"></div>
-                </div>
+            <% end %>
+        <% else %>
+            <div class="alert alert-info p-3 text-center" role="alert">
+                まだ投票がありません。最初の投票者になりましょう！
             </div>
         <% end %>
-    <% else %>
-        <p class="p-3 text-center text-muted">まだ投票がありません。</p>
-    <% end %>
-</div>
+    </div>
 
-<div class="mt-5">
-    <%= link_to 'アンケート一覧へ戻る', polls_path, class: 'btn btn-outline-secondary' %>
+    <div class="mt-5 text-center">
+        <%= link_to 'アンケート一覧へ戻る', polls_path, class: 'btn btn-outline-secondary' %>
+        <%# 🚨 修正: Vote.exists? のチェック方法を current_user と poll を使用するように変更 🚨 %>
+        <% if !logged_in? || !Vote.exists?(user: current_user, poll: @poll) %>
+            <%= link_to '投票ページに戻る', poll_path(@poll), class: "btn btn-outline-primary ms-3" %>
+        <% end %>
+    </div>
+
 </div>

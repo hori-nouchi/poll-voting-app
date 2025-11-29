@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.0.0"
+gem "rails", "~> 7.0.8"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # Use the Puma web server [https://github.com/puma/puma]
@@ -43,7 +43,7 @@ gem "thruster", require: false
 # Codespaces (開発) およびテスト環境では SQLite を使用
 group :development, :test do
   # 🚨 【修正】Rails 8 が要求するバージョン (>= 2.1) に対応するため、バージョン指定を (~> 2.0) に引き上げます 🚨
-  gem "sqlite3", "~> 2.0" 
+  gem "sqlite3", "~> 1.4" 
 
   # デバッグ用
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
@@ -68,3 +68,4 @@ group :production do
 end
 
 # --- ---------------------------------- ---
+gem "jsbundling-rails", "~> 1.3"

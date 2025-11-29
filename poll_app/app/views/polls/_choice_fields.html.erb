@@ -1,0 +1,20 @@
+
+<%# app/views/choices/_choice_fields.html.erb %>
+<%# Pollフォームから呼び出され、個々の選択肢 (Choice) のフィールドをレンダリングします %>
+
+<%# 🚨 修正: nested-fields クラスを追加 🚨 %>
+<div class="input-group mb-3 choice-field nested-fields" data-new-record="<%= form.object.new_record? %>">
+  <%# 選択肢の内容入力フィールド %>
+  <%= form.text_field :content, class: "form-control rounded-start-3", placeholder: "選択肢の内容を入力", required: true %>
+  
+  <%# 既存レコードの削除のための hidden フィールド %>
+  <%# Railsが削除と認識するのは値が '1' の場合のみです。 %>
+  <%= form.hidden_field :_destroy, value: form.object.marked_for_destruction? ? '1' : '0' %>
+
+  <%# 削除ボタン: Stimulus nested-form コントローラーの remove アクションを呼び出す %>
+  <button type="button" 
+          class="btn btn-outline-danger rounded-end-3" 
+          data-action="click->nested-form#remove">
+    <i class="fas fa-trash"></i> 削除
+  </button>
+</div>

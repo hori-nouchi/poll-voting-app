@@ -1,8 +1,18 @@
 import { Application } from "@hotwired/stimulus"
-import { eagerLoadControllersFrom } from "@hotwired/stimulus-loading"
 
-// Stimulus Application を初期化し、起動します
 const application = Application.start()
 
-// controllersフォルダ内のすべてのコントローラーを読み込み、アプリケーションに登録します
-eagerLoadControllersFrom("controllers", application)
+// controllers ディレクトリ内の *_controller.js を全部読み込む
+const controllerFiles = import.meta.glob("./**/*_controller.js")
+
+for (const path in controllerFiles) {
+  controllerFiles[path]().then((module) => {
+    const controllerName = path
+      .replace("./", "")
+      .replace("_controller.js", "")
+      .replace("/", "--") // Rails命名規則に合わせる
+    application.register(controllerName, module.default)
+  })
+}
+
+export { application }

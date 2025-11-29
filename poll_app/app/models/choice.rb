@@ -3,8 +3,9 @@ class Choice < ApplicationRecord
   belongs_to :poll
   
   # 投票 (Votes) 関連付け
-  # 選択肢が削除された場合、その選択肢に対する投票も削除されます
-  has_many :votes, foreign_key: :chosen_option, dependent: :destroy
+  # 🚨 修正: foreign_key を :choice_id (デフォルト) に戻す 🚨
+  # 以前は :chosen_option になっていましたが、これは Vote モデルの規約に反します。
+  has_many :votes, dependent: :destroy 
   
   # バリデーション
   validates :content, presence: true, length: { maximum: 100 }

@@ -3,7 +3,9 @@
     <h1 class="mb-4">新しいアンケートを作成</h1>
 
     <%# フォーム全体をレンダリングします。_form.html.erbがネストされたフォームロジックを保持します %>
-    <%# data-controllerは_form.html.erb内で設定されるため、ここでは不要です %>
     <%= render "form", poll: @poll %>
+
+    <%# Stimulus nested_form_controller を読み込むタグを追加 🚨 ここが重要 🚨 %>
+    <%= javascript_import_module_tag "nested_form_controller" %>
   </div>
 </div>

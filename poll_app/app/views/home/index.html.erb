@@ -1,66 +1,137 @@
-<div class="row">
-    <div class="col-12">
+<%# このビューは、ルートパス (`/`) で表示され、アンケートのランキング、一覧、検索機能を提供します。 %>
 
-        <%# 🏆 人気ランキング (投票数順) 🏆 %>
-        <% if @ranking_polls.any? %>
-            <h2 class="h5 mb-3 mt-4">👑 人気ランキング (投票数順)</h2>
-            <ul class="list-group mb-4">
-                <% @ranking_polls.each_with_index do |poll, index| %>
-                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                        <div>
-                            <%# 順位を表示 %>
-                            <span class="badge bg-warning me-2"><%= index + 1 %>位</span>
+<%# 🟢 Importmapのモジュールシステムと互換性のある読み込みタグ（競合解決済み） 🟢 %>
+<%# 'home_page' は config/importmap.rb でピン留めされている必要があります %>
+<%= javascript_importmap_tags %>
+
+
+<div class="container my-5">
+    
+    <%# ---------------------------------------------------------------- %>
+    <%# 1. メインのキャッチコピーとユーザーアクションボタン %>
+    <%# ---------------------------------------------------------------- %>
+    <div class="text-center mb-5 pb-4 border-bottom">
+        <h1 class="display-4 fw-bold text-primary">アンケート投票アプリ</h1>
+        <p class="lead text-muted">今すぐアンケートを作成したり、投票に参加しましょう。</p>
+        
+        <div class="mt-4">
+            <% if logged_in? %>
+                <%# 🚨 修正: ここに「新しいアンケートを作成」ボタンを復活 🚨 %>
+                <%= link_to '新しいアンケートを作成', new_poll_path, class: "btn btn-warning btn-lg me-3 fw-bold" %>
+                <%= link_to 'アンケート一覧を見る', polls_path, class: "btn btn-primary btn-lg" %>
+            <% else %>
+                <%# 未ログインユーザー向け %>
+                <%= link_to '新規登録はこちら', signup_path, class: "btn btn-success btn-lg" %>
+                <%= link_to 'ログイン', login_path, class: "btn btn-outline-secondary btn-lg ms-3" %>
+            <% end %>
+        </div>
+    </div>
+    
+    <%# ---------------------------------------------------------------- %>
+    <%# 2. ランキング、一覧、検索コンテンツ %>
+    <%# ---------------------------------------------------------------- %>
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+
+            <%# 🏆 人気ランキング (投票数順) 🏆 %>
+            <% if @ranking_polls.present? %>
+                <h2 class="h5 mb-3 mt-4 fw-bold text-dark">👑 人気ランキング (投票数順)</h2>
+                <ul class="list-group mb-5 shadow-sm">
+                    <% @ranking_polls.each_with_index do |poll, index| %>
+                        <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                            <div class="d-flex align-items-center">
+                                <%# 順位に応じたバッジカラー %>
+                                <% badge_class = case index
+                                                 when 0 then "bg-warning text-dark" # 1位
+                                                 when 1 then "bg-info"    # 2位
+                                                 when 2 then "bg-success" # 3位
+                                                 else "bg-secondary"
+                                                 end %>
+                                <span class="badge <%= badge_class %> me-3 fw-bold"><%= index + 1 %>位</span>
+                                
+                                <%# アンケートタイトルを投票ページへのリンクとして表示 %>
+                                <%= link_to poll.title, poll_path(poll), class: "text-dark text-decoration-none fw-medium" %>
+                            </div>
                             
-                            <%# アンケートタイトルを投票ページへのリンクとして表示 %>
-                            <%= link_to poll.title, poll_path(poll), class: "text-dark text-decoration-none" %>
-                        </div>
-                        
-                        <%# 投票数を表示 %>
-                        <span class="badge bg-secondary rounded-pill">
-                            <%= poll.votes.count %> 票
-                        </span>
+                            <%# 投票数を表示 %>
+                            <span class="badge bg-primary rounded-pill py-2 px-3 fw-bold">
+                                <%= poll.votes.count %> 票
+                            </span>
+                        </li>
+                    <% end %>
+                </ul>
+            <% else %>
+                <p class="text-muted text-center mt-4">まだ投票されたアンケートがありません。</p>
+            <% end %>
+
+            <hr class="my-5">
+            
+            <%# ---------------------------------------------------------------- %>
+            <%# 3. 検索バー %>
+            <%# ---------------------------------------------------------------- %>
+            <div class="p-4 border bg-light shadow-sm rounded-3 mb-5">
+                <h2 class="h5 mb-3 fw-bold">アンケート検索</h2>
+                
+                <%# 検索を実行するフォーム (root_path, GETリクエスト) %>
+                <%= form_with url: root_path, method: :get, local: true, class: "input-group" do %>
+                    
+                    <%= text_field_tag :search, params[:search], 
+                        class: "form-control form-control-lg rounded-start-3", 
+                        placeholder: "タイトルでアンケートを検索" %>
+                    
+                    <%= button_tag "検索", type: :submit, class: "btn btn-dark btn-lg rounded-end-3" %>
+                <% end %>
+                
+                <% if params[:search].present? %>
+                    <%= link_to "検索をクリア", root_path, class: "text-muted small mt-2 d-inline-block text-decoration-none" %>
+                <% end %>
+            </div>
+
+
+            <%# ---------------------------------------------------------------- %>
+            <%# 4. 最新のアンケート一覧 %>
+            <%# ---------------------------------------------------------------- %>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="h5 mb-0 fw-bold">最新のアンケート一覧</h2>
+                <% if logged_in? %>
+                    <%# 🚨 修正: ここに「アンケート新規作成」ボタンを復活 🚨 %>
+                    <%= link_to 'アンケート新規作成', new_poll_path, class: "btn btn-sm btn-outline-warning fw-bold" %>
+                <% end %>
+            </div>
+
+            <ul class="list-group list-group-flush shadow-sm">
+                <% if @polls.present? %>
+                    <% @polls.each do |poll| %>
+                        <li class="list-group-item d-flex justify-content-between align-items-center p-3 border-bottom">
+                            <%# タイトルとステータス %>
+                            <div class="me-3">
+                                <%= link_to poll.title, poll_path(poll), class: "text-decoration-none text-primary fw-medium" %>
+                                <%# statusの表示ロジックは削除済み %>
+                            </div>
+                            
+                            <%# 投票数と作成日時 %>
+                            <div class="text-end d-flex flex-column align-items-end">
+                                <span class="text-secondary small mb-1"><%= poll.votes.count %> 票</span>
+                                <span class="text-muted small"><%= l poll.created_at, format: :short %></span>
+                            </div>
+                        </li>
+                    <% end %>
+                <% else %>
+                    <li class="list-group-item text-muted text-center p-4">
+                        <% if params[:search].present? %>
+                            "<%= params[:search] %>" に一致するアンケートは見つかりませんでした。
+                        <% else %>
+                            アンケートはまだ作成されていません。
+                        <% end %>
                     </li>
                 <% end %>
             </ul>
-        <% else %>
-            <p class="text-muted">まだ投票されたアンケートがありません。</p>
-        <% end %>
-
-        <hr>
-
-        <%# ➕ アンケート新規作成ボタン ➕ %>
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="h5 mb-0">最新のアンケート一覧</h2>
-            <% if current_user %>
-                <%= link_to "アンケート新規作成", new_poll_path, class: "btn btn-warning btn-lg fw-bold" %>
-            <% end %>
-        </div>
-
-        <%# 📝 アンケート一覧表示 %>
-        <ul class="list-group list-group-flush mt-3">
-            <% if @polls.any? %>
-                <% @polls.each do |poll| %>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <%= link_to poll.title, poll_path(poll), class: "text-decoration-none text-primary" %>
-                        <span class="text-muted"><%= poll.created_at.strftime("%Y/%m/%d") %></span>
-                    </li>
-                <% end %>
-            <% else %>
-                <li class="list-group-item text-muted">アンケートはまだ作成されていません。</li>
-            <% end %>
-        </ul>
-        <%# 🚨 【ここを追加】検索バーのフォーム 🚨 %>
-        <div class="mt-4 p-3 border border-dark bg-light shadow-sm">
-            <%# 検索を実行するフォーム %>
-            <%= form_with url: root_path, method: :get, local: true, class: "input-group" do %>
-        
-                <%= text_field_tag :search, params[:search], 
-                    class: "form-control", 
-                    placeholder: "タイトルでアンケートを検索" %>
             
-                <%= button_tag "検索", type: :submit, class: "btn btn-dark" %>
-            <% end %>
+            <%# ページネーションが必要な場合はここに追加 %>
+            
         </div>
-        
     </div>
+</div>
+<div data-controller="hello">
+  Stimulusテスト
 </div>

@@ -6,7 +6,8 @@ class Poll < ApplicationRecord
   has_many :choices, dependent: :destroy
   
   # -----------------------------------------------
-  # 🚨 【必須】 reject_if: :all_blank を追加 🚨
+  # 🚨 【必須】 accepts_nested_attributes_for の設定 🚨
+  # PollフォームからChoiceも同時に作成・更新できるようにします
   accepts_nested_attributes_for :choices, 
                                 allow_destroy: true,
                                 reject_if: :all_blank # 空のフィールドを無視
@@ -17,17 +18,19 @@ class Poll < ApplicationRecord
 
   # バリデーション
   validates :title, presence: true, length: { maximum: 255 } 
-  validates :status, presence: true, 
-                     inclusion: { in: %w(公開中 終了) }
+  # -----------------------------------------------
+  # 🚨 修正: statusに関するバリデーションを削除 🚨
+  # validates :status, presence: true, 
+  #                    inclusion: { in: %w(公開中 終了) }
+  # -----------------------------------------------
   
-  # 選択肢は最低2つ必須のカスタムバリデーション
+  # 選択肢は最低2つ必須のカスタムバリデーションを適用
   validate :must_have_at_least_two_choices
 
   private
   
   # 選択肢のバリデーション (choices 関連付けのレコードが2つ以上存在するかチェック)
   def must_have_at_least_two_choices
-    # 🚨 修正ロジック 🚨
     # `marked_for_destruction?` (削除フラグが立っているレコード) を除外した後の有効な選択肢をカウントする
     valid_choices_count = choices.reject(&:marked_for_destruction?).size
     

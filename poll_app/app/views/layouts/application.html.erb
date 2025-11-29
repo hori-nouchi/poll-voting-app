@@ -11,7 +11,11 @@
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
 
-    <%# 🚨 重要: ここに手動の <script type="importmap"> はありません。Railsが自動で生成します。 %>
+    <%# Importmap/Turbo/Stimulusに必要なタグ。これでapplication.jsのロードが処理されます %>
+    
+    <%= javascript_importmap_tags %>
+    <%= yield(:js) %>
+    <%# javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
     
   </head>
   <body class="bg-light">
@@ -24,7 +28,7 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
+          <ul class="navbar-nav ms-auto align-items-lg-center"> 
             
             <%# アンケート作成を黄色いボタンにし、ホームとヘルプを通常のnav-itemとして配置します %>
             <li class="nav-item">
@@ -33,7 +37,7 @@
             <li class="nav-item">
               <%= link_to 'ヘルプ', help_path, class: "nav-link" %>
             </li>
-            <li class="nav-item ms-2">
+            <li class="nav-item ms-lg-2">
               <%# アンケート作成ボタンを黄色 (warning) に変更 %>
               <%= link_to 'アンケート作成', new_poll_path, class: "btn btn-warning" %>
             </li>
@@ -41,17 +45,22 @@
             <%# ユーザー認証リンク %>
             <% if defined?(logged_in?) && logged_in? %>
               <li class="nav-item">
-                <span class="nav-link text-white-50 ms-2">ようこそ, <%= defined?(current_user) && current_user.respond_to?(:email) ? current_user.email : 'ユーザー' %></span>
+                <span class="nav-link text-white-50 ms-lg-2">ようこそ, <%= defined?(current_user) && current_user.respond_to?(:email) ? current_user.email : 'ユーザー' %></span>
               </li>
-              <li class="nav-item">
-                <%= link_to "ログアウト", logout_path, data: { turbo_method: :delete }, class: "nav-link" %>
+              <li class="nav-item ms-lg-2">
+                <%# 🚨 修正: link_toからbutton_toに変更し、DELETEリクエストをフォーム送信で保証 🚨 %>
+                <%= button_to "ログアウト", logout_path, 
+                  method: :delete, 
+                  data: { turbo_confirm: "ログアウトしますか？" }, 
+                  # リンクのように見せるためのBootstrapクラス
+                  class: "btn btn-link nav-link text-white p-0" %>
               </li>
             <% else %>
               <li class="nav-item">
                 <%= link_to "ログイン", login_path, class: "nav-link" %>
               </li>
               <li class="nav-item">
-                <%# 修正: signup_path を使用 (config/routes.rb の変更に準拠) %>
+                <%# 修正: signup_path を使用 %>
                 <%= link_to "新規登録", signup_path, class: "nav-link" %>
               </li>
             <% end %>
@@ -75,9 +84,6 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    
-    <%# Importmap環境向けのタグを使用し、外部JSをロードします %>
-    <%= javascript_importmap_tags %>
     
   </body>
 </html>

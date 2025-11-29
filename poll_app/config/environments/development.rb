@@ -65,8 +65,8 @@ Rails.application.configure do
   # Suppress logger output for asset requests.
   config.assets.quiet = true
   
-  # Importmapの問題を解決するためにアセットダイジェストを無効化します 
-  config.assets.digest = false 
+  # 🚨 修正: Importmapの問題解決のために追加した設定を削除し、標準動作に戻します 🚨
+  # config.assets.digest = false 
 
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true

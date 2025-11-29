@@ -1,25 +1,26 @@
 class HomeController < ApplicationController
   def index
-    # 🚨 【修正箇所1】 @pollsの初期取得 🚨
-    # 通常のアンケート一覧データを取得 (polls#indexと同じロジック)
-    # 検索処理を行うために、まず公開中のすべてのアンケートを取得
+    # 1. アンケート一覧（検索対応）
+    # ベースクエリ: 公開中のアンケートを、関連ユーザー情報込みで作成日時降順に取得
     @polls = Poll.where(status: '公開中').includes(:user).order(created_at: :desc)
 
-    # 🚨 【修正箇所2】 検索ロジックの追加 🚨
+    # 検索クエリがあれば、タイトルで絞り込みを行う
     if params[:search].present?
-      # タイトルに検索キーワードを含むアンケートにフィルタリング
+      # `where` 句を使用して、タイトルに検索キーワードを含むアンケートにフィルタリング
+      # 大文字・小文字を区別しない検索が必要な場合は `ILIKE` を使用しますが、
+      # ここでは一般的な `LIKE` を使用します。
       @polls = @polls.where("title LIKE ?", "%#{params[:search]}%")
     end
 
-    # 投票数順のランキングデータを取得 (既存のコード)
+    # 2. 人気ランキング（総投票数順）
+    # left_joinsでVotesがないPollも含め、グループ化して投票数で降順に並び替え、上位5件を取得
     @ranking_polls = Poll.left_joins(:votes)
                          .group(:id)
                          .order('COUNT(votes.id) DESC')
                          .limit(5)
   end
   
-  
-  # ヘルプページ用のアクションを追加
+  # ヘルプページ用のアクション
   def help
     # ビューを表示するだけ
   end
