@@ -9,3 +9,7 @@ pin_all_from "app/javascript/controllers", under: "controllers"
 
 # nested_form_controller.js を個別に使う場合も pin
 pin "nested_form_controller", to: "controllers/nested_form_controller.js"
+
+# 🚨 修正: BootstrapとPopper.jsのピン設定を追加 🚨
+pin "@popperjs/core", to: "popper.js", preload: true
+pin "bootstrap", to: "bootstrap.min.js", preload: true
