@@ -1,4 +1,4 @@
-class CreateChoices < ActiveRecord::Migration[7.1]
+class CreateChoices < ActiveRecord::Migration[7.0]
   def change
     create_table :choices do |t|
       # 選択肢の内容
