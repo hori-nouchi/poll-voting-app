@@ -45,9 +45,10 @@ COPY . .
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
 
-# Precompiling assets for production without requiring secret RAILS_MASTER_KEY
-# 修正後のDockerfile (49行目付近)
-RUN ./bin/rails assets:precompile
+# Dockerfile:50行目付近
+# 修正前：RUN ./bin/rails assets:precompile
+# 修正後（環境変数SECRET_KEY_BASEを強制的に渡す）：
+RUN SECRET_KEY_BASE=$SECRET_KEY_BASE ./bin/rails assets:precompile
 
 
 
