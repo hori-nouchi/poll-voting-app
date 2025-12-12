@@ -1,21 +1,24 @@
-// Stimulusコントローラーのコア設定をインポート
-import { application } from "./application"
+// Stimulusアプリケーションのコア設定をインポート
+import { application } from "./application.js"
 
-// =========================================================================
-// 🚨 esbuildのワイルドカードエラー回避のため、手動インポートに切り替えます 🚨
-// =========================================================================
+// -------------------------------------------------------------------------
+// 🚨 個別のコントローラーを登録 🚨
+// -------------------------------------------------------------------------
 
-// HTML側 (_form.html.erb) で "nested-form" が使われているため、
-// 存在する nested_form_controller をその名前で登録します。
+// Stimulusコントローラーを動的にロードし、アプリケーションに登録します。
+// Importmapでは、コントローラーのインポートは手動またはワイルドカードなしで行う必要があります。
 
-import NestedFormV2Controller from "./nested_form_controller" 
-application.register("nested-form", NestedFormV2Controller)
+// 1. Nested Form Controller をインポート
+import NestedFormController from "./nested_form_controller.js" 
+
+// 2. Pollフォームで使用されている data-controller="nested-form" に対応
+application.register("nested-form", NestedFormController)
 
 
 // 登録が必要な他のコントローラがあればここに追加します
 // 例:
-// import PollController from "./poll_controller"
+// import PollController from "./poll_controller.js"
 // application.register("poll", PollController)
 
 
-console.log("Stimulus controllers manually loaded and registered.")
+console.log("Stimulus controllers initialized and registered.")
