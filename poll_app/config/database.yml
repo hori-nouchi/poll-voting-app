@@ -1,41 +1,52 @@
-# SQLite. Versions 3.8.0 and up are supported.
-#   gem install sqlite3
-#
-#   Ensure the SQLite 3 gem is defined in your Gemfile
-#   gem "sqlite3"
-#
+# -----------------------------------------------------
+# ローカル開発・テスト環境 (SQLite3) のデフォルト設定
+# -----------------------------------------------------
 default: &default
-  adapter: sqlite3
+  # Active Record の接続プールサイズをPumaのスレッド数に合わせる
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   timeout: 5000
 
 development:
   <<: *default
-  database: storage/development.sqlite3
+  adapter: sqlite3
+  database: db/development.sqlite3
 
-# Warning: The database defined as "test" will be erased and
-# re-generated from your development database when you run "rake".
-# Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: storage/test.sqlite3
-
-
-# Store production database in the storage/ directory, which by default
-# is mounted as a persistent Docker volume in config/deploy.yml.
+  adapter: sqlite3
+  database: db/test.sqlite3
+  
+# -----------------------------------------------------
+# 本番環境 (Production) の設定 - PostgreSQL/DATABASE_URLを使用
+# -----------------------------------------------------
 production:
-  primary:
-    <<: *default
-    database: storage/production.sqlite3
-  cache:
-    <<: *default
-    database: storage/production_cache.sqlite3
-    migrations_paths: db/cache_migrate
-  queue:
-    <<: *default
-    database: storage/production_queue.sqlite3
-    migrations_paths: db/queue_migrate
+  # primary: &primary_production で本番環境の接続情報（PostgreSQL/DATABASE_URL）を定義し、アンカーとして保存する
+  primary: &primary_production
+    # SQLiteのデフォルト設定を上書きするため、ここではadapterとdatabaseを明示的に設定
+    adapter: postgresql
+    encoding: unicode
+    
+    # 接続情報全体を環境変数 DATABASE_URL から取得する (画像で指示されたキー)
+    url: <%= ENV['DATABASE_URL'] %>
+    
+    # コネクションプールサイズはPumaの設定と一致させる
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+    timeout: 5000
+    
+  # メインの production 環境は primary の設定を参照する
+  <<: *primary_production
+
+  # Action Cable の設定（primary と同じデータベースを使うが、マイグレーションパスを分ける）
   cable:
-    <<: *default
-    database: storage/production_cable.sqlite3
+    <<: *primary_production
     migrations_paths: db/cable_migrate
+
+  # Cache の設定
+  cache:
+    <<: *primary_production
+    migrations_paths: db/cache_migrate
+
+  # Active Job の Queue の設定
+  queue:
+    <<: *primary_production
+    migrations_paths: db/queue_migrate

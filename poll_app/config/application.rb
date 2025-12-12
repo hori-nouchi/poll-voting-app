@@ -16,8 +16,9 @@ module PollApp
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     # config.autoload_lib(ignore: %w[assets tasks])
     # lib フォルダを自動読み込み対象にする場合
-    config.autoload_paths << Rails.root.join('lib')
-    config.assets.initialize_on_precompile = true
+    #config.autoload_paths << Rails.root.join('lib')
+    #config.assets.initialize_on_precompile = true
+    config.autoload_lib(ignore: %w[assets tasks])
 
 
     # Configuration for the application, engines, and railties goes here.
