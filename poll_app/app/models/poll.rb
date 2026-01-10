@@ -3,18 +3,16 @@ class Poll < ApplicationRecord
   belongs_to :user
   
   # 選択肢 (Choices) の関連付け
-  has_many :choices, dependent: :destroy
+  has_many :choices, dependent: :destroy, inverse_of: :poll
   
   # -----------------------------------------------
   # 🚨 【必須】 accepts_nested_attributes_for の設定 🚨
   # PollフォームからChoiceも同時に作成・更新できるようにします
-  accepts_nested_attributes_for :choices, 
-                                allow_destroy: true,
-                                reject_if: :all_blank # 空のフィールドを無視
+  accepts_nested_attributes_for :choices, allow_destroy: true, reject_if: :all_blank # 空のフィールドを無視
   # -----------------------------------------------
   
   # 投票 (Votes) の関連付け
-  has_many :votes, dependent: :destroy
+  has_many :votes, dependent: :destroy, inverse_of: :poll
 
   # バリデーション
   validates :title, presence: true, length: { maximum: 255 } 

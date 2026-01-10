@@ -1,85 +1,75 @@
-<div class="row justify-content-center">
-  <div class="col-lg-8">
-    <%# 🚨 修正: data-controller="nested-form" を設定 🚨 %>
-    <%= form_with model: poll, class: "mb-5", data: { controller: "nested-form" } do |form| %>
+<%# app/views/polls/_form.html.erb %>
+<%# data-controller="nested-form" で Stimulus を起動 %>
+<%= form_with(model: poll, local: true, data: { controller: "nested-form" }) do |form| %>
 
-      <%# エラー表示 %>
-      <% if poll.errors.any? %>
-        <div class="alert alert-danger">
-          <h4 class="alert-heading">以下のエラーにより保存できませんでした:</h4>
-          <ul>
-            <% poll.errors.full_messages.each do |message| %>
-              <li><%= message %></li>
-            <% end %>
-          </ul>
-        </div>
-      <% end %>
-      
-      <%# ---------------------------------------------------------------- %>
-      <%# 1. アンケートタイトルと説明 %>
-      <%# ---------------------------------------------------------------- %>
-      <div class="card p-4 shadow-sm mb-4">
-        <h5 class="card-title text-primary fw-bold">アンケートの基本情報</h5>
-        
-        <div class="mb-3">
-          <%= form.label :title, "タイトル", class: "form-label fw-bold" %>
-          <%= form.text_field :title, class: "form-control form-control-lg", required: true, placeholder: "例: 次のプロジェクトで使いたい技術は？" %>
-        </div>
-
-        <div class="mb-3">
-          <%= form.label :description, "説明 (オプション)", class: "form-label fw-bold" %>
-          <%= form.text_area :description, class: "form-control", rows: 3, placeholder: "このアンケートの目的や詳細を記述します。" %>
-        </div>
-        
-        <%# NOTE: status フィールドは削除済みのため含めません %>
-      </div>
-
-
-      <%# ---------------------------------------------------------------- %>
-      <%# 2. 選択肢コンテナ（動的に追加・削除される部分） %>
-      <%# ---------------------------------------------------------------- %>
-      <div class="card p-4 shadow-sm mb-4">
-        <h5 class="card-title text-primary fw-bold mb-3 d-flex justify-content-between align-items-center">
-          選択肢 <span class="badge bg-secondary ms-2" data-nested-form-target="count">0</span>
-        </h5>
-        
-        <div data-nested-form-target="container" class="list-group mb-3">
-          <%# 既存の/バリデーションで失敗した選択肢のフィールドをレンダリング %>
-          <%= form.fields_for :choices do |choice_fields| %>
-            <%= render 'choice_fields', form: choice_fields %>
-          <% end %>
-        </div>
-
-        <%# 🚨 選択肢追加ボタン 🚨 %>
-        <%= link_to '選択肢を追加', '#', 
-          data: { 
-              action: 'click->nested-form#add'
-          }, 
-          class: "btn btn-outline-primary rounded-pill fw-bold" %>
-          
-        <p class="form-text text-muted mt-2">※ 最低2つ以上の選択肢が必要です。</p>
-      </div>
-
-
-      <%# ---------------------------------------------------------------- %>
-      <%# 3. フォーム送信ボタン %>
-      <%# ---------------------------------------------------------------- %>
-      <div class="text-center">
-        <%= form.submit "アンケートを保存", class: "btn btn-primary btn-lg fw-bold px-5" %>
-        <%= link_to 'キャンセル', polls_path, class: "btn btn-outline-secondary btn-lg ms-3" %>
-      </div>
-
-
-      <%# ---------------------------------------------------------------- %>
-      <%# 4. テンプレート（非表示） 🚨 【重要】 🚨 %>
-      <%# ---------------------------------------------------------------- %>
-      <template data-nested-form-target="template">
-        <%# テンプレートの内容は、新規レコードのプレースホルダー 'NEW_RECORD' を持つ必要があります %>
-        <%= form.fields_for :choices, Choice.new, child_index: "NEW_RECORD" do |choice_fields| %>
-          <%= render 'choice_fields', form: choice_fields %>
+  <%# エラーメッセージの表示エリア %>
+  <% if poll.errors.any? %>
+    <div class="alert alert-danger shadow-sm border-start border-4 border-danger">
+      <h4 class="alert-heading fw-bold">以下のエラーにより保存できませんでした:</h4>
+      <ul class="mb-0">
+        <% poll.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
         <% end %>
-      </template>
+      </ul>
+    </div>
+  <% end %>
 
-    <% end %>
+  <%# --- 1. アンケート基本情報 --- %>
+  <div class="card p-4 shadow-sm mb-4">
+    <h5 class="card-title text-primary fw-bold border-bottom pb-2 mb-3">アンケートの基本情報</h5>
+    
+    <div class="mb-3">
+      <%= form.label :title, "タイトル", class: "form-label fw-bold" %>
+      <%= form.text_field :title, class: "form-control form-control-lg", required: true, placeholder: "例: 次のプロジェクトで使いたい技術は？" %>
+    </div>
+
+    <div class="mb-3">
+      <%= form.label :description, "説明 (オプション)", class: "form-label fw-bold" %>
+      <%= form.text_area :description, class: "form-control", rows: 3, placeholder: "このアンケートの目的や詳細を記述します。" %>
+    </div>
   </div>
-</div>
+
+  <%# --- 2. 選択肢管理エリア --- %>
+  <div class="card p-4 shadow-sm mb-4">
+    <h5 class="card-title text-primary fw-bold mb-3 d-flex justify-content-between align-items-center">
+      <span>選択肢</span>
+      <%# ターゲット: 選択肢の数を更新するための表示箇所 %>
+      <span class="badge bg-secondary ms-2" data-nested-form-target="count">
+        <%= poll.choices.reject(&:marked_for_destruction?).size %>
+      </span>
+    </h5>
+
+    <%# ターゲット: 新しい選択肢が挿入されるコンテナ %>
+    <div data-nested-form-target="container" class="mb-3">
+      <%= form.fields_for :choices do |choice_fields| %>
+        <%= render 'choice_fields', form: choice_fields %>
+      <% end %>
+    </div>
+
+    <%# 追加ボタン: JavaScriptの nested-form#add アクションを起動 %>
+    <div class="text-start border-top pt-3">
+      <button type="button" 
+              class="btn btn-outline-primary rounded-pill fw-bold"
+              data-action="click->nested-form#add">
+        <i class="bi bi-plus-circle me-1"></i> 選択肢を追加
+      </button>
+    </div>
+      
+    <p class="form-text text-muted mt-3">※ 最低2つ以上の選択肢が必要です。</p>
+  </div>
+
+  <%# --- 3. アクションボタン --- %>
+  <div class="text-center d-flex justify-content-center gap-3">
+    <%= form.submit "アンケートを保存", class: "btn btn-primary btn-lg fw-bold px-5" %>
+    <%= link_to 'キャンセル', polls_path, class: "btn btn-outline-secondary btn-lg px-4" %>
+  </div>
+
+  <%# --- 4. JavaScript用テンプレート --- %>
+  <%# content_tag を使うことで、テンプレート内のエスケープ処理や全角スペースによるエラーを防ぎます %>
+  <template data-nested-form-target="template">
+    <%= form.fields_for :choices, Choice.new, child_index: "NEW_RECORD" do |choice_fields| %>
+      <%= render 'choice_fields', form: choice_fields %>
+    <% end %>
+  </template>
+
+<% end %>
