@@ -1,6 +1,6 @@
 class PollsController < ApplicationController
   # 【重要】本番デプロイ前にこの行は必ず削除（またはコメントアウト）してください
-  skip_before_action :verify_authenticity_token, only: [:create_vote]
+  #skip_before_action :verify_authenticity_token, only: [:create_vote]
 
   # ログイン必須のアクションを定義
   before_action :require_user, except: [:index, :show, :result] 

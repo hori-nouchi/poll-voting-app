@@ -2,7 +2,7 @@ class SessionsController < ApplicationController
   # CSRFトークン検証のエラー（422）が再発しないよう、
   # 開発環境で動作を確認しながら進めます。本番環境での運用時は、
   # 以下の `skip_before_action` は使用しないでください。
-  skip_before_action :verify_authenticity_token, only: [:create, :destroy]
+  #skip_before_action :verify_authenticity_token, only: [:create, :destroy]
   # ログインフォームの表示 (GET /login)
   def new
     # フォームを表示するだけ
