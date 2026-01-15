@@ -1,0 +1,145 @@
+<style>
+  /* 既存のスタイルはそのまま、フッター周りだけ微調整 */
+  body {
+    background-color: #ffffff;
+    font-family: sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 0;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .header {
+    text-align: center;
+    padding: 30px 0;
+    border-bottom: 2px solid #eee;
+    margin-bottom: 30px;
+  }
+
+  .header h1 {
+    color: #88a4d4;
+    margin: 0 0 15px 0;
+  }
+
+  .btn-new {
+    display: inline-block;
+    background-color: #88a4d4;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  .diary-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid #eee;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .diary-item:hover {
+    background-color: #fafafa;
+  }
+
+  .color-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-right: 15px;
+    flex-shrink: 0;
+  }
+
+  .diary-info {
+    flex-grow: 1;
+  }
+
+  .diary-date {
+    font-size: 0.85rem;
+    color: #888;
+  }
+
+  .diary-preview {
+    font-size: 1rem;
+    margin-top: 4px;
+  }
+
+  /* フッターのデザインを少しリッチに */
+  .footer {
+    text-align: center;
+    padding: 30px 20px;
+    margin-top: 50px;
+    border-top: 1px solid #eee;
+    color: #888;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .help-link, .auth-link {
+    color: #88a4d4;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: bold;
+  }
+
+  .auth-link.logout {
+    color: #ffb7c5; /* ログアウトは少し赤っぽく */
+  }
+</style>
+
+<div class="container">
+  <div class="header">
+    <h1>色の日記帳</h1>
+    <%= link_to "日記を書く", new_diary_path, class: "btn-new" %>
+  </div>
+
+  <div class="diary-list">
+    <% @diaries.each do |diary| %>
+      <%= link_to diary, class: "diary-item" do %>
+        <div class="color-dot" style="background-color: <%= diary.color %>;"></div>
+        <div class="diary-info">
+          <div class="diary-date"><%= diary.diary_date.strftime("%Y年%m月%d日") %></div>
+          <div class="diary-preview"><%= truncate(diary.content, length: 30) %></div>
+        </div>
+        <div style="color: #ccc;">&gt;</div>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="footer">
+    <div class="footer-links">
+      <span class="help-link" onclick="alert('日記の色を選んで保存するだけ！\n一覧の色はあなたが選んだ気分を反映しています。')">ヘルプ</span>
+      
+      <% if user_signed_in? %>
+        <!-- ログイン中の表示：メールアドレスではなくニックネームを表示 -->
+        <span style="font-size: 0.8rem; color: #bbb;">
+          <%= current_user.name.presence || "ユーザー" %> さん
+        </span>
+        <%= link_to "ログアウト", destroy_user_session_path, data: { turbo_method: :delete }, class: "auth-link logout" %>
+      <% else %>
+        <!-- 未ログインの表示 -->
+        <%= link_to "ログイン", new_user_session_path, class: "auth-link" %>
+      <% end %>
+    </div>
+    
+    <p style="font-size: 0.8rem; margin: 0;">&copy; 2026 色の日記</p>
+  </div>  
+</div>

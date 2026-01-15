@@ -1,0 +1,49 @@
+<%# 選択された色を背景に反映させるためのスタイル %>
+<style>
+  body {
+    /* 選んだ色を背景にし、白を重ねてふんわりさせます */
+    background: linear-gradient(to bottom, <%= @diary.color %>22, #fdfbfb); 
+    background-attachment: fixed;
+    transition: background 0.5s ease;
+  }
+
+  .diary-card {
+    background: white;
+    padding: 40px;
+    border-radius: 30px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+    max-width: 600px;
+    margin: 50px auto;
+    border-top: 8px solid <%= @diary.color %>; /* カードの上の線だけ選んだ色にする */
+  }
+
+  .color-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: <%= @diary.color %>;
+    margin: 0 auto 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+</style>
+
+<div class="diary-card">
+  <div class="color-circle"></div>
+
+  <div style="text-align: center; margin-bottom: 30px;">
+    <h2 style="color: #555; margin-bottom: 5px;">
+      <%= @diary.diary_date.strftime("%Y年 %m月 %d日") %>
+    </h2>
+    <span style="color: #999; font-family: monospace;"><%= @diary.color.upcase() %></span>
+  </div>
+
+  <div style="font-size: 1.2rem; color: #444; line-height: 1.8; min-height: 150px; padding: 20px; background: #fafafa; border-radius: 15px;">
+    <%= simple_format(@diary.content) %>
+  </div>
+
+  <div style="margin-top: 40px; display: flex; justify-content: center; gap: 20px;">
+    <%= link_to "編集する", edit_diary_path(@diary), style: "color: #88a4d4;" %>
+    <%= link_to "一覧に戻る", diaries_path, style: "color: #999;" %>
+    <%= button_to "削除", @diary, method: :delete, data: { confirm: "本当に消しちゃう？" }, style: "background: none; border: none; color: #ffb7c5; cursor: pointer; font-weight: bold;" %>
+  </div>
+</div>

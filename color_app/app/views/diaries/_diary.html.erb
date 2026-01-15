@@ -1,0 +1,26 @@
+<div id="<%= dom_id diary %>" style="margin-bottom: 20px; padding: 10px; border: 1px solid #eee; border-radius: 10px;">
+  <p>
+    <strong>日付:</strong>
+    <%= diary.diary_date %>
+  </p>
+
+  <p>
+    <strong>色:</strong>
+    <%# ここで色の丸を表示しています %>
+    <div style="
+      width: 40px; 
+      height: 40px; 
+      border-radius: 50%; 
+      background-color: <%= diary.color %>; 
+      border: 2px solid #ddd;
+      display: inline-block;
+      vertical-align: middle;
+    "></div>
+    <span style="margin-left: 10px; color: #666;"><%= diary.color %></span>
+  </p>
+
+  <p>
+    <strong>内容:</strong>
+    <%= diary.content %>
+  </p>
+</div>

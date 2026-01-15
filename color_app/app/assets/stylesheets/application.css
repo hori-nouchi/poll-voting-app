@@ -1,0 +1,134 @@
+/*
+ * This is a manifest file that'll be compiled into application.css.
+ *
+ * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
+ * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
+ * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
+ * depending on specificity.
+ *
+ * Consider organizing styles into separate files for maintainability.
+ */
+/* 全体の背景とフォント */
+body {
+  background-color: #fdfbfb; /* 優しい白 */
+  font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+  color: #5a5a5a;
+  line-height: 1.6;
+  margin: 0;
+  padding-bottom: 50px;
+}
+
+/* ヘッダー・タイトルの装飾 */
+h1 {
+  text-align: center;
+  color: #88a4d4; /* くすみブルー */
+  font-size: 2rem;
+  margin: 40px 0;
+  position: relative;
+  display: block;
+}
+
+h1::after {
+  content: "";
+  display: block;
+  width: 50px;
+  height: 3px;
+  background: #ffccda; /* ピンクのアクセント */
+  margin: 10px auto;
+  border-radius: 10px;
+}
+
+/* 日記カードのスタイル */
+#diaries {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* 個別の件名（render diaryで呼ばれる部分） */
+[id^="diary_"] {
+  background: #ffffff;
+  border: none !important;
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease;
+  position: relative;
+}
+
+[id^="diary_"]:hover {
+  transform: translateY(-5px);
+}
+
+/* リンクボタンのデザイン */
+a {
+  color: #88a4d4;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+a:hover {
+  color: #ffb7c5;
+}
+
+/* 新規作成ボタンを可愛く */
+a[href$="/new"] {
+  display: block;
+  width: 200px;
+  margin: 40px auto;
+  text-align: center;
+  background: #88a4d4;
+  color: white;
+  padding: 15px;
+  border-radius: 30px;
+  box-shadow: 0 5px 15px rgba(136, 164, 212, 0.3);
+  transition: all 0.3s;
+}
+
+a[href$="/new"]:hover {
+  background: #99b5e5;
+  transform: scale(1.05);
+}
+
+/* フォームの入力欄 */
+input[type="text"], input[type="date"], textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #eee;
+  border-radius: 12px;
+  box-sizing: border-box;
+  margin-top: 5px;
+  margin-bottom: 20px;
+  outline: none;
+}
+
+input:focus, textarea:focus {
+  border-color: #ffccda;
+}
+
+input[type="submit"] {
+  background: #ffb7c5;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 30px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  box-shadow: 0 5px 10px rgba(255, 183, 197, 0.3);
+}
+
+/* 通知メッセージ */
+p[style*="color: green"] {
+  background: #e8f5e9;
+  color: #2e7d32 !important;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  max-width: 600px;
+  margin: 20px auto;
+}

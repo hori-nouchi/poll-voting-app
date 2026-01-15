@@ -1,0 +1,182 @@
+<style>
+  /* 全体の背景設定 */
+  body {
+    background-color: #fdfbfb;
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+  }
+
+  .form-container {
+    max-width: 500px;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    border-top: 10px solid #88a4d4; /* 初期色。JSで動的に変えます */
+    transition: border-color 0.3s ease;
+  }
+
+  .form-title {
+    text-align: center;
+    color: #555;
+    margin-bottom: 25px;
+    font-weight: bold;
+  }
+
+  .input-group {
+    margin-bottom: 25px;
+  }
+
+  .label-text {
+    display: block;
+    font-weight: bold;
+    color: #777;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+  }
+
+  /* 入力フィールドのデザイン */
+  .styled-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #eee;
+    border-radius: 12px;
+    box-sizing: border-box;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+
+  .styled-input:focus {
+    border-color: #88a4d4;
+  }
+
+  /* カラーピッカーのカスタマイズ */
+  .color-picker-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: #fafafa;
+    padding: 15px;
+    border-radius: 15px;
+  }
+
+  .color-input {
+    width: 60px;
+    height: 60px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    background: none;
+  }
+
+  .color-input::-webkit-color-swatch {
+    border-radius: 50%;
+    border: 4px solid white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+
+  .color-code {
+    font-family: monospace;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #555;
+  }
+
+  /* 保存ボタン */
+  .submit-btn {
+    width: 100%;
+    background-color: #88a4d4;
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(136, 164, 212, 0.3);
+    transition: all 0.3s;
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(136, 164, 212, 0.4);
+  }
+
+  /* エラーメッセージ */
+  .error-box {
+    background: #fff5f5;
+    color: #e53e3e;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+  }
+</style>
+
+<div class="form-container" id="diary-form-box">
+  <h2 class="form-title">今日の色は何色？</h2>
+
+  <%= form_with(model: diary, data: { turbo: false }) do |form| %>
+    <% if diary.errors.any? %>
+      <div class="error-box">
+        <ul>
+          <% diary.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="input-group">
+      <span class="label-text">日付</span>
+      <%= form.date_field :diary_date, class: "styled-input", value: (diary.diary_date || Time.now.strftime('%Y-%m-%d')) %>
+    </div>
+
+    <div class="input-group">
+      <span class="label-text">気分を色でえらぶ</span>
+      <div class="color-picker-wrapper">
+        <%= form.color_field :color, class: "color-input", id: "color-picker", value: (diary.color || "#88a4d4") %>
+        <span class="color-code" id="color-hex-text"><%= (diary.color || "#88a4d4").upcase %></span>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <span class="label-text">今日のできごと</span>
+      <%= form.text_area :content, class: "styled-input", style: "height: 120px; resize: none;", placeholder: "ここに入力してね..." %>
+    </div>
+
+    <div style="margin-top: 30px;">
+      <%= form.submit "この色で保存する", class: "submit-btn", id: "save-button" %>
+    </div>
+
+    <div style="text-align: center; margin-top: 20px;">
+      <%= link_to "やめる", diaries_path, style: "color: #bbb; text-decoration: none; font-size: 0.9rem;" %>
+    </div>
+  <% end %>
+</div>
+
+<script>
+  // 色の変化をリアルタイムに画面へ反映させる
+  const colorPicker = document.getElementById('color-picker');
+  const hexText = document.getElementById('color-hex-text');
+  const formBox = document.getElementById('diary-form-box');
+  const saveBtn = document.getElementById('save-button');
+
+  function updateColor(color) {
+    hexText.innerText = color.toUpperCase();
+    hexText.style.color = color;
+    formBox.style.borderColor = color; // 枠線の色を変える
+    saveBtn.style.backgroundColor = color; // ボタンの色も変える
+    saveBtn.style.boxShadow = `0 4px 15px ${color}66`; // ボタンの影も色を合わせる
+  }
+
+  colorPicker.addEventListener('input', (e) => {
+    updateColor(e.target.value);
+  });
+
+  // 初期読み込み時にも反映
+  window.addEventListener('DOMContentLoaded', () => {
+    updateColor(colorPicker.value);
+  });
+</script>

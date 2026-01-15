@@ -1,0 +1,109 @@
+<style>
+  body {
+    background-color: #fdfbfb;
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+  }
+
+  .login-container {
+    max-width: 400px;
+    margin: 60px auto;
+    background: white;
+    padding: 40px 30px;
+    border-radius: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    border-top: 10px solid #88a4d4;
+  }
+
+  .login-title {
+    text-align: center;
+    color: #88a4d4;
+    margin-bottom: 30px;
+    font-weight: bold;
+    font-size: 1.5rem;
+  }
+
+  .field {
+    margin-bottom: 20px;
+  }
+
+  .label-text {
+    display: block;
+    font-weight: bold;
+    color: #777;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+  }
+
+  .input-field {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #eee;
+    border-radius: 12px;
+    box-sizing: border-box;
+    font-size: 1rem;
+    outline: none;
+  }
+
+  .input-field:focus {
+    border-color: #88a4d4;
+  }
+
+  .actions {
+    margin-top: 30px;
+  }
+
+  .login-btn {
+    width: 100%;
+    background-color: #88a4d4;
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(136, 164, 212, 0.3);
+  }
+
+  .links-section {
+    margin-top: 25px;
+    text-align: center;
+    font-size: 0.85rem;
+  }
+
+  .links-section a {
+    color: #bbb;
+    text-decoration: none;
+  }
+</style>
+
+<div class="login-container">
+  <h2 class="login-title">おかえりなさい 🎨</h2>
+
+  <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+    <div class="field">
+      <span class="label-text">メールアドレス</span>
+      <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "input-field", placeholder: "example@mail.com" %>
+    </div>
+
+    <div class="field">
+      <span class="label-text">パスワード</span>
+      <%= f.password_field :password, autocomplete: "current-password", class: "input-field" %>
+    </div>
+
+    <% if devise_mapping.rememberable? %>
+      <div class="field" style="display: flex; align-items: center; gap: 8px; color: #999; font-size: 0.85rem;">
+        <%= f.check_box :remember_me %>
+        <%= f.label :remember_me, "ログイン状態を保持する" %>
+      </div>
+    <% end %>
+
+    <div class="actions">
+      <%= f.submit "ログイン", class: "login-btn" %>
+    </div>
+  <% end %>
+
+  <div class="links-section">
+    <%= render "devise/shared/links" %>
+  </div>
+</div>

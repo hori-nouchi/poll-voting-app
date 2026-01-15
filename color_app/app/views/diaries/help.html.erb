@@ -1,0 +1,93 @@
+<style>
+  body {
+    background-color: #fdfbfb;
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+    color: #555;
+    line-height: 1.8;
+  }
+
+  .help-container {
+    max-width: 600px;
+    margin: 50px auto;
+    background: white;
+    padding: 40px;
+    border-radius: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  }
+
+  .help-title {
+    text-align: center;
+    color: #88a4d4;
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+    font-weight: bold;
+  }
+
+  .help-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px dashed #eee;
+  }
+
+  .help-section h3 {
+    color: #88a4d4;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .step-icon {
+    background: #88a4d4;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+  }
+
+  .back-btn {
+    display: block;
+    text-align: center;
+    background: #f0f0f0;
+    color: #777;
+    padding: 12px;
+    border-radius: 15px;
+    text-decoration: none;
+    margin-top: 20px;
+    transition: background 0.3s;
+  }
+
+  .back-btn:hover {
+    background: #e5e5e5;
+  }
+</style>
+
+<div class="help-container">
+  <h1 class="help-title">使いかたガイド 🎨</h1>
+
+  <div class="help-section">
+    <h3><span class="step-icon">1</span>色を選ぼう</h3>
+    <p>「日記を書く」ボタンから、今のあなたの気分にぴったりな色を直感で選んでください。</p>
+  </div>
+
+  <div class="help-section">
+    <h3><span class="step-icon">2</span>言葉を残そう</h3>
+    <p>その色を選んだ理由や、今日あった出来事を自由に書いてみましょう。短い一言でも大丈夫です。</p>
+  </div>
+
+  <div class="help-section">
+    <h3><span class="step-icon">3</span>自分だけの色を積み重ねる</h3>
+    <p>一覧画面では、あなたが選んだ色がカードのアクセントとして並びます。毎日続けることで、あなただけの色彩豊かな日記帳が完成します。</p>
+  </div>
+
+  <div class="help-section" style="border: none;">
+    <h3><span class="step-icon">?</span>困ったときは</h3>
+    <p>ログインすることで、あなた専用の日記として保存されます。ニックネームを設定して、自分らしい日記帳にカスタマイズしてくださいね。</p>
+  </div>
+
+  <%= link_to "日記に戻る", diaries_path, class: "back-btn" %>
+</div>
