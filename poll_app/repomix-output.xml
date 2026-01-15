@@ -1,0 +1,4999 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.github/
+  workflows/
+    ci.yml
+  dependabot.yml
+.kamal/
+  hooks/
+    docker-setup.sample
+    post-app-boot.sample
+    post-deploy.sample
+    post-proxy-reboot.sample
+    pre-app-boot.sample
+    pre-build.sample
+    pre-connect.sample
+    pre-deploy.sample
+    pre-proxy-reboot.sample
+  secrets
+app/
+  assets/
+    builds/
+      .keep
+    images/
+      .keep
+    stylesheets/
+      application.css
+  controllers/
+    concerns/
+      .keep
+    application_controller.rb
+    home_controller.rb
+    polls_controller.rb
+    sessions_controller.rb
+    static_pages_controller.rb
+    users_controller.rb
+  helpers/
+    application_helper.rb
+    home_helper.rb
+    polls_helper.rb
+    sessions_helper.rb
+    static_pages_helper.rb
+    users_helper.rb
+  javascript/
+    controllers/
+      application.js
+      index.js
+      nested_form_controller.js
+      poll_controller.js
+    application.js
+  jobs/
+    application_job.rb
+  mailers/
+    application_mailer.rb
+  models/
+    concerns/
+      .keep
+    application_record.rb
+    choice.rb
+    poll.rb
+    user.rb
+    vote.rb
+  views/
+    home/
+      help.html.erb
+      index.html.erb
+    layouts/
+      application.html.erb
+      mailer.html.erb
+      mailer.text.erb
+    polls/
+      _choice_fields.html.erb
+      _form.html.erb
+      _option_field.html.erb
+      index.html.erb
+      new.html.erb
+      result.html.erb
+      show.html.erb
+    pwa/
+      manifest.json.erb
+      service-worker.js
+    sessions/
+      create.html.erb
+      destroy.html.erb
+      new.html.erb
+    shared/
+      _error_messages.html.erb
+    static_pages/
+      help.html.erb
+    users/
+      create.html.erb
+      new.html.erb
+bin/
+  brakeman
+  bundle
+  ci
+  dev
+  docker-entrypoint
+  importmap
+  kamal
+  rails
+  rake
+  rubocop
+  setup
+  thrust
+config/
+  environments/
+    development.rb
+    production.rb
+    test.rb
+  initializers/
+    assets.rb
+    content_security_policy.rb
+    filter_parameter_logging.rb
+    inflections.rb
+    new_framework_defaults_8_1.rb
+  locales/
+    en.yml
+  application.rb
+  boot.rb
+  cable.yml
+  ci.rb
+  credentials.yml.enc
+  database.yml
+  deploy.yml
+  environment.rb
+  importmap.rb
+  puma.rb
+  routes.rb
+  storage.yml
+db/
+  migrate/
+    20251116171202_create_polls.rb
+    20251116171212_create_votes.rb
+    20251116171357_create_users.rb
+    20251117155006_create_choices.rb
+    20251211235814_add_service_name_to_active_storage_blobs.active_storage.rb
+    20251211235815_create_active_storage_variant_records.active_storage.rb
+    20251211235816_remove_not_null_on_active_storage_blobs_checksum.active_storage.rb
+    20260112160703_add_choice_id_to_votes.rb
+    20260112163254_add_description_to_polls.rb
+  development.sqlite3
+  schema.rb
+  seeds.rb
+  test.sqlite3
+lib/
+  tasks/
+    .keep
+log/
+  .keep
+public/
+  400.html
+  404.html
+  406-unsupported-browser.html
+  422.html
+  500.html
+  icon.png
+  icon.svg
+  robots.txt
+script/
+  .keep
+storage/
+  .keep
+test/
+  controllers/
+    .keep
+    home_controller_test.rb
+    polls_controller_test.rb
+    sessions_controller_test.rb
+    static_pages_controller_test.rb
+    users_controller_test.rb
+  fixtures/
+    files/
+      .keep
+    polls.yml
+    users.yml
+    votes.yml
+  helpers/
+    .keep
+  integration/
+    .keep
+  mailers/
+    .keep
+  models/
+    .keep
+    poll_test.rb
+    user_test.rb
+    vote_test.rb
+  system/
+    .keep
+  application_system_test_case.rb
+  test_helper.rb
+.dockerignore
+.gitattributes
+.gitignore
+.rubocop.yml
+.ruby-version
+config.ru
+Dockerfile
+Gemfile
+package.json
+Procfile.dev
+Rakefile
+README.md
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path=".github/workflows/ci.yml">
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  scan_ruby:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+
+      - name: Scan for common Rails security vulnerabilities using static analysis
+        run: bin/brakeman --no-pager
+
+  scan_js:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+
+      - name: Scan for security vulnerabilities in JavaScript dependencies
+        run: bin/importmap audit
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+
+      - name: Lint code for consistent style
+        run: bin/rubocop -f github
+
+  test:
+    runs-on: ubuntu-latest
+
+    # services:
+    #  redis:
+    #    image: redis
+    #    ports:
+    #      - 6379:6379
+    #    options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - name: Install packages
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl libjemalloc2 libvips sqlite3
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+
+      - name: Run tests
+        env:
+          RAILS_ENV: test
+          # REDIS_URL: redis://localhost:6379/0
+        run: bin/rails db:test:prepare test test:system
+
+      - name: Keep screenshots from failed system tests
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: screenshots
+          path: ${{ github.workspace }}/tmp/screenshots
+          if-no-files-found: ignore
+</file>
+
+<file path=".github/dependabot.yml">
+version: 2
+updates:
+- package-ecosystem: bundler
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+- package-ecosystem: github-actions
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+</file>
+
+<file path=".kamal/hooks/docker-setup.sample">
+#!/bin/sh
+
+echo "Docker set up on $KAMAL_HOSTS..."
+</file>
+
+<file path=".kamal/hooks/post-app-boot.sample">
+#!/bin/sh
+
+echo "Booted app version $KAMAL_VERSION on $KAMAL_HOSTS..."
+</file>
+
+<file path=".kamal/hooks/post-deploy.sample">
+#!/bin/sh
+
+# A sample post-deploy hook
+#
+# These environment variables are available:
+# KAMAL_RECORDED_AT
+# KAMAL_PERFORMER
+# KAMAL_VERSION
+# KAMAL_HOSTS
+# KAMAL_ROLES (if set)
+# KAMAL_DESTINATION (if set)
+# KAMAL_RUNTIME
+
+echo "$KAMAL_PERFORMER deployed $KAMAL_VERSION to $KAMAL_DESTINATION in $KAMAL_RUNTIME seconds"
+</file>
+
+<file path=".kamal/hooks/post-proxy-reboot.sample">
+#!/bin/sh
+
+echo "Rebooted kamal-proxy on $KAMAL_HOSTS"
+</file>
+
+<file path=".kamal/hooks/pre-app-boot.sample">
+#!/bin/sh
+
+echo "Booting app version $KAMAL_VERSION on $KAMAL_HOSTS..."
+</file>
+
+<file path=".kamal/hooks/pre-build.sample">
+#!/bin/sh
+
+# A sample pre-build hook
+#
+# Checks:
+# 1. We have a clean checkout
+# 2. A remote is configured
+# 3. The branch has been pushed to the remote
+# 4. The version we are deploying matches the remote
+#
+# These environment variables are available:
+# KAMAL_RECORDED_AT
+# KAMAL_PERFORMER
+# KAMAL_VERSION
+# KAMAL_HOSTS
+# KAMAL_ROLES (if set)
+# KAMAL_DESTINATION (if set)
+
+if [ -n "$(git status --porcelain)" ]; then
+  echo "Git checkout is not clean, aborting..." >&2
+  git status --porcelain >&2
+  exit 1
+fi
+
+first_remote=$(git remote)
+
+if [ -z "$first_remote" ]; then
+  echo "No git remote set, aborting..." >&2
+  exit 1
+fi
+
+current_branch=$(git branch --show-current)
+
+if [ -z "$current_branch" ]; then
+  echo "Not on a git branch, aborting..." >&2
+  exit 1
+fi
+
+remote_head=$(git ls-remote $first_remote --tags $current_branch | cut -f1)
+
+if [ -z "$remote_head" ]; then
+  echo "Branch not pushed to remote, aborting..." >&2
+  exit 1
+fi
+
+if [ "$KAMAL_VERSION" != "$remote_head" ]; then
+  echo "Version ($KAMAL_VERSION) does not match remote HEAD ($remote_head), aborting..." >&2
+  exit 1
+fi
+
+exit 0
+</file>
+
+<file path=".kamal/hooks/pre-connect.sample">
+#!/usr/bin/env ruby
+
+# A sample pre-connect check
+#
+# Warms DNS before connecting to hosts in parallel
+#
+# These environment variables are available:
+# KAMAL_RECORDED_AT
+# KAMAL_PERFORMER
+# KAMAL_VERSION
+# KAMAL_HOSTS
+# KAMAL_ROLES (if set)
+# KAMAL_DESTINATION (if set)
+# KAMAL_RUNTIME
+
+hosts = ENV["KAMAL_HOSTS"].split(",")
+results = nil
+max = 3
+
+elapsed = Benchmark.realtime do
+  results = hosts.map do |host|
+    Thread.new do
+      tries = 1
+
+      begin
+        Socket.getaddrinfo(host, 0, Socket::AF_UNSPEC, Socket::SOCK_STREAM, nil, Socket::AI_CANONNAME)
+      rescue SocketError
+        if tries < max
+          puts "Retrying DNS warmup: #{host}"
+          tries += 1
+          sleep rand
+          retry
+        else
+          puts "DNS warmup failed: #{host}"
+          host
+        end
+      end
+
+      tries
+    end
+  end.map(&:value)
+end
+
+retries = results.sum - hosts.size
+nopes = results.count { |r| r == max }
+
+puts "Prewarmed %d DNS lookups in %.2f sec: %d retries, %d failures" % [ hosts.size, elapsed, retries, nopes ]
+</file>
+
+<file path=".kamal/hooks/pre-deploy.sample">
+#!/usr/bin/env ruby
+
+# A sample pre-deploy hook
+#
+# Checks the Github status of the build, waiting for a pending build to complete for up to 720 seconds.
+#
+# Fails unless the combined status is "success"
+#
+# These environment variables are available:
+# KAMAL_RECORDED_AT
+# KAMAL_PERFORMER
+# KAMAL_VERSION
+# KAMAL_HOSTS
+# KAMAL_COMMAND
+# KAMAL_SUBCOMMAND
+# KAMAL_ROLES (if set)
+# KAMAL_DESTINATION (if set)
+
+# Only check the build status for production deployments
+if ENV["KAMAL_COMMAND"] == "rollback" || ENV["KAMAL_DESTINATION"] != "production"
+  exit 0
+end
+
+require "bundler/inline"
+
+# true = install gems so this is fast on repeat invocations
+gemfile(true, quiet: true) do
+  source "https://rubygems.org"
+
+  gem "octokit"
+  gem "faraday-retry"
+end
+
+MAX_ATTEMPTS = 72
+ATTEMPTS_GAP = 10
+
+def exit_with_error(message)
+  $stderr.puts message
+  exit 1
+end
+
+class GithubStatusChecks
+  attr_reader :remote_url, :git_sha, :github_client, :combined_status
+
+  def initialize
+    @remote_url = github_repo_from_remote_url
+    @git_sha = `git rev-parse HEAD`.strip
+    @github_client = Octokit::Client.new(access_token: ENV["GITHUB_TOKEN"])
+    refresh!
+  end
+
+  def refresh!
+    @combined_status = github_client.combined_status(remote_url, git_sha)
+  end
+
+  def state
+    combined_status[:state]
+  end
+
+  def first_status_url
+    first_status = combined_status[:statuses].find { |status| status[:state] == state }
+    first_status && first_status[:target_url]
+  end
+
+  def complete_count
+    combined_status[:statuses].count { |status| status[:state] != "pending"}
+  end
+
+  def total_count
+    combined_status[:statuses].count
+  end
+
+  def current_status
+    if total_count > 0
+      "Completed #{complete_count}/#{total_count} checks, see #{first_status_url} ..."
+    else
+      "Build not started..."
+    end
+  end
+
+  private
+    def github_repo_from_remote_url
+      url = `git config --get remote.origin.url`.strip.delete_suffix(".git")
+      if url.start_with?("https://github.com/")
+        url.delete_prefix("https://github.com/")
+      elsif url.start_with?("git@github.com:")
+        url.delete_prefix("git@github.com:")
+      else
+        url
+      end
+    end
+end
+
+
+$stdout.sync = true
+
+begin
+  puts "Checking build status..."
+
+  attempts = 0
+  checks = GithubStatusChecks.new
+
+  loop do
+    case checks.state
+    when "success"
+      puts "Checks passed, see #{checks.first_status_url}"
+      exit 0
+    when "failure"
+      exit_with_error "Checks failed, see #{checks.first_status_url}"
+    when "pending"
+      attempts += 1
+    end
+
+    exit_with_error "Checks are still pending, gave up after #{MAX_ATTEMPTS * ATTEMPTS_GAP} seconds" if attempts == MAX_ATTEMPTS
+
+    puts checks.current_status
+    sleep(ATTEMPTS_GAP)
+    checks.refresh!
+  end
+rescue Octokit::NotFound
+  exit_with_error "Build status could not be found"
+end
+</file>
+
+<file path=".kamal/hooks/pre-proxy-reboot.sample">
+#!/bin/sh
+
+echo "Rebooting kamal-proxy on $KAMAL_HOSTS..."
+</file>
+
+<file path=".kamal/secrets">
+# Secrets defined here are available for reference under registry/password, env/secret, builder/secrets,
+# and accessories/*/env/secret in config/deploy.yml. All secrets should be pulled from either
+# password manager, ENV, or a file. DO NOT ENTER RAW CREDENTIALS HERE! This file needs to be safe for git.
+
+# Example of extracting secrets from 1password (or another compatible pw manager)
+# SECRETS=$(kamal secrets fetch --adapter 1password --account your-account --from Vault/Item KAMAL_REGISTRY_PASSWORD RAILS_MASTER_KEY)
+# KAMAL_REGISTRY_PASSWORD=$(kamal secrets extract KAMAL_REGISTRY_PASSWORD ${SECRETS})
+# RAILS_MASTER_KEY=$(kamal secrets extract RAILS_MASTER_KEY ${SECRETS})
+
+# Use a GITHUB_TOKEN if private repositories are needed for the image
+# GITHUB_TOKEN=$(gh config get -h github.com oauth_token)
+
+# Grab the registry password from ENV
+KAMAL_REGISTRY_PASSWORD=$KAMAL_REGISTRY_PASSWORD
+
+# Improve security by using a password manager. Never check config/master.key into git!
+RAILS_MASTER_KEY=$(cat config/master.key)
+</file>
+
+<file path="app/assets/builds/.keep">
+
+</file>
+
+<file path="app/assets/images/.keep">
+
+</file>
+
+<file path="app/assets/stylesheets/application.css">
+/*
+ * This is a manifest file that'll be compiled into application.css.
+ *
+ * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
+ * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
+ * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
+ * depending on specificity.
+ *
+ * Consider organizing styles into separate files for maintainability.
+ */
+</file>
+
+<file path="app/controllers/concerns/.keep">
+
+</file>
+
+<file path="app/controllers/application_controller.rb">
+class ApplicationController < ActionController::Base
+  # 以下のメソッドをすべてのコントローラーとビューで利用可能にする
+  protect_from_forgery with: :exception
+  helper_method :current_user, :logged_in?
+  
+  # 現在ログインしているユーザーを取得する
+  def current_user
+    @current_user ||= User.find_by(id: session[:user_id]) if session[:user_id]
+  end
+
+  # ログイン状態か判定する
+  def logged_in?
+    !!current_user
+  end
+
+  # ログインが必須なアクションでのアクセス制限
+  def require_user
+    unless logged_in?
+      flash[:error] = "この操作にはログインが必要です。"
+      redirect_to login_path
+    end
+  end
+end
+</file>
+
+<file path="app/controllers/home_controller.rb">
+class HomeController < ApplicationController
+  def index
+    # 1. アンケート一覧
+    @polls = Poll.where(status: '公開中').includes(:user).order(created_at: :desc)
+
+    if params[:search].present?
+      @polls = @polls.where("title LIKE ?", "%#{params[:search]}%")
+    end
+
+    # 2. 人気ランキング
+    # モデルに has_many :votes, through: :choices を書いたことで
+    # ここでの .left_joins(:votes) が動作するようになります
+    @ranking_polls = Poll.left_joins(:votes)
+                         .group(:id)
+                         .order('COUNT(votes.id) DESC')
+                         .limit(5)
+  end
+
+  def help
+  end
+end
+</file>
+
+<file path="app/controllers/polls_controller.rb">
+class PollsController < ApplicationController
+  before_action :set_poll, only: [:show, :edit, :update, :destroy, :create_vote, :result]
+  before_action :require_login, only: [:new, :create, :edit, :update, :destroy]
+
+  # GET /polls
+  def index
+    @polls = Poll.all.order(created_at: :desc)
+  end
+
+  # GET /polls/:id
+  def show
+    @choices = @poll.choices
+  end
+
+  # GET /polls/new
+  def new
+    @poll = Poll.new
+    # Build 3 default choices for the form
+    3.times { @poll.choices.build }
+  end
+
+  # POST /polls
+  def create
+    @poll = current_user.polls.build(poll_params)
+    if @poll.save
+      redirect_to @poll, notice: 'アンケートを作成しました。'
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+
+  # GET /polls/:id/edit
+  def edit
+  end
+
+  # PATCH/PUT /polls/:id
+  def update
+    if @poll.update(poll_params)
+      redirect_to @poll, notice: 'アンケートを更新しました。'
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
+  # DELETE /polls/:id
+  def destroy
+    @poll.destroy
+    redirect_to polls_url, notice: 'アンケートを削除しました。'
+  end
+
+  # POST /polls/:id/vote
+  # This matches the route: post 'polls/:id/vote', to: 'polls#create_vote'
+  def create_vote
+    choice_id = params[:choice_id]
+
+    if choice_id.blank?
+      flash[:error] = "選択肢を選んでください。"
+      return redirect_to poll_path(@poll)
+    end
+
+    @choice = @poll.choices.find_by(id: choice_id)
+
+    if @choice
+      # Record user ID if logged in, otherwise anonymous vote
+      vote = @choice.votes.build(user: current_user)
+      
+      if vote.save
+        flash[:notice] = "投票が完了しました。"
+        redirect_to result_poll_path(@poll)
+      else
+        flash[:error] = "投票の保存に失敗しました。"
+        redirect_to poll_path(@poll)
+      end
+    else
+      flash[:error] = "無効な選択肢です。"
+      redirect_to poll_path(@poll)
+    end
+  end
+
+  # GET /polls/:id/result
+  def result
+    @choices = @poll.choices.includes(:votes)
+  end
+
+  private
+
+  def set_poll
+    @poll = Poll.find(params[:id])
+  end
+
+  def poll_params
+    params.require(:poll).permit(:title, :description, choices_attributes: [:id, :content, :_destroy])
+  end
+
+  # Login check
+  def require_login
+    unless logged_in?
+      flash[:error] = "この操作にはログインが必要です。"
+      redirect_to login_path
+    end
+  end
+
+  # Helper to get current user
+  def current_user
+    @current_user ||= User.find_by(id: session[:user_id]) if session[:user_id]
+  end
+
+  def logged_in?
+    current_user.present?
+  end
+
+  # Ensure helpers are available in views
+  helper_method :current_user, :logged_in?
+end
+</file>
+
+<file path="app/controllers/sessions_controller.rb">
+class SessionsController < ApplicationController
+  # CSRFトークン検証のエラー（422）が再発しないよう、
+  # 開発環境で動作を確認しながら進めます。本番環境での運用時は、
+  # 以下の `skip_before_action` は使用しないでください。
+  skip_before_action :verify_authenticity_token, only: [:create, :destroy]
+  # ログインフォームの表示 (GET /login)
+  def new
+    # フォームを表示するだけ
+  end
+
+  # ログインの実行 (POST /login)
+  def create
+    # 🚨 デバッグログの開始 🚨
+    logger.info "--- ログイン試行開始 ---"
+    logger.info "入力メールアドレス: #{params[:email]}"
+
+    # 1. emailでユーザーを検索
+    user = User.find_by(email: params[:email])
+    
+    # 2. ユーザーが存在し、パスワードが一致するか検証
+    if user
+      logger.info "ユーザー発見: ID=#{user.id}"
+      
+      # has_secure_passwordのauthenticateメソッドを使用
+      if user.authenticate(params[:password])
+        # 3. 認証成功
+        logger.info "認証成功！セッションを作成します。"
+        
+        # ログイン処理はApplicationControllerのヘルパーに任せても良いが、
+        # ここでは直接セッションを操作します
+        session[:user_id] = user.id
+        
+        flash[:success] = "ログインに成功しました！"
+        # 🚨 リダイレクト成功ログ 🚨
+        logger.info "--- ログイン試行終了: 成功 ---"
+        redirect_to root_path
+        return
+      else
+        # 4. パスワード不一致
+        logger.warn "認証失敗: パスワード不一致。"
+        flash.now[:error] = "メールアドレスまたはパスワードが正しくありません。"
+        logger.info "--- ログイン試行終了: 失敗 (パスワード) ---"
+        render :new, status: :unprocessable_entity
+      end
+    else
+      # 5. ユーザー未発見
+      logger.warn "認証失敗: ユーザー未発見。新規登録が必要です。"
+      flash.now[:error] = "メールアドレスまたはパスワードが正しくありません。"
+      logger.info "--- ログイン試行終了: 失敗 (ユーザーなし) ---"
+      render :new, status: :unprocessable_entity
+    end
+  end
+
+  # ログアウトの実行 (DELETE /logout)
+  def destroy
+    # セッションからuser_idを削除
+    session[:user_id] = nil
+    flash[:notice] = "ログアウトしました。"
+    # ログアウト後のリダイレクトは status: :see_other を付けるのが慣例
+    redirect_to root_path, status: :see_other
+  end
+end
+</file>
+
+<file path="app/controllers/static_pages_controller.rb">
+class StaticPagesController < ApplicationController
+  def help
+  end
+end
+</file>
+
+<file path="app/controllers/users_controller.rb">
+class UsersController < ApplicationController
+  # 認証済みユーザーのみが実行できるアクションの制限を、このコントローラーでは解除します。
+  # ログインや新規登録は、未認証ユーザーが行うためです。
+  skip_before_action :verify_authenticity_token, only: [:create]
+
+  # GET /users/new (新規登録フォームの表示)
+  def new
+    # 新しいユーザーオブジェクトを初期化し、フォームに渡します
+    @user = User.new 
+  end
+  
+  # POST /users (新規ユーザーの作成)
+  def create
+    @user = User.new(user_params)
+    
+    if @user.save
+      # 登録成功時の処理: セッションにユーザーIDを保存し、ログイン状態にします
+      # 🚨 NOTE: `login(@user)`というヘルパーメソッドが定義されている場合は、
+      # 🚨 `session[:user_id] = @user.id` の代わりにそちらを使用することで、SessionsControllerと共通化できます。
+      session[:user_id] = @user.id 
+      flash[:success] = "登録が完了しました！"
+      redirect_to root_path
+    else
+      # 登録失敗時 (バリデーションエラーなど) の処理
+      # フォームの再表示とHTTPステータス422 (処理不能なエンティティ) を返します
+      flash.now[:error] = "登録に失敗しました。"
+      render :new, status: :unprocessable_entity
+    end
+  end
+  
+  private
+  
+  # ストロングパラメーター
+  def user_params
+    # 許可する属性: email, password, password_confirmation
+    params.require(:user).permit(:email, :password, :password_confirmation)
+  end
+end
+</file>
+
+<file path="app/helpers/application_helper.rb">
+module ApplicationHelper
+end
+</file>
+
+<file path="app/helpers/home_helper.rb">
+module HomeHelper
+end
+</file>
+
+<file path="app/helpers/polls_helper.rb">
+module PollsHelper
+end
+</file>
+
+<file path="app/helpers/sessions_helper.rb">
+module SessionsHelper
+end
+</file>
+
+<file path="app/helpers/static_pages_helper.rb">
+module StaticPagesHelper
+end
+</file>
+
+<file path="app/helpers/users_helper.rb">
+module UsersHelper
+end
+</file>
+
+<file path="app/javascript/controllers/application.js">
+import { Application } from "@hotwired/stimulus"
+
+// Stimulusアプリケーションを初期化
+const application = Application.start()
+
+// デバッグ情報を無効化 (本番環境向け)
+application.debug = false
+
+// window.Stimulus にグローバルに設定
+window.Stimulus = application
+
+export { application }
+</file>
+
+<file path="app/javascript/controllers/index.js">
+// Stimulusアプリケーションのコア設定をインポート
+import { application } from "./application.js"
+
+// -------------------------------------------------------------------------
+// 🚨 個別のコントローラーを登録 🚨
+// -------------------------------------------------------------------------
+
+// Stimulusコントローラーを動的にロードし、アプリケーションに登録します。
+// Importmapでは、コントローラーのインポートは手動またはワイルドカードなしで行う必要があります。
+
+// 1. Nested Form Controller をインポート
+import NestedFormController from "./nested_form_controller.js" 
+
+// 2. Pollフォームで使用されている data-controller="nested-form" に対応
+application.register("nested-form", NestedFormController)
+
+
+// 登録が必要な他のコントローラがあればここに追加します
+// 例:
+// import PollController from "./poll_controller.js"
+// application.register("poll", PollController)
+
+
+console.log("Stimulus controllers initialized and registered.")
+</file>
+
+<file path="app/javascript/controllers/nested_form_controller.js">
+import { Controller } from "@hotwired/stimulus";
+
+/**
+ * Stimulus Controller: Rails Nested Attributes
+ * Turbo環境下での422エラーを防ぎ、データの整合性を保ちます
+ */
+export default class extends Controller {
+  static targets = ["container", "template", "count"];
+
+  connect() {
+    this.updateCount();
+  }
+
+  /**
+   * 新しいフィールドをテンプレートから追加
+   */
+  add(event) {
+    event.preventDefault();
+
+    const templateContent = this.templateTarget.innerHTML;
+    // ユニークなIDを生成してRailsのプレースホルダーを置換
+    const uniqueId = new Date().getTime() + Math.floor(Math.random() * 1000);
+    const newHtml = templateContent.replace(/NEW_RECORD/g, uniqueId);
+
+    this.containerTarget.insertAdjacentHTML("beforeend", newHtml);
+    this.updateCount();
+  }
+
+  /**
+   * フィールドを削除
+   */
+  remove(event) {
+    event.preventDefault();
+
+    const item = event.target.closest(".nested-fields");
+    if (!item) return;
+
+    // _destroy フィールド（hidden）を探す
+    const destroyField = item.querySelector('input[name*="_destroy"]');
+
+    if (destroyField) {
+      // ケース1: DBに既に存在するデータ
+      // Railsの accepts_nested_attributes_for で削除対象として認識させる
+      destroyField.value = "1";
+      item.style.display = "none";
+      item.classList.add("hidden-nested-item");
+
+      // 送信時にHTML5バリデーションに引っかからないよう、すべての required を解除
+      const inputs = item.querySelectorAll("input, textarea, select");
+      inputs.forEach(input => {
+        input.removeAttribute("required");
+        // サーバー側のバリデーションエラーを避けるため、値もクリアしておくとより安全です
+        if (input !== destroyField && input.type !== 'hidden') {
+          input.value = ""; 
+        }
+      });
+    } else {
+      // ケース2: まだ保存されていない新規項目
+      // サーバーに送る必要がないため、DOMから完全に削除
+      item.remove();
+    }
+
+    this.updateCount();
+  }
+
+  /**
+   * 現在の有効な項目数を更新（画面表示用）
+   */
+  updateCount() {
+    if (!this.hasCountTarget) return;
+    const visibleItems = this.containerTarget.querySelectorAll(".nested-fields:not(.hidden-nested-item)");
+    this.countTarget.textContent = visibleItems.length;
+  }
+}
+</file>
+
+<file path="app/javascript/controllers/poll_controller.js">
+import { Controller } from "@hotwired/stimulus"
+
+export default class extends Controller {
+  static targets = ["container", "template"]
+
+  connect() {
+    // 接続確認用（必要なければ削除してOK）
+    console.log("Poll form controller connected")
+  }
+
+  // 選択肢を追加するアクション
+  addChoice(event) {
+    event.preventDefault()
+    
+    // テンプレートから新しいHTMLを作成
+    const content = this.templateTarget.innerHTML.replace(/NEW_RECORD/g, new Date().getTime())
+    
+    // コンテナの最後に追加
+    this.containerTarget.insertAdjacentHTML('beforeend', content)
+  }
+
+  // 選択肢を削除するアクション
+  removeChoice(event) {
+    event.preventDefault()
+    
+    // 削除ボタンの親要素（選択肢の入力フィールド一式）を取得
+    const wrapper = event.target.closest('.choice-field')
+    
+    // 既存データ（IDがあるもの）の場合は隠して _destroy を 1 にする処理が必要になる場合がありますが、
+    // 新規作成時であれば単純に削除して問題ありません
+    if (this.containerTarget.querySelectorAll('.choice-field').length > 1) {
+      wrapper.remove()
+    } else {
+      alert("選択肢は最低1つ必要です。")
+    }
+  }
+}
+</file>
+
+<file path="app/javascript/application.js">
+// Configure your import map in config/importmap.rb. Read more: https://github.com/rails/importmap-rails
+import "@hotwired/turbo-rails"
+import "./controllers"
+
+// Bootstrap 5のJavaScriptコンポーネントをロードするために必要
+import "@popperjs/core"
+import "bootstrap"
+</file>
+
+<file path="app/jobs/application_job.rb">
+class ApplicationJob < ActiveJob::Base
+  # Automatically retry jobs that encountered a deadlock
+  # retry_on ActiveRecord::Deadlocked
+
+  # Most jobs are safe to ignore if the underlying records are no longer available
+  # discard_on ActiveJob::DeserializationError
+end
+</file>
+
+<file path="app/mailers/application_mailer.rb">
+class ApplicationMailer < ActionMailer::Base
+  default from: "from@example.com"
+  layout "mailer"
+end
+</file>
+
+<file path="app/models/concerns/.keep">
+
+</file>
+
+<file path="app/models/application_record.rb">
+class ApplicationRecord < ActiveRecord::Base
+  primary_abstract_class
+end
+</file>
+
+<file path="app/models/choice.rb">
+class Choice < ApplicationRecord
+  # --- Associations ---
+  
+  # Links each choice to a specific poll
+  belongs_to :poll, inverse_of: :choices
+  
+  # Votes linked to this specific choice
+  has_many :votes, dependent: :destroy 
+
+  # --- Validations ---
+  
+  # 削除フラグが立っていない場合のみ、バリデーションを実行する
+  validates :content, 
+            presence: true, 
+            length: { maximum: 100 },
+            unless: :reject_by_destroy_flag?
+
+  # --- Methods ---
+
+  # フォームから送信される _destroy フラグを安全に判定するメソッド
+  # メソッド名を独自のものにすることで、Rails内部の無限ループを回避します
+  def reject_by_destroy_flag?
+    # 1. accepts_nested_attributes_for の内部状態を確認
+    return true if marked_for_destruction?
+    
+    # 2. フォームから直接送られてくる _destroy パラメータを確認
+    # attr_accessor :_destroy がない場合でも、パラメータが存在すれば true を返す
+    [true, "1", 1].include?(instance_variable_get(:@_destroy)) || 
+    (respond_to?(:_destroy) && [true, "1", 1].include?(_destroy))
+  end
+end
+</file>
+
+<file path="app/models/poll.rb">
+class Poll < ApplicationRecord
+  # 1. 関連付け
+  belongs_to :user
+  has_many :choices, dependent: :destroy, inverse_of: :poll
+  has_many :votes, through: :choices
+
+  # 2. ネストした属性の設定
+  accepts_nested_attributes_for :choices, 
+                                allow_destroy: true, 
+                                reject_if: :all_blank
+
+  # 3. バリデーション
+  validates :title, presence: true, length: { maximum: 100 }
+  validates :description, presence: true
+  validates :status, presence: true
+
+  # カスタムバリデーション
+  validate :must_have_at_least_two_choices
+
+  private
+
+  def must_have_at_least_two_choices
+    # 関連付けられた choices のうち、削除フラグが立っていないものを数える
+    # メモリ上のオブジェクトを直接参照し、メソッド呼び出しを最小限にします
+    valid_choices_count = choices.to_a.count do |choice|
+      # _destroy 属性が真（"1" や true）でないものを有効な選択肢としてカウント
+      # choice.marked_for_destruction? がエラーになるため、属性値を直接参照
+      is_marked_for_destruction = choice.respond_to?(:_destroy) && [true, "1", 1].include?(choice._destroy)
+      
+      !choice.marked_for_destruction? && !is_marked_for_destruction rescue !is_marked_for_destruction
+    end
+
+    if valid_choices_count < 2
+      errors.add(:base, "選択肢は2つ以上入力してください。")
+    end
+  end
+end
+</file>
+
+<file path="app/models/user.rb">
+class User < ApplicationRecord
+  # has_secure_passwordを使うための設定
+  has_secure_password
+  
+  # Polls と Votes との関連付けを追加 (アンケートと投票機能の実装のため)
+  has_many :polls, dependent: :destroy # 作成したアンケート
+  has_many :votes, dependent: :destroy # 投票履歴
+
+  # [cite_start]バリデーションの設定 (仕様書草稿に基づく [cite: 40])
+  # email: 必須、一意、メールアドレス形式、最大255文字
+  validates :email, presence: true, 
+                    uniqueness: { case_sensitive: false }, 
+                    length: { maximum: 255 },
+                    format: { with: URI::MailTo::EMAIL_REGEXP }
+  
+  # password: 必須、最低8文字以上
+  validates :password, length: { minimum: 8 }, 
+                       allow_nil: true 
+end
+</file>
+
+<file path="app/models/vote.rb">
+class Vote < ApplicationRecord
+  # --- Associations ---
+  
+  # 投票したユーザー
+  belongs_to :user
+  # 投票対象のアンケート
+  belongs_to :poll
+  # 投票した具体的な選択肢 (choice_id というカラム名であると想定)
+  belongs_to :choice, foreign_key: :choice_id, optional: true
+
+  # --- Validations ---
+
+  # 1ユーザーは1アンケートに1回のみ投票可能 (複合一意性)
+  validates :user_id, uniqueness: { 
+    scope: :poll_id, 
+    message: "は同じアンケートに二重に投票できません" 
+  }
+
+  # 選択肢のIDが必須であることを検証
+  # カラム名が chosen_option の場合は :chosen_option に書き換えてください
+  validates :choice_id, presence: true
+
+  # カスタムバリデーション: 選択肢がそのアンケートに属しているか確認
+  validate :choice_must_belong_to_poll
+
+  private
+
+  def choice_must_belong_to_poll
+    return if choice_id.blank? || poll_id.blank?
+
+    # 選択したChoiceのpoll_idと、Voteのpoll_idが一致するかチェック
+    unless Choice.exists?(id: choice_id, poll_id: poll_id)
+      errors.add(:choice_id, "は指定されたアンケートの有効な選択肢ではありません")
+    end
+  end
+end
+</file>
+
+<file path="app/views/home/help.html.erb">
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card shadow-sm p-4">
+            <h2 class="card-title text-primary mb-4">アンケート・投票アプリ ヘルプセンター</h2>
+            
+            <hr>
+
+            <section class="mb-5">
+                <h3>1. アプリケーションの概要</h3>
+                <p class="text-muted">本アプリは、ユーザーが作成したアンケートに対し、他のユーザーが投票し、結果をリアルタイムで共有できるプラットフォームです。</p>
+            </section>
+            
+            <section class="mb-5">
+                <h3>2. 主要機能</h3>
+                
+                <h4 class="mt-3">🔑 ユーザー認証</h4>
+                <ul class="list-group list-group-flush mb-3">
+                    <li class="list-group-item">新規登録: メールアドレスとパスワードでアカウントを作成できます。</li>
+                    <li class="list-group-item">ログイン: 登録したアカウントでログインできます。</li>
+                </ul>
+                
+                <h4 class="mt-3">📝 アンケート作成</h4>
+                <ul class="list-group list-group-flush mb-3">
+                    <li class="list-group-item text-danger">**【注意】ログインが必須です。**</li>
+                    <li class="list-group-item">タイトルと選択肢（2個以上）を設定し、アンケートを公開できます。</li>
+                </ul>
+                
+                <h4 class="mt-3">🗳️ 投票機能</h4>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item text-danger">**【注意】ログインが必須です。**</li>
+                    <li class="list-group-item">各アンケートに対し、**一回のみ**投票できます。</li>
+                    <li class="list-group-item">投票後は、すぐに結果ページへ移動します。</li>
+                </ul>
+            </section>
+
+            <section class="mb-3">
+                <h3>3. お問い合わせ</h3>
+                <p>ご不明な点や不具合がございましたら、サポートまでご連絡ください。</p>
+                <a href="mailto:support@example.com" class="btn btn-info">サポートにメールする</a>
+            </section>
+        </div>
+    </div>
+</div>
+</file>
+
+<file path="app/views/home/index.html.erb">
+<%# このビューは、ルートパス (`/`) で表示され、アンケートのランキング、一覧、検索機能を提供します。 %>
+
+<%# 🟢 Importmapのモジュールシステムと互換性のある読み込みタグ（競合解決済み） 🟢 %>
+<%# 'home_page' は config/importmap.rb でピン留めされている必要があります %>
+<%= javascript_importmap_tags %>
+
+
+<div class="container my-5">
+    
+    <%# ---------------------------------------------------------------- %>
+    <%# 1. メインのキャッチコピーとユーザーアクションボタン %>
+    <%# ---------------------------------------------------------------- %>
+    <div class="text-center mb-5 pb-4 border-bottom">
+        <h1 class="display-4 fw-bold text-primary">アンケート投票アプリ</h1>
+        <p class="lead text-muted">今すぐアンケートを作成したり、投票に参加しましょう。</p>
+        
+        <div class="mt-4">
+            <% if logged_in? %>
+                <%# 🚨 修正: ここに「新しいアンケートを作成」ボタンを復活 🚨 %>
+                <%= link_to '新しいアンケートを作成', new_poll_path, class: "btn btn-warning btn-lg me-3 fw-bold" %>
+                <%= link_to 'アンケート一覧を見る', polls_path, class: "btn btn-primary btn-lg" %>
+            <% else %>
+                <%# 未ログインユーザー向け %>
+                <%= link_to '新規登録はこちら', signup_path, class: "btn btn-success btn-lg" %>
+                <%= link_to 'ログイン', login_path, class: "btn btn-outline-secondary btn-lg ms-3" %>
+            <% end %>
+        </div>
+    </div>
+    
+    <%# ---------------------------------------------------------------- %>
+    <%# 2. ランキング、一覧、検索コンテンツ %>
+    <%# ---------------------------------------------------------------- %>
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+
+            <%# 🏆 人気ランキング (投票数順) 🏆 %>
+            <% if @ranking_polls.present? %>
+                <h2 class="h5 mb-3 mt-4 fw-bold text-dark">👑 人気ランキング (投票数順)</h2>
+                <ul class="list-group mb-5 shadow-sm">
+                    <% @ranking_polls.each_with_index do |poll, index| %>
+                        <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                            <div class="d-flex align-items-center">
+                                <%# 順位に応じたバッジカラー %>
+                                <% badge_class = case index
+                                                 when 0 then "bg-warning text-dark" # 1位
+                                                 when 1 then "bg-info"    # 2位
+                                                 when 2 then "bg-success" # 3位
+                                                 else "bg-secondary"
+                                                 end %>
+                                <span class="badge <%= badge_class %> me-3 fw-bold"><%= index + 1 %>位</span>
+                                
+                                <%# アンケートタイトルを投票ページへのリンクとして表示 %>
+                                <%= link_to poll.title, poll_path(poll), class: "text-dark text-decoration-none fw-medium" %>
+                            </div>
+                            
+                            <%# 投票数を表示 %>
+                            <span class="badge bg-primary rounded-pill py-2 px-3 fw-bold">
+                                <%= poll.votes.count %> 票
+                            </span>
+                        </li>
+                    <% end %>
+                </ul>
+            <% else %>
+                <p class="text-muted text-center mt-4">まだ投票されたアンケートがありません。</p>
+            <% end %>
+
+            <hr class="my-5">
+            
+            <%# ---------------------------------------------------------------- %>
+            <%# 3. 検索バー %>
+            <%# ---------------------------------------------------------------- %>
+            <div class="p-4 border bg-light shadow-sm rounded-3 mb-5">
+                <h2 class="h5 mb-3 fw-bold">アンケート検索</h2>
+                
+                <%# 検索を実行するフォーム (root_path, GETリクエスト) %>
+                <%= form_with url: root_path, method: :get, local: true, class: "input-group" do %>
+                    
+                    <%= text_field_tag :search, params[:search], 
+                        class: "form-control form-control-lg rounded-start-3", 
+                        placeholder: "タイトルでアンケートを検索" %>
+                    
+                    <%= button_tag "検索", type: :submit, class: "btn btn-dark btn-lg rounded-end-3" %>
+                <% end %>
+                
+                <% if params[:search].present? %>
+                    <%= link_to "検索をクリア", root_path, class: "text-muted small mt-2 d-inline-block text-decoration-none" %>
+                <% end %>
+            </div>
+
+
+            <%# ---------------------------------------------------------------- %>
+            <%# 4. 最新のアンケート一覧 %>
+            <%# ---------------------------------------------------------------- %>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="h5 mb-0 fw-bold">最新のアンケート一覧</h2>
+                <% if logged_in? %>
+                    <%# 🚨 修正: ここに「アンケート新規作成」ボタンを復活 🚨 %>
+                    <%= link_to 'アンケート新規作成', new_poll_path, class: "btn btn-sm btn-outline-warning fw-bold" %>
+                <% end %>
+            </div>
+
+            <ul class="list-group list-group-flush shadow-sm">
+                <% if @polls.present? %>
+                    <% @polls.each do |poll| %>
+                        <li class="list-group-item d-flex justify-content-between align-items-center p-3 border-bottom">
+                            <%# タイトルとステータス %>
+                            <div class="me-3">
+                                <%= link_to poll.title, poll_path(poll), class: "text-decoration-none text-primary fw-medium" %>
+                                <%# statusの表示ロジックは削除済み %>
+                            </div>
+                            
+                            <%# 投票数と作成日時 %>
+                            <div class="text-end d-flex flex-column align-items-end">
+                                <span class="text-secondary small mb-1"><%= poll.votes.count %> 票</span>
+                                <span class="text-muted small"><%= l poll.created_at, format: :short %></span>
+                            </div>
+                        </li>
+                    <% end %>
+                <% else %>
+                    <li class="list-group-item text-muted text-center p-4">
+                        <% if params[:search].present? %>
+                            "<%= params[:search] %>" に一致するアンケートは見つかりませんでした。
+                        <% else %>
+                            アンケートはまだ作成されていません。
+                        <% end %>
+                    </li>
+                <% end %>
+            </ul>
+            
+            <%# ページネーションが必要な場合はここに追加 %>
+            
+        </div>
+    </div>
+</div>
+</file>
+
+<file path="app/views/layouts/application.html.erb">
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>アンケートアプリ</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+
+    <%# Importmap/Turbo/Stimulusに必要なタグ。これでapplication.jsのロードが処理されます %>
+    
+    <%= javascript_importmap_tags %>
+    <%= yield(:js) %>
+    <%# javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+    
+  </head>
+  <body class="bg-light">
+    <!-- ナビゲーションバーや共通ヘッダーの想定 -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-4">
+      <div class="container">
+        <%# Navbar BrandをRootに戻します %>
+        <%= link_to "アンケートアプリ", root_path, class: "navbar-brand" %>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto align-items-lg-center"> 
+            
+            <%# アンケート作成を黄色いボタンにし、ホームとヘルプを通常のnav-itemとして配置します %>
+            <li class="nav-item">
+              <%= link_to 'ホーム', root_path, class: "nav-link" %>
+            </li>
+            <li class="nav-item">
+              <%= link_to 'ヘルプ', help_path, class: "nav-link" %>
+            </li>
+            <li class="nav-item ms-lg-2">
+              <%# アンケート作成ボタンを黄色 (warning) に変更 %>
+              <%= link_to 'アンケート作成', new_poll_path, class: "btn btn-warning" %>
+            </li>
+            
+            <%# ユーザー認証リンク %>
+            <% if defined?(logged_in?) && logged_in? %>
+              <li class="nav-item">
+                <span class="nav-link text-white-50 ms-lg-2">ようこそ, <%= defined?(current_user) && current_user.respond_to?(:email) ? current_user.email : 'ユーザー' %></span>
+              </li>
+              <li class="nav-item ms-lg-2">
+                <%# 🚨 修正: link_toからbutton_toに変更し、DELETEリクエストをフォーム送信で保証 🚨 %>
+                <%= button_to "ログアウト", logout_path, 
+                  method: :delete, 
+                  data: { turbo_confirm: "ログアウトしますか？" }, 
+                  # リンクのように見せるためのBootstrapクラス
+                  class: "btn btn-link nav-link text-white p-0" %>
+              </li>
+            <% else %>
+              <li class="nav-item">
+                <%= link_to "ログイン", login_path, class: "nav-link" %>
+              </li>
+              <li class="nav-item">
+                <%# 修正: signup_path を使用 %>
+                <%= link_to "新規登録", signup_path, class: "nav-link" %>
+              </li>
+            <% end %>
+            
+          </ul>
+        </div>
+      </div>
+    </nav>
+    
+    <main class="container">
+      <%# フラッシュメッセージの表示ロジックは維持 %>
+      <% if flash[:notice] || flash[:alert] || flash[:success] || flash[:error] %>
+        <div class="alert <%= flash[:notice] || flash[:success] ? 'alert-success' : 'alert-danger' %> alert-dismissible fade show" role="alert">
+          <%= flash[:notice] || flash[:alert] || flash[:success] || flash[:error] %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% end %>
+
+      <%= yield %>
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    
+  </body>
+</html>
+</file>
+
+<file path="app/views/layouts/mailer.html.erb">
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style>
+      /* Email styles need to be inline */
+    </style>
+  </head>
+
+  <body>
+    <%= yield %>
+  </body>
+</html>
+</file>
+
+<file path="app/views/layouts/mailer.text.erb">
+<%= yield %>
+</file>
+
+<file path="app/views/polls/_choice_fields.html.erb">
+<%# app/views/polls/_choice_fields.html.erb %>
+<%# wrapper ターゲットとして定義し、JavaScriptからこの要素ごと操作できるようにします %>
+<div class="nested-fields" data-nested-form-target="wrapper">
+  <div class="input-group">
+    <%# 選択肢の入力フィールド %>
+    <%= form.text_field :content, 
+                        class: "form-control", 
+                        placeholder: "選択肢を入力してください", 
+                        required: true %>
+
+    <%# 削除ボタン: JavaScriptの nested-form#remove アクションを起動 %>
+    <button type="button" 
+            class="btn btn-outline-danger" 
+            data-action="click->nested-form#remove"
+            title="削除">
+      <i class="bi bi-trash"></i>
+    </button>
+  </div>
+
+  <%# 🚨 重要: 削除フラグを保持する隠しフィールド 🚨 %>
+  <%# allow_destroy: true を設定している場合、このフィールドが '1' になるとレコードが削除されます %>
+  <%= form.hidden_field :_destroy %>
+</div>
+</file>
+
+<file path="app/views/polls/_form.html.erb">
+<%= form_with(model: poll, local: true, data: { controller: "poll-form" }) do |f| %>
+  <div class="mb-3">
+    <%= f.label :title, "アンケートタイトル", class: "form-label" %>
+    <%= f.text_field :title, class: "form-control", placeholder: "例：好きな果物は？" %>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">選択肢</label>
+    
+    <%# 1. コンテナにターゲットを設定 %>
+    <div id="choices-container" data-poll-form-target="container">
+      <%= f.fields_for :choices do |choice_form| %>
+        <div class="choice-field d-flex mb-2 gap-2">
+          <%= choice_form.text_field :content, class: "form-control", placeholder: "選択肢を入力" %>
+          
+          <%# 2. 削除ボタンにアクションを設定 %>
+          <button type="button" class="btn btn-outline-danger" data-action="click->poll-form#removeChoice">
+             削除
+          </button>
+        </div>
+      <% end %>
+    </div>
+
+    <%# 3. 追加ボタンにアクションを設定 %>
+    <button type="button" class="btn btn-outline-primary btn-sm mt-2" data-action="click->poll-form#addChoice">
+      + 選択肢を追加
+    </button>
+  </div>
+
+  <%# 4. テンプレートを隠し要素として定義 %>
+  <template data-poll-form-target="template">
+    <%= f.fields_for :choices, Choice.new, child_index: "NEW_RECORD" do |choice_form| %>
+      <div class="choice-field d-flex mb-2 gap-2">
+        <%= choice_form.text_field :content, class: "form-control", placeholder: "選択肢を入力" %>
+        <button type="button" class="btn btn-outline-danger" data-action="click->poll-form#removeChoice">
+           削除
+        </button>
+      </div>
+    <% end %>
+  </template>
+
+  <div class="mt-4">
+    <%= f.submit "アンケートを作成する", class: "btn btn-primary w-100" %>
+  </div>
+<% end %>
+</file>
+
+<file path="app/views/polls/_option_field.html.erb">
+<% # 各選択肢の入力フィールド %>
+<% # name="poll[options][]" とすることで、コントローラで options: [] として配列で受け取れる %>
+<div class="input-group mb-3" data-options-target="field">
+    <input type="text" name="poll[options][]" class="form-control" placeholder="選択肢のテキスト" required>
+    <%# 削除ボタン。Stimulusで処理 %>
+    <button type="button" class="btn btn-outline-danger" data-action="options#removeField">削除</button>
+</div>
+</file>
+
+<file path="app/views/polls/index.html.erb">
+<h2>全アンケート一覧</h2>
+<p class="text-secondary">公開中のアンケートが <%= @polls.count %> 件あります。</p>
+<div class="d-flex justify-content-end mb-4">
+    <% if current_user %>
+        <%# ログインしている場合のみボタンを表示 %>
+        <%= link_to "アンケート新規作成", new_poll_path, class: "btn btn-warning btn-lg" %>
+    <% end %>
+</div>
+
+<%= form_with(url: polls_path, method: :get, local: true, class: 'mb-4 p-3 border rounded bg-light shadow-sm') do |f| %>
+  <div class="input-group">
+    <%= f.text_field :search, class: 'form-control', placeholder: 'アンケートタイトルで検索', value: params[:search] %>
+    <button class="btn btn-primary" type="submit">検索</button>
+  </div>
+<% end %>
+
+<div class="list-group">
+  <% if @polls.any? %>
+    <% @polls.each do |poll| %>
+      <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+        <div>
+          <h5 class="mb-1">
+            <%= link_to poll.title, poll_path(poll), class: 'text-decoration-none text-dark' %>
+          </h5>
+          <small class="text-muted">作成者: <%= poll.user.email %> | 作成日時: <%= l poll.created_at, format: :short %></small>
+        </div>
+        <span class="badge bg-success rounded-pill">
+          <%= poll.votes.count %> 票
+        </span>
+      </div>
+    <% end %>
+  <% else %>
+    <p class="p-3 text-center text-muted">現在、公開中のアンケートはありません。</p>
+  <% end %>
+</div>
+</file>
+
+<file path="app/views/polls/new.html.erb">
+<div class="poll-app-wrapper">
+  <div class="poll-container">
+    <header class="poll-header">
+      <h1 class="poll-heading">新規アンケート作成</h1>
+      <p class="poll-subheading">質問内容と選択肢を自由に設定してください。</p>
+    </header>
+
+    <div class="poll-card">
+      <%= form_with(model: @poll, local: true, id: "poll-form") do |f| %>
+        
+        <% if @poll.errors.any? %>
+          <div class="error-notification">
+            <h2 class="error-title"><%= @poll.errors.count %> 件のエラーがあります</h2>
+            <ul class="error-list">
+              <% @poll.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div class="form-group">
+          <%= f.label :title, "アンケートのタイトル", class: "form-label" %>
+          <%= f.text_field :title, placeholder: "例: 好きなプログラミング言語は？", class: "form-control", required: true %>
+        </div>
+
+        <div class="form-group">
+          <%= f.label :description, "詳細説明 (任意)", class: "form-label" %>
+          <%= f.text_area :description, rows: 2, placeholder: "アンケートの補足情報を入力...", class: "form-control" %>
+        </div>
+
+        <!-- 選択肢セクション -->
+        <div class="options-section">
+          <div class="options-header">
+            <h3 class="options-title">選択肢</h3>
+            <button type="button" id="add-choice" class="btn-add">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              追加
+            </button>
+          </div>
+
+          <div id="choices-container">
+            <!-- JavaScriptで動的に追加される、または初期の選択肢 -->
+            <div class="choice-row" data-index="0">
+              <div class="choice-input-wrapper">
+                <input type="text" name="poll[choices_attributes][0][content]" placeholder="選択肢を入力" class="form-control choice-field" required>
+                <button type="button" class="remove-choice" title="削除">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="choice-row" data-index="1">
+              <div class="choice-input-wrapper">
+                <input type="text" name="poll[choices_attributes][1][content]" placeholder="選択肢を入力" class="form-control choice-field" required>
+                <button type="button" class="remove-choice" title="削除">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-footer">
+          <%= f.submit "アンケートを公開する", class: "btn btn-submit" %>
+          <%= link_to "キャンセル", polls_path, class: "btn btn-cancel" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<style>
+  :root {
+    --primary: #4f46e5;
+    --primary-hover: #4338ca;
+    --bg-gray: #f9fafb;
+    --text-dark: #111827;
+    --text-light: #6b7280;
+    --border: #d1d5db;
+    --white: #ffffff;
+    --danger: #ef4444;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  .poll-app-wrapper {
+    background-color: var(--bg-gray);
+    min-height: 100vh;
+    padding: 40px 20px;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+
+  .poll-container {
+    max-width: 550px;
+    margin: 0 auto;
+  }
+
+  .poll-header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .poll-heading {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-dark);
+  }
+
+  .poll-card {
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 24px;
+  }
+
+  .form-group { margin-bottom: 20px; }
+  .form-label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem; }
+  
+  .form-control {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 1rem;
+    box-sizing: border-box;
+  }
+
+  .form-control:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  }
+
+  /* Dynamic Section */
+  .options-section {
+    margin-top: 24px;
+    border-top: 1px solid #edf2f7;
+    padding-top: 20px;
+  }
+
+  .options-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .options-title { font-size: 1.1rem; font-weight: 700; margin: 0; }
+
+  .btn-add {
+    background: #ecf0ff;
+    color: var(--primary);
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .btn-add:hover { background: #e0e7ff; }
+
+  .choice-row {
+    margin-bottom: 12px;
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  .choice-input-wrapper {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .remove-choice {
+    background: none;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: all 0.2s;
+  }
+
+  .remove-choice:hover {
+    color: var(--danger);
+    background: #fef2f2;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .form-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 32px;
+  }
+
+  .btn {
+    padding: 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-submit { background: var(--primary); color: white; }
+  .btn-cancel { background: #f3f4f6; color: var(--text-light); }
+
+  @media (min-width: 480px) {
+    .form-footer { flex-direction: row-reverse; }
+    .btn { flex: 1; }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('choices-container');
+    const addButton = document.getElementById('add-choice');
+
+    // 選択肢の追加
+    addButton.addEventListener('click', () => {
+      const rows = container.querySelectorAll('.choice-row');
+      const nextIndex = rows.length > 0 ? parseInt(rows[rows.length - 1].dataset.index) + 1 : 0;
+      
+      const newRow = document.createElement('div');
+      newRow.className = 'choice-row';
+      newRow.dataset.index = nextIndex;
+      newRow.innerHTML = `
+        <div class="choice-input-wrapper">
+          <input type="text" name="poll[choices_attributes][${nextIndex}][content]" placeholder="選択肢を入力" class="form-control choice-field" required>
+          <button type="button" class="remove-choice" title="削除">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      `;
+      container.appendChild(newRow);
+    });
+
+    // 選択肢の削除（イベントデリゲーション）
+    container.addEventListener('click', (e) => {
+      if (e.target.closest('.remove-choice')) {
+        const row = e.target.closest('.choice-row');
+        const rows = container.querySelectorAll('.choice-row');
+        
+        // 最低2つの選択肢を残すバリデーション（任意）
+        if (rows.length > 1) {
+          row.remove();
+        } else {
+          alert('選択肢は最低1つ必要です。');
+        }
+      }
+    });
+  });
+</script>
+</file>
+
+<file path="app/views/polls/result.html.erb">
+<!-- app/views/polls/result.html.erb -->
+<div class="container my-5">
+    
+    <h2>投票結果</h2>
+    <p class="text-secondary">アンケートタイトル:</p>
+    <h3><%= @poll.title %></h3>
+
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card text-center bg-info text-white shadow-sm p-3 rounded-3">
+                <div class="card-body">
+                    <h5 class="card-title">総投票数</h5>
+                    <p class="card-text fs-1 fw-bold"><%= @total_votes %> 票</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card shadow-sm p-3 h-100 rounded-3">
+                <h5 class="card-title">グラフ表示エリア</h5>
+                <div style="height: 200px; background-color: #f8f9fa; border: 1px dashed #ccc; display: flex; align-items: center; justify-content: center; font-style: italic; border-radius: 0.5rem;">
+                    投票結果のグラフ（棒グラフまたは円グラフ）<br>（注: グラフライブラリがないため、プレースホルダーです）
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h4 class="mt-5 mb-3">結果内訳</h4>
+
+    <div class="list-group">
+        <% if @total_votes > 0 %>
+            <% # @results は、キーが選択肢のテキスト、値が投票数のハッシュ (例: {"はい" => 10, "いいえ" => 5}) %>
+            <% @results.each_with_index do |(option_text, count), index| %>
+                <% 
+                    # 割合を計算 (小数点以下1桁まで)
+                    percentage = (@total_votes > 0) ? (count.to_f / @total_votes * 100).round(1) : 0
+                    # プログレスバーの色を設定 (Bootstrapのユーティリティクラス)
+                    # indexを使って色のバリエーションを確保します
+                    color_class = case index % 4
+                                  when 0 then "bg-primary"
+                                  when 1 then "bg-success"
+                                  when 2 then "bg-warning"
+                                  when 3 then "bg-danger"
+                                  end
+                %>
+                <div class="list-group-item p-3 rounded-3 mb-2 shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <strong class="text-truncate text-wrap me-3" style="max-width: 70%;"><%= option_text %></strong>
+                        <span>
+                            <span class="badge bg-secondary me-2"><%= percentage %>%</span>
+                            <span class="badge bg-dark"><%= count %> 票</span>
+                        </span>
+                    </div>
+                    <div class="progress" role="progressbar" style="height: 10px;">
+                        <div class="progress-bar <%= color_class %>" style="width: <%= percentage %>%"></div>
+                    </div>
+                </div>
+            <% end %>
+        <% else %>
+            <div class="alert alert-info p-3 text-center" role="alert">
+                まだ投票がありません。最初の投票者になりましょう！
+            </div>
+        <% end %>
+    </div>
+
+    <div class="mt-5 text-center">
+        <%= link_to 'アンケート一覧へ戻る', polls_path, class: 'btn btn-outline-secondary' %>
+        <%# 🚨 修正: Vote.exists? のチェック方法を current_user と poll を使用するように変更 🚨 %>
+        <% if !logged_in? || !Vote.exists?(user: current_user, poll: @poll) %>
+            <%= link_to '投票ページに戻る', poll_path(@poll), class: "btn btn-outline-primary ms-3" %>
+        <% end %>
+    </div>
+
+</div>
+</file>
+
+<file path="app/views/polls/show.html.erb">
+<h2><%= @poll.title %></h2>
+<p class="text-secondary">
+  作成者: <%= @poll.user.email %> | 
+  作成日時: <%= l @poll.created_at, format: :short %>
+</p>
+
+<div class="card p-4 shadow-sm">
+  <h4 class="card-title mb-3">投票フォーム</h4>
+
+  <%# Turboの非同期処理によるリダイレクトの不具合を防ぐため data: { turbo: false } を維持 %>
+  <%= form_with(url: vote_poll_path(@poll), method: :post, data: { turbo: false }) do |f| %>
+    
+    <p class="mb-3">いずれか一つの選択肢を選んで投票してください。</p>
+    
+    <div class="poll-choices">
+      <% @poll.choices.each do |choice| %>
+        <div class="form-check mb-2">
+          <% # ラジオボタン。name属性を :choice_id とすることで、コントローラーで params[:choice_id] として取得可能 %>
+          <%= radio_button_tag :choice_id, choice.id, false, 
+              id: "choice_#{choice.id}", 
+              class: "form-check-input", 
+              required: true %>
+          
+          <% # ラベルをクリックしてもラジオボタンが選択されるように id を紐付け %>
+          <%= label_tag "choice_#{choice.id}", choice.content, class: "form-check-label" %>
+        </div>
+      <% end %>
+    </div>
+
+    <hr>
+    <div class="actions">
+      <%= submit_tag "投票する", class: "btn btn-primary btn-lg mt-3" %>
+    </div>
+  <% end %>
+  
+  <p class="mt-3 text-danger"><small>※ 投票は一回限りです。</small></p>
+</div>
+
+<div class="mt-4">
+  <%= link_to '一覧に戻る', polls_path, class: "btn btn-outline-secondary" %>
+</div>
+</file>
+
+<file path="app/views/pwa/manifest.json.erb">
+{
+  "name": "PollApp",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "/icon.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "scope": "/",
+  "description": "PollApp.",
+  "theme_color": "red",
+  "background_color": "red"
+}
+</file>
+
+<file path="app/views/pwa/service-worker.js">
+// Add a service worker for processing Web Push notifications:
+//
+// self.addEventListener("push", async (event) => {
+//   const { title, options } = await event.data.json()
+//   event.waitUntil(self.registration.showNotification(title, options))
+// })
+//
+// self.addEventListener("notificationclick", function(event) {
+//   event.notification.close()
+//   event.waitUntil(
+//     clients.matchAll({ type: "window" }).then((clientList) => {
+//       for (let i = 0; i < clientList.length; i++) {
+//         let client = clientList[i]
+//         let clientPath = (new URL(client.url)).pathname
+//
+//         if (clientPath == event.notification.data.path && "focus" in client) {
+//           return client.focus()
+//         }
+//       }
+//
+//       if (clients.openWindow) {
+//         return clients.openWindow(event.notification.data.path)
+//       }
+//     })
+//   )
+// })
+</file>
+
+<file path="app/views/sessions/create.html.erb">
+<h1>Sessions#create</h1>
+<p>Find me in app/views/sessions/create.html.erb</p>
+</file>
+
+<file path="app/views/sessions/destroy.html.erb">
+<h1>Sessions#destroy</h1>
+<p>Find me in app/views/sessions/destroy.html.erb</p>
+</file>
+
+<file path="app/views/sessions/new.html.erb">
+<div class="row justify-content-center mt-5">
+  <div class="col-md-6 col-lg-4">
+    <div class="card shadow-lg border-0 rounded-3">
+      <div class="card-body p-4 p-md-5">
+        
+        <%# タイトル %>
+        <h1 class="card-title text-center mb-4 fs-3 fw-bold text-primary">ログイン</h1>
+        
+        <%# フラッシュメッセージ (エラーがある場合、SessionsController#createでflash[:error]が使われることを想定) %>
+        <% if flash[:error] %>
+          <div class="alert alert-danger fade show rounded-3" role="alert"><%= flash[:error] %></div>
+        <% end %>
+
+        <%# フォームの開始: POST /login へ送信 %>
+        <%# 環境対応のため data: { turbo: false } を使用し、明示的に POST メソッドを使用 %>
+        <%= form_with(url: login_path, method: :post, data: { turbo: false }, local: true) do |form| %>
+          
+          <%# メールアドレスフィールド %>
+          <div class="mb-3">
+            <%= form.label :email, "メールアドレス", class: "form-label fw-bold" %>
+            <%# name属性を "email" にするため、シンボルではなく文字列で指定します %>
+            <%= form.email_field :email, class: "form-control form-control-lg rounded-3", placeholder: "your@example.com", name: "email", required: true %>
+          </div>
+
+          <%# パスワードフィールド %>
+          <div class="mb-4">
+            <%= form.label :password, "パスワード", class: "form-label fw-bold" %>
+            <%# name属性を "password" にするため、シンボルではなく文字列で指定します %>
+            <%= form.password_field :password, class: "form-control form-control-lg rounded-3", name: "password", required: true %>
+          </div>
+
+          <div class="d-grid">
+            <%# ログインボタン %>
+            <%= form.submit "ログイン", class: "btn btn-primary btn-lg fw-bold rounded-3" %>
+          </div>
+        <% end %>
+        
+        <%# 新規登録へのリンク %>
+        <div class="text-center mt-4">
+          <p class="text-muted mb-0">アカウントをお持ちでないですか？</p>
+          <%# signup_path にリダイレクトします (もし /register ならそのパスに修正してください) %>
+          <%= link_to "新規登録はこちら", signup_path, class: "text-decoration-none fw-bold text-primary" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</file>
+
+<file path="app/views/shared/_error_messages.html.erb">
+<% if object.errors.any? %>
+  <div id="error_explanation" class="alert alert-danger">
+    <h5>
+      <%= object.errors.count %>件のエラーにより、この操作は実行できませんでした。
+    </h5>
+    <ul class="mb-0">
+      <% object.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+</file>
+
+<file path="app/views/static_pages/help.html.erb">
+<h1>StaticPages#help</h1>
+<p>Find me in app/views/static_pages/help.html.erb</p>
+</file>
+
+<file path="app/views/users/create.html.erb">
+<h1>Users#create</h1>
+<p>Find me in app/views/users/create.html.erb</p>
+</file>
+
+<file path="app/views/users/new.html.erb">
+<div class="row justify-content-center mt-5">
+  <div class="col-md-6 col-lg-4">
+    <div class="card shadow-lg border-0 rounded-3">
+      <div class="card-body p-4 p-md-5">
+        <h1 class="card-title text-center mb-4 fs-3 fw-bold text-primary">新規ユーザー登録</h1>
+        
+        <%# 🚨 修正点: フォームの送信先を users_path に設定 🚨 %>
+        <%# users_path は POST /users を指し、users#create にマッピングされます。 %>
+        <%= form_with(model: @user, url: signup_path, data: { turbo: false }, local: true) do |form| %>
+          
+          <%# エラーメッセージの表示 %>
+          <% if @user.errors.any? %>
+            <div class="alert alert-danger fade show rounded-3" role="alert">
+              <h4 class="alert-heading fs-6 fw-bold">入力内容にエラーがあります</h4>
+              <ul>
+                <% @user.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <div class="mb-3">
+            <%= form.label :email, "メールアドレス", class: "form-label fw-bold" %>
+            <%= form.email_field :email, class: "form-control form-control-lg rounded-3", placeholder: "your@example.com", required: true %>
+          </div>
+
+          <div class="mb-3">
+            <%= form.label :password, "パスワード", class: "form-label fw-bold" %>
+            <%= form.password_field :password, class: "form-control form-control-lg rounded-3", required: true %>
+            <div class="form-text text-muted">最低8文字以上で設定してください。</div>
+          </div>
+
+          <div class="mb-4">
+            <%= form.label :password_confirmation, "パスワード確認", class: "form-label fw-bold" %>
+            <%= form.password_field :password_confirmation, class: "form-control form-control-lg rounded-3", required: true %>
+          </div>
+
+          <div class="d-grid">
+            <%= form.submit "登録して始める", class: "btn btn-primary btn-lg fw-bold rounded-3" %>
+          </div>
+        <% end %>
+        
+        <div class="text-center mt-4">
+          <p class="text-muted mb-0">アカウントをお持ちですか？</p>
+          <%= link_to "ログインはこちら", login_path, class: "text-decoration-none fw-bold" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</file>
+
+<file path="bin/brakeman">
+#!/usr/bin/env ruby
+require "rubygems"
+require "bundler/setup"
+
+ARGV.unshift("--ensure-latest")
+
+load Gem.bin_path("brakeman", "brakeman")
+</file>
+
+<file path="bin/bundle">
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+#
+# This file was generated by Bundler.
+#
+# The application 'bundle' is installed as part of a gem, and
+# this file is here to facilitate running it.
+#
+
+require "rubygems"
+
+m = Module.new do
+  module_function
+
+  def invoked_as_script?
+    File.expand_path($0) == File.expand_path(__FILE__)
+  end
+
+  def env_var_version
+    ENV["BUNDLER_VERSION"]
+  end
+
+  def cli_arg_version
+    return unless invoked_as_script? # don't want to hijack other binstubs
+    return unless "update".start_with?(ARGV.first || " ") # must be running `bundle update`
+    bundler_version = nil
+    update_index = nil
+    ARGV.each_with_index do |a, i|
+      if update_index && update_index.succ == i && a.match?(Gem::Version::ANCHORED_VERSION_PATTERN)
+        bundler_version = a
+      end
+      next unless a =~ /\A--bundler(?:[= ](#{Gem::Version::VERSION_PATTERN}))?\z/
+      bundler_version = $1
+      update_index = i
+    end
+    bundler_version
+  end
+
+  def gemfile
+    gemfile = ENV["BUNDLE_GEMFILE"]
+    return gemfile if gemfile && !gemfile.empty?
+
+    File.expand_path("../Gemfile", __dir__)
+  end
+
+  def lockfile
+    lockfile =
+      case File.basename(gemfile)
+      when "gems.rb" then gemfile.sub(/\.rb$/, ".locked")
+      else "#{gemfile}.lock"
+      end
+    File.expand_path(lockfile)
+  end
+
+  def lockfile_version
+    return unless File.file?(lockfile)
+    lockfile_contents = File.read(lockfile)
+    return unless lockfile_contents =~ /\n\nBUNDLED WITH\n\s{2,}(#{Gem::Version::VERSION_PATTERN})\n/
+    Regexp.last_match(1)
+  end
+
+  def bundler_requirement
+    @bundler_requirement ||=
+      env_var_version ||
+      cli_arg_version ||
+      bundler_requirement_for(lockfile_version)
+  end
+
+  def bundler_requirement_for(version)
+    return "#{Gem::Requirement.default}.a" unless version
+
+    bundler_gem_version = Gem::Version.new(version)
+
+    bundler_gem_version.approximate_recommendation
+  end
+
+  def load_bundler!
+    ENV["BUNDLE_GEMFILE"] ||= gemfile
+
+    activate_bundler
+  end
+
+  def activate_bundler
+    gem_error = activation_error_handling do
+      gem "bundler", bundler_requirement
+    end
+    return if gem_error.nil?
+    require_error = activation_error_handling do
+      require "bundler/version"
+    end
+    return if require_error.nil? && Gem::Requirement.new(bundler_requirement).satisfied_by?(Gem::Version.new(Bundler::VERSION))
+    warn "Activating bundler (#{bundler_requirement}) failed:\n#{gem_error.message}\n\nTo install the version of bundler this project requires, run `gem install bundler -v '#{bundler_requirement}'`"
+    exit 42
+  end
+
+  def activation_error_handling
+    yield
+    nil
+  rescue StandardError, LoadError => e
+    e
+  end
+end
+
+m.load_bundler!
+
+if m.invoked_as_script?
+  load Gem.bin_path("bundler", "bundle")
+end
+</file>
+
+<file path="bin/ci">
+#!/usr/bin/env ruby
+require_relative "../config/boot"
+require "active_support/continuous_integration"
+
+CI = ActiveSupport::ContinuousIntegration
+require_relative "../config/ci.rb"
+</file>
+
+<file path="bin/dev">
+#!/usr/bin/env ruby
+exec "./bin/rails", "server", *ARGV
+</file>
+
+<file path="bin/docker-entrypoint">
+#!/bin/bash -e
+
+# Enable jemalloc for reduced memory usage and latency.
+if [ -z "${LD_PRELOAD+x}" ]; then
+    LD_PRELOAD=$(find /usr/lib -name libjemalloc.so.2 -print -quit)
+    export LD_PRELOAD
+fi
+
+# If running the rails server then create or migrate existing database
+if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
+  ./bin/rails db:prepare
+fi
+
+exec "${@}"
+</file>
+
+<file path="bin/importmap">
+#!/usr/bin/env ruby
+
+require_relative "../config/application"
+require "importmap/commands"
+</file>
+
+<file path="bin/kamal">
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+#
+# This file was generated by Bundler.
+#
+# The application 'kamal' is installed as part of a gem, and
+# this file is here to facilitate running it.
+#
+
+ENV["BUNDLE_GEMFILE"] ||= File.expand_path("../Gemfile", __dir__)
+
+bundle_binstub = File.expand_path("bundle", __dir__)
+
+if File.file?(bundle_binstub)
+  if File.read(bundle_binstub, 300).include?("This file was generated by Bundler")
+    load(bundle_binstub)
+  else
+    abort("Your `bin/bundle` was not generated by Bundler, so this binstub cannot run.
+Replace `bin/bundle` by running `bundle binstubs bundler --force`, then run this command again.")
+  end
+end
+
+require "rubygems"
+require "bundler/setup"
+
+load Gem.bin_path("kamal", "kamal")
+</file>
+
+<file path="bin/rails">
+#!/usr/bin/env ruby
+APP_PATH = File.expand_path("../config/application", __dir__)
+require_relative "../config/boot"
+require "rails/commands"
+</file>
+
+<file path="bin/rake">
+#!/usr/bin/env ruby
+require_relative "../config/boot"
+require "rake"
+Rake.application.run
+</file>
+
+<file path="bin/rubocop">
+#!/usr/bin/env ruby
+require "rubygems"
+require "bundler/setup"
+
+# Explicit RuboCop config increases performance slightly while avoiding config confusion.
+ARGV.unshift("--config", File.expand_path("../.rubocop.yml", __dir__))
+
+load Gem.bin_path("rubocop", "rubocop")
+</file>
+
+<file path="bin/setup">
+#!/usr/bin/env ruby
+require "fileutils"
+
+APP_ROOT = File.expand_path("..", __dir__)
+
+def system!(*args)
+  system(*args, exception: true)
+end
+
+FileUtils.chdir APP_ROOT do
+  # This script is a way to set up or update your development environment automatically.
+  # This script is idempotent, so that you can run it at any time and get an expectable outcome.
+  # Add necessary setup steps to this file.
+
+  puts "== Installing dependencies =="
+  system("bundle check") || system!("bundle install")
+
+  # puts "\n== Copying sample files =="
+  # unless File.exist?("config/database.yml")
+  #   FileUtils.cp "config/database.yml.sample", "config/database.yml"
+  # end
+
+  puts "\n== Preparing database =="
+  system! "bin/rails db:prepare"
+  system! "bin/rails db:reset" if ARGV.include?("--reset")
+
+  puts "\n== Removing old logs and tempfiles =="
+  system! "bin/rails log:clear tmp:clear"
+
+  unless ARGV.include?("--skip-server")
+    puts "\n== Starting development server =="
+    STDOUT.flush # flush the output before exec(2) so that it displays
+    exec "bin/dev"
+  end
+end
+</file>
+
+<file path="bin/thrust">
+#!/usr/bin/env ruby
+require "rubygems"
+require "bundler/setup"
+
+load Gem.bin_path("thruster", "thrust")
+</file>
+
+<file path="config/environments/development.rb">
+require "active_support/core_ext/integer/time"
+
+Rails.application.configure do
+  # Settings specified here will take precedence over those in config/application.rb.
+
+  # Make code changes take effect immediately without server restart.
+  config.enable_reloading = true
+
+  # Do not eager load code on boot.
+  config.eager_load = false
+
+  # Show full error reports.
+  config.consider_all_requests_local = true
+
+  # Enable server timing.
+  config.server_timing = true
+
+  # Enable/disable Action Controller caching. By default Action Controller caching is disabled.
+  # Run rails dev:cache to toggle Action Controller caching.
+  if Rails.root.join("tmp/caching-dev.txt").exist?
+    config.action_controller.perform_caching = true
+    config.action_controller.enable_fragment_cache_logging = true
+    config.public_file_server.headers = { "cache-control" => "public, max-age=#{2.days.to_i}" }
+  else
+    config.action_controller.perform_caching = false
+  end
+
+  # Change to :null_store to avoid any caching.
+  config.cache_store = :memory_store
+
+  # Store uploaded files on the local file system (see config/storage.yml for options).
+  config.active_storage.service = :local
+
+  # Don't care if the mailer can't send.
+  config.action_mailer.raise_delivery_errors = false
+
+  # Make template changes take effect immediately.
+  config.action_mailer.perform_caching = false
+
+  # Set localhost to be used by links generated in mailer templates.
+  config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
+
+  # Print deprecation notices to the Rails logger.
+  config.active_support.deprecation = :log
+
+  # Raise an error on page load if there are pending migrations.
+  config.active_record.migration_error = :page_load
+
+  # Highlight code that triggered database queries in logs.
+  config.active_record.verbose_query_logs = true
+
+  # Append comments with runtime information tags to SQL queries in logs.
+  config.active_record.query_log_tags_enabled = true
+
+  # Highlight code that enqueued background job in logs.
+  config.active_job.verbose_enqueue_logs = true
+
+  # Highlight code that triggered redirect in logs.
+  config.action_dispatch.verbose_redirect_logs = true
+
+  # Suppress logger output for asset requests.
+  config.assets.quiet = true
+
+  # Raises error for missing translations.
+  # config.i18n.raise_on_missing_translations = true
+
+  # Annotate rendered view with file names.
+  config.action_view.annotate_rendered_view_with_filenames = true
+
+  # Uncomment if you wish to allow Action Cable access from any origin.
+  # config.action_cable.disable_request_forgery_protection = true
+
+  # Raise error when a before_action's only/except options reference missing actions.
+  config.action_controller.raise_on_missing_callback_actions = true
+
+  # Apply autocorrection by RuboCop to files generated by `bin/rails generate`.
+  # config.generators.apply_rubocop_autocorrect_after_generate!
+  # GitHub Codespaces やプロキシ環境での CSRF 保護を通過させるための設定
+  # ログに表示されている URL のドメイン部分を許可します
+  config.hosts << ".app.github.dev"
+  
+  # Origin チェックで localhost と実際のURLが混在するのを許可
+  config.action_controller.forgery_protection_origin_check = false
+end
+</file>
+
+<file path="config/environments/production.rb">
+require "active_support/core_ext/integer/time"
+
+Rails.application.configure do
+  # Settings specified here will take precedence over those in config/application.rb.
+
+  # Code is not reloaded between requests.
+  config.enable_reloading = false
+
+  # Eager load code on boot for better performance and memory savings (ignored by Rake tasks).
+  config.eager_load = true
+
+  # Full error reports are disabled.
+  config.consider_all_requests_local = false
+
+  # Turn on fragment caching in view templates.
+  config.action_controller.perform_caching = true
+
+  # Cache assets for far-future expiry since they are all digest stamped.
+  config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
+
+  # Enable serving of images, stylesheets, and JavaScripts from an asset server.
+  # config.asset_host = "http://assets.example.com"
+
+  # Store uploaded files on the local file system (see config/storage.yml for options).
+  config.active_storage.service = :local
+
+  # Assume all access to the app is happening through a SSL-terminating reverse proxy.
+  config.assume_ssl = true
+
+  # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
+  config.force_ssl = true
+
+  # Skip http-to-https redirect for the default health check endpoint.
+  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
+
+  # Log to STDOUT with the current request id as a default log tag.
+  config.log_tags = [ :request_id ]
+  
+  # 🚨 修正: NoMethodError を解消するため、ロガーの初期化方法を変更 🚨
+  # ActiveSupport::Logger.new(STDOUT) を TaggedLogging でラップします。
+  logger           = ActiveSupport::Logger.new(STDOUT)
+  logger.formatter = config.log_formatter
+  config.logger    = ActiveSupport::TaggedLogging.new(logger)
+  # -------------------------------------------------------------
+
+  # Change to "debug" to log everything (including potentially personally-identifiable information!)
+  config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
+
+  # Prevent health checks from clogging up the logs.
+  config.silence_healthcheck_path = "/up"
+
+  # Don't log any deprecations.
+  config.active_support.report_deprecations = false
+
+  # Replace the default in-process memory cache store with a durable alternative.
+  # config.cache_store = :mem_cache_store
+
+  # Replace the default in-process and non-durable queuing backend for Active Job.
+  # config.active_job.queue_adapter = :resque
+
+  # Ignore bad email addresses and do not raise email delivery errors.
+  # Set this to true and configure the email server for immediate delivery to raise delivery errors.
+  # config.action_mailer.raise_delivery_errors = false
+
+  # Set host to be used by links generated in mailer templates.
+  config.action_mailer.default_url_options = { host: "example.com" }
+
+  # Specify outgoing SMTP server. Remember to add smtp/* credentials via rails credentials:edit.
+  # config.action_mailer.smtp_settings = {
+  #   user_name: Rails.application.credentials.dig(:smtp, :user_name),
+  #   password: Rails.application.credentials.dig(:smtp, :password),
+  #   address: "smtp.example.com",
+  #   port: 587,
+  #   authentication: :plain
+  # }
+
+  # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
+  # the I18n.default_locale when a translation cannot be found).
+  config.i18n.fallbacks = true
+
+  # Do not dump schema after migrations.
+  config.active_record.dump_schema_after_migration = false
+
+  # Only use :id for inspections in production.
+  #config.active_record.attributes_for_inspect = [ :id ]
+
+  # Enable DNS rebinding protection and other `Host` header attacks.
+  # config.hosts = [
+  #   "example.com",      # Allow requests from example.com
+  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
+  # ]
+  #
+  # Skip DNS rebinding protection for the default health check endpoint.
+  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+end
+</file>
+
+<file path="config/environments/test.rb">
+# The test environment is used exclusively to run your application's
+# test suite. You never need to work with it otherwise. Remember that
+# your test database is "scratch space" for the test suite and is wiped
+# and recreated between test runs. Don't rely on the data there!
+
+Rails.application.configure do
+  # Settings specified here will take precedence over those in config/application.rb.
+
+  # While tests run files are not watched, reloading is not necessary.
+  config.enable_reloading = false
+
+  # Eager loading loads your entire application. When running a single test locally,
+  # this is usually not necessary, and can slow down your test suite. However, it's
+  # recommended that you enable it in continuous integration systems to ensure eager
+  # loading is working properly before deploying your code.
+  config.eager_load = ENV["CI"].present?
+
+  # Configure public file server for tests with cache-control for performance.
+  config.public_file_server.headers = { "cache-control" => "public, max-age=3600" }
+
+  # Show full error reports.
+  config.consider_all_requests_local = true
+  config.cache_store = :null_store
+
+  # Render exception templates for rescuable exceptions and raise for other exceptions.
+  config.action_dispatch.show_exceptions = :rescuable
+
+  # Disable request forgery protection in test environment.
+  config.action_controller.allow_forgery_protection = false
+
+  # Store uploaded files on the local file system in a temporary directory.
+  config.active_storage.service = :test
+
+  # Tell Action Mailer not to deliver emails to the real world.
+  # The :test delivery method accumulates sent emails in the
+  # ActionMailer::Base.deliveries array.
+  config.action_mailer.delivery_method = :test
+
+  # Set host to be used by links generated in mailer templates.
+  config.action_mailer.default_url_options = { host: "example.com" }
+
+  # Print deprecation notices to the stderr.
+  config.active_support.deprecation = :stderr
+
+  # Raises error for missing translations.
+  # config.i18n.raise_on_missing_translations = true
+
+  # Annotate rendered view with file names.
+  # config.action_view.annotate_rendered_view_with_filenames = true
+
+  # Raise error when a before_action's only/except options reference missing actions.
+  config.action_controller.raise_on_missing_callback_actions = true
+end
+</file>
+
+<file path="config/initializers/assets.rb">
+# Be sure to restart your server when you modify this file.
+
+# Version of your assets, change this if you want to expire all your assets.
+Rails.application.config.assets.version = "1.0"
+
+# Add additional assets to the asset load path.
+# Rails.application.config.assets.paths << Emoji.images_path
+</file>
+
+<file path="config/initializers/content_security_policy.rb">
+# Be sure to restart your server when you modify this file.
+
+# Define an application-wide content security policy.
+# See the Securing Rails Applications Guide for more information:
+# https://guides.rubyonrails.org/security.html#content-security-policy-header
+
+# Rails.application.configure do
+#   config.content_security_policy do |policy|
+#     policy.default_src :self, :https
+#     policy.font_src    :self, :https, :data
+#     policy.img_src     :self, :https, :data
+#     policy.object_src  :none
+#     policy.script_src  :self, :https
+#     policy.style_src   :self, :https
+#     # Specify URI for violation reports
+#     # policy.report_uri "/csp-violation-report-endpoint"
+#   end
+#
+#   # Generate session nonces for permitted importmap, inline scripts, and inline styles.
+#   config.content_security_policy_nonce_generator = ->(request) { request.session.id.to_s }
+#   config.content_security_policy_nonce_directives = %w(script-src style-src)
+#
+#   # Automatically add `nonce` to `javascript_tag`, `javascript_include_tag`, and `stylesheet_link_tag`
+#   # if the corresponding directives are specified in `content_security_policy_nonce_directives`.
+#   # config.content_security_policy_nonce_auto = true
+#
+#   # Report violations without enforcing the policy.
+#   # config.content_security_policy_report_only = true
+# end
+</file>
+
+<file path="config/initializers/filter_parameter_logging.rb">
+# Be sure to restart your server when you modify this file.
+
+# Configure parameters to be partially matched (e.g. passw matches password) and filtered from the log file.
+# Use this to limit dissemination of sensitive information.
+# See the ActiveSupport::ParameterFilter documentation for supported notations and behaviors.
+Rails.application.config.filter_parameters += [
+  :passw, :email, :secret, :token, :_key, :crypt, :salt, :certificate, :otp, :ssn, :cvv, :cvc
+]
+</file>
+
+<file path="config/initializers/inflections.rb">
+# Be sure to restart your server when you modify this file.
+
+# Add new inflection rules using the following format. Inflections
+# are locale specific, and you may define rules for as many different
+# locales as you wish. All of these examples are active by default:
+# ActiveSupport::Inflector.inflections(:en) do |inflect|
+#   inflect.plural /^(ox)$/i, "\\1en"
+#   inflect.singular /^(ox)en/i, "\\1"
+#   inflect.irregular "person", "people"
+#   inflect.uncountable %w( fish sheep )
+# end
+
+# These inflection rules are supported but not enabled by default:
+# ActiveSupport::Inflector.inflections(:en) do |inflect|
+#   inflect.acronym "RESTful"
+# end
+</file>
+
+<file path="config/initializers/new_framework_defaults_8_1.rb">
+# Be sure to restart your server when you modify this file.
+#
+# This file eases your Rails 8.1 framework defaults upgrade.
+#
+# Uncomment each configuration one by one to switch to the new default.
+# Once your application is ready to run with all new defaults, you can remove
+# this file and set the `config.load_defaults` to `8.1`.
+#
+# Read the Guide for Upgrading Ruby on Rails for more info on each option.
+# https://guides.rubyonrails.org/upgrading_ruby_on_rails.html
+
+###
+# Skips escaping HTML entities and line separators. When set to `false`, the
+# JSON renderer no longer escapes these to improve performance.
+#
+# Example:
+#   class PostsController < ApplicationController
+#     def index
+#       render json: { key: "\u2028\u2029<>&" }
+#     end
+#   end
+#
+# Renders `{"key":"\u2028\u2029\u003c\u003e\u0026"}` with the previous default, but `{"key":"  <>&"}` with the config
+# set to `false`.
+#
+# Applications that want to keep the escaping behavior can set the config to `true`.
+#++
+# Rails.configuration.action_controller.escape_json_responses = false
+
+###
+# Skips escaping LINE SEPARATOR (U+2028) and PARAGRAPH SEPARATOR (U+2029) in JSON.
+#
+# Historically these characters were not valid inside JavaScript literal strings but that changed in ECMAScript 2019.
+# As such it's no longer a concern in modern browsers: https://caniuse.com/mdn-javascript_builtins_json_json_superset.
+#++
+# Rails.configuration.active_support.escape_js_separators_in_json = false
+
+###
+# Raises an error when order dependent finder methods (e.g. `#first`, `#second`) are called without `order` values
+# on the relation, and the model does not have any order columns (`implicit_order_column`, `query_constraints`, or
+# `primary_key`) to fall back on.
+#
+# The current behavior of not raising an error has been deprecated, and this configuration option will be removed in
+# Rails 8.2.
+#++
+# Rails.configuration.active_record.raise_on_missing_required_finder_order_columns = true
+
+###
+# Controls how Rails handles path relative URL redirects.
+# When set to `:raise`, Rails will raise an `ActionController::Redirecting::UnsafeRedirectError`
+# for relative URLs without a leading slash, which can help prevent open redirect vulnerabilities.
+#
+# Example:
+#   redirect_to "example.com"     # Raises UnsafeRedirectError
+#   redirect_to "@attacker.com"   # Raises UnsafeRedirectError
+#   redirect_to "/safe/path"      # Works correctly
+#
+# Applications that want to allow these redirects can set the config to `:log` (previous default)
+# to only log warnings, or `:notify` to send ActiveSupport notifications.
+#++
+# Rails.configuration.action_controller.action_on_path_relative_redirect = :raise
+
+###
+# Use a Ruby parser to track dependencies between Action View templates
+#++
+# Rails.configuration.action_view.render_tracker = :ruby
+
+###
+# When enabled, hidden inputs generated by `form_tag`, `token_tag`, `method_tag`, and the hidden parameter fields
+# included in `button_to` forms will omit the `autocomplete="off"` attribute.
+#
+# Applications that want to keep generating the `autocomplete` attribute for those tags can set it to `false`.
+#++
+# Rails.configuration.action_view.remove_hidden_field_autocomplete = true
+</file>
+
+<file path="config/locales/en.yml">
+# Files in the config/locales directory are used for internationalization and
+# are automatically loaded by Rails. If you want to use locales other than
+# English, add the necessary files in this directory.
+#
+# To use the locales, use `I18n.t`:
+#
+#     I18n.t "hello"
+#
+# In views, this is aliased to just `t`:
+#
+#     <%= t("hello") %>
+#
+# To use a different locale, set it with `I18n.locale`:
+#
+#     I18n.locale = :es
+#
+# This would use the information in config/locales/es.yml.
+#
+# To learn more about the API, please read the Rails Internationalization guide
+# at https://guides.rubyonrails.org/i18n.html.
+#
+# Be aware that YAML interprets the following case-insensitive strings as
+# booleans: `true`, `false`, `on`, `off`, `yes`, `no`. Therefore, these strings
+# must be quoted to be interpreted as strings. For example:
+#
+#     en:
+#       "yes": yup
+#       enabled: "ON"
+
+en:
+  hello: "Hello world"
+</file>
+
+<file path="config/application.rb">
+require_relative "boot"
+
+require "rails/all"
+
+# Require the gems listed in Gemfile, including any gems
+# you've limited to :test, :development, or :production.
+Bundler.require(*Rails.groups)
+
+module PollApp
+  class Application < Rails::Application
+    # Initialize configuration defaults for originally generated Rails version.
+    config.load_defaults 7.0
+
+    # Please, add to the `ignore` list any other `lib` subdirectories that do
+    # not contain `.rb` files, or that should not be reloaded or eager loaded.
+    # Common ones are `templates`, `generators`, or `middleware`, for example.
+    # config.autoload_lib(ignore: %w[assets tasks])
+    # lib フォルダを自動読み込み対象にする場合
+    #config.autoload_paths << Rails.root.join('lib')
+    #config.assets.initialize_on_precompile = true
+    config.autoload_lib(ignore: %w[assets tasks])
+
+
+    # Configuration for the application, engines, and railties goes here.
+    #
+    # These settings can be overridden in specific environments using the files
+    # in config/environments, which are processed later.
+    #
+    # config.time_zone = "Central Time (US & Canada)"
+    # config.eager_load_paths << Rails.root.join("extras")
+  end
+end
+</file>
+
+<file path="config/boot.rb">
+ENV["BUNDLE_GEMFILE"] ||= File.expand_path("../Gemfile", __dir__)
+
+require "bundler/setup" # Set up gems listed in the Gemfile.
+require "bootsnap/setup" # Speed up boot time by caching expensive operations.
+</file>
+
+<file path="config/cable.yml">
+development:
+  adapter: async
+
+test:
+  adapter: test
+
+production:
+  adapter: redis
+  url: <%= ENV.fetch("REDIS_URL") { "redis://localhost:6379/1" } %>
+  channel_prefix: poll_app_production
+</file>
+
+<file path="config/ci.rb">
+# Run using bin/ci
+
+CI.run do
+  step "Setup", "bin/setup --skip-server"
+
+  step "Style: Ruby", "bin/rubocop"
+
+  step "Security: Importmap vulnerability audit", "bin/importmap audit"
+  step "Security: Brakeman code analysis", "bin/brakeman --quiet --no-pager --exit-on-warn --exit-on-error"
+
+  step "Tests: Rails", "bin/rails test"
+  step "Tests: System", "bin/rails test:system"
+  step "Tests: Seeds", "env RAILS_ENV=test bin/rails db:seed:replant"
+
+  # Optional: set a green GitHub commit status to unblock PR merge.
+  # Requires the `gh` CLI and `gh extension install basecamp/gh-signoff`.
+  # if success?
+  #   step "Signoff: All systems go. Ready for merge and deploy.", "gh signoff"
+  # else
+  #   failure "Signoff: CI failed. Do not merge or deploy.", "Fix the issues and try again."
+  # end
+end
+</file>
+
+<file path="config/credentials.yml.enc">
+zd/XoxWeJJj7XO/UAiKOgeiOuu5a9RZ4GlcdGzbVVk4pnL0yTwsBt3LGOA+kUrIJkNM+0U6Z6f50iA4fMgUrRUMcdX8JkNHsjIDdq0YkzLpmdKBDa7kzh8qKUvyj0HRu+xyRRe8sOzudTVFGrBt4P7W8Ojvw9xJePzUkV30WZPX2TRl4SsPXfiXCgqZLCdKBeNz9M165p/h/8irl7B8K/xjeCo00WCo7q55lJDT0RP/au2FTqzqFH39Kvf8kjoC1w10None09p1GMVwxX+iATE7rRRaafvUeg6FRjk92EYFXi93eesM0GWSa2iZXaGch1qK5x/i6he3m4WEkEQJVlhHCp7/DmTJSXXgYARph8S/Xh5toqo+t7+4SthCcl/+4qBSgcKg8q8W5rRc8kptg97qMm6x+VCRGLnRUNQeWwoKHoTUf+UWbAe6AGVrXcaFGdI6W5Nw9abhov+NDOwrB9YnbzDovnK1kbSMohFMBq4k0Q0U1LnkvPQoI--1IYD0AGDBqv01oiy--osfYcmz4RzU89w73+7PQAA==
+</file>
+
+<file path="config/database.yml">
+# -----------------------------------------------------
+# ローカル開発・テスト環境 (SQLite3) のデフォルト設定
+# -----------------------------------------------------
+default: &default
+  # Active Record の接続プールサイズをPumaのスレッド数に合わせる
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000
+
+development:
+  <<: *default
+  adapter: sqlite3
+  database: db/development.sqlite3
+
+test:
+  <<: *default
+  adapter: sqlite3
+  database: db/test.sqlite3
+  
+# -----------------------------------------------------
+# 本番環境 (Production) の設定 - PostgreSQL/DATABASE_URLを使用
+# -----------------------------------------------------
+production:
+  # primary: &primary_production で本番環境の接続情報（PostgreSQL/DATABASE_URL）を定義し、アンカーとして保存する
+  primary: &primary_production
+    # SQLiteのデフォルト設定を上書きするため、ここではadapterとdatabaseを明示的に設定
+    adapter: postgresql
+    encoding: unicode
+    
+    # 接続情報全体を環境変数 DATABASE_URL から取得する (画像で指示されたキー)
+    url: <%= ENV['DATABASE_URL'] %>
+    
+    # コネクションプールサイズはPumaの設定と一致させる
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+    timeout: 5000
+    
+  # メインの production 環境は primary の設定を参照する
+  <<: *primary_production
+
+  # Action Cable の設定（primary と同じデータベースを使うが、マイグレーションパスを分ける）
+  cable:
+    <<: *primary_production
+    migrations_paths: db/cable_migrate
+
+  # Cache の設定
+  cache:
+    <<: *primary_production
+    migrations_paths: db/cache_migrate
+
+  # Active Job の Queue の設定
+  queue:
+    <<: *primary_production
+    migrations_paths: db/queue_migrate
+</file>
+
+<file path="config/deploy.yml">
+# Name of your application. Used to uniquely configure containers.
+service: poll_app
+
+# Name of the container image.
+image: your-user/poll_app
+
+# Deploy to these servers.
+servers:
+  web:
+    - 192.168.0.1
+  # job:
+  #   hosts:
+  #     - 192.168.0.1
+  #   cmd: bin/jobs
+
+# Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
+# Remove this section when using multiple web servers and ensure you terminate SSL at your load balancer.
+#
+# Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
+proxy:
+  ssl: true
+  host: app.example.com
+
+# Credentials for your image host.
+registry:
+  # Specify the registry server, if you're not using Docker Hub
+  # server: registry.digitalocean.com / ghcr.io / ...
+  username: your-user
+
+  # Always use an access token rather than real password when possible.
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+# Inject ENV variables into containers (secrets come from .kamal/secrets).
+env:
+  secret:
+    - RAILS_MASTER_KEY
+  clear:
+    # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
+    # When you start using multiple servers, you should split out job processing to a dedicated machine.
+    SOLID_QUEUE_IN_PUMA: true
+
+    # Set number of processes dedicated to Solid Queue (default: 1)
+    # JOB_CONCURRENCY: 3
+
+    # Set number of cores available to the application on each server (default: 1).
+    # WEB_CONCURRENCY: 2
+
+    # Match this to any external database server to configure Active Record correctly
+    # Use poll_app-db for a db accessory server on same machine via local kamal docker network.
+    # DB_HOST: 192.168.0.2
+
+    # Log everything from Rails
+    # RAILS_LOG_LEVEL: debug
+
+# Aliases are triggered with "bin/kamal <alias>". You can overwrite arguments on invocation:
+# "bin/kamal logs -r job" will tail logs from the first server in the job section.
+aliases:
+  console: app exec --interactive --reuse "bin/rails console"
+  shell: app exec --interactive --reuse "bash"
+  logs: app logs -f
+  dbc: app exec --interactive --reuse "bin/rails dbconsole"
+
+
+# Use a persistent storage volume for sqlite database files and local Active Storage files.
+# Recommended to change this to a mounted volume path that is backed up off server.
+volumes:
+  - "poll_app_storage:/rails/storage"
+
+
+# Bridge fingerprinted assets, like JS and CSS, between versions to avoid
+# hitting 404 on in-flight requests. Combines all files from new and old
+# version inside the asset_path.
+asset_path: /rails/public/assets
+
+# Configure the image builder.
+builder:
+  arch: amd64
+
+  # # Build image via remote server (useful for faster amd64 builds on arm64 computers)
+  # remote: ssh://docker@docker-builder-server
+  #
+  # # Pass arguments and secrets to the Docker build process
+  # args:
+  #   RUBY_VERSION: ruby-3.4.1
+  # secrets:
+  #   - GITHUB_TOKEN
+  #   - RAILS_MASTER_KEY
+
+# Use a different ssh user than root
+# ssh:
+#   user: app
+
+# Use accessory services (secrets come from .kamal/secrets).
+# accessories:
+#   db:
+#     image: mysql:8.0
+#     host: 192.168.0.2
+#     # Change to 3306 to expose port to the world instead of just local network.
+#     port: "127.0.0.1:3306:3306"
+#     env:
+#       clear:
+#         MYSQL_ROOT_HOST: '%'
+#       secret:
+#         - MYSQL_ROOT_PASSWORD
+#     files:
+#       - config/mysql/production.cnf:/etc/mysql/my.cnf
+#       - db/production.sql:/docker-entrypoint-initdb.d/setup.sql
+#     directories:
+#       - data:/var/lib/mysql
+#   redis:
+#     image: redis:7.0
+#     host: 192.168.0.2
+#     port: 6379
+#     directories:
+#       - data:/data
+</file>
+
+<file path="config/environment.rb">
+# Load the Rails application.
+require_relative "application"
+
+# Initialize the Rails application.
+Rails.application.initialize!
+</file>
+
+<file path="config/importmap.rb">
+# config/importmap.rb
+pin "application", preload: true
+pin "@hotwired/turbo-rails", to: "turbo.min.js", preload: true
+pin "@hotwired/stimulus", to: "stimulus.min.js", preload: true
+pin "@hotwired/stimulus-loading", to: "stimulus-loading.js", preload: true
+
+# controllers ディレクトリ内の Stimulus コントローラーを全部登録
+pin_all_from "app/javascript/controllers", under: "controllers"
+
+# nested_form_controller.js を個別に使う場合も pin
+pin "nested_form_controller", to: "controllers/nested_form_controller.js"
+
+# 🚨 修正: BootstrapとPopper.jsのピン設定を追加 🚨
+pin "@popperjs/core", to: "popper.js", preload: true
+pin "bootstrap", to: "bootstrap.min.js", preload: true
+</file>
+
+<file path="config/puma.rb">
+# This configuration file will be evaluated by Puma.
+# For more information, see https://puma.io/puma/Puma/DSL.html.
+
+# --- 1. THREADS (Concurrency within each worker process) ---
+# The thread pool size. This is set higher than the default (3) for better throughput.
+max_threads_count = ENV.fetch("RAILS_MAX_THREADS") { 5 }
+min_threads_count = ENV.fetch("RAILS_MIN_THREADS") { max_threads_count }
+threads min_threads_count, max_threads_count
+
+# --- 2. WORKERS (Concurrency across CPU cores) ---
+# Specifies the number of worker processes to boot. 
+# This is crucial for performance in production to use all available CPU cores.
+# Default to 4 workers, or use the WEB_CONCURRENCY environment variable.
+workers ENV.fetch("WEB_CONCURRENCY") { 4 }
+
+# Use 'preload_app!' when using workers. It saves memory (Copy-on-Write) 
+# and improves boot time.
+preload_app!
+
+# --- 3. BASIC CONFIGURATION ---
+
+# Specifies the `port` that Puma will listen on; default is 3000.
+port ENV.fetch("PORT") { 3000 }
+
+# Specifies the environment (production, development, etc.).
+environment ENV.fetch("RAILS_ENV") { "development" }
+
+# Specify the PID file. In production, this file is necessary for process management.
+# It defaults to tmp/pids/server.pid
+pidfile ENV.fetch("PIDFILE") { "tmp/pids/server.pid" }
+
+# Allow puma to be restarted by `bin/rails restart` command.
+plugin :tmp_restart
+
+# Run the Solid Queue supervisor inside of Puma for single-server deployments.
+# (Keeping your existing custom plugin line)
+plugin :solid_queue if ENV["SOLID_QUEUE_IN_PUMA"]
+
+# --- 4. ON WORKER BOOT (Required for Multi-process setup) ---
+# If you are using Active Record, you must configure the connection pool to be
+# ready for each worker.
+on_worker_boot do
+  # Worker-specific setup for Active Record.
+  ActiveRecord::Base.establish_connection if defined?(ActiveRecord)
+end
+</file>
+
+<file path="config/routes.rb">
+Rails.application.routes.draw do
+  # ホームと静的ページ
+  root 'home#index'
+  get '/help', to: 'home#help'
+
+  # ユーザー登録 (UsersController)
+  # /signup で登録画面を表示し、POST送信も /signup で受け取ります
+  get  '/signup', to: 'users#new'
+  post '/signup', to: 'users#create'
+  
+  # ログイン/ログアウト (SessionsController)
+  get    '/login',  to: 'sessions#new'     # ログインフォーム
+  post   '/login',  to: 'sessions#create'  # ログイン実行
+  delete '/logout', to: 'sessions#destroy' # ログアウト実行
+
+  # アンケート機能 (PollsController)
+  # resources を使うことで、index, show, new, create, edit, update, destroy が自動生成されます
+  resources :polls do
+    member do
+      # 投票処理 (POST /polls/:id/vote)
+      # コントローラー内の create_vote メソッドを呼び出します
+      post 'vote', to: 'polls#create_vote', as: 'vote' 
+      
+      # 結果表示 (GET /polls/:id/result)
+      get 'result'
+    end
+  end
+  
+  # Health check route (Rails 7.1以降のデフォルト)
+  get "up" => "rails/health#show", as: :rails_health_check
+end
+</file>
+
+<file path="config/storage.yml">
+test:
+  service: Disk
+  root: <%= Rails.root.join("tmp/storage") %>
+
+local:
+  service: Disk
+  root: <%= Rails.root.join("storage") %>
+
+# Use bin/rails credentials:edit to set the AWS secrets (as aws:access_key_id|secret_access_key)
+# amazon:
+#   service: S3
+#   access_key_id: <%= Rails.application.credentials.dig(:aws, :access_key_id) %>
+#   secret_access_key: <%= Rails.application.credentials.dig(:aws, :secret_access_key) %>
+#   region: us-east-1
+#   bucket: your_own_bucket-<%= Rails.env %>
+
+# Remember not to checkin your GCS keyfile to a repository
+# google:
+#   service: GCS
+#   project: your_project
+#   credentials: <%= Rails.root.join("path/to/gcs.keyfile") %>
+#   bucket: your_own_bucket-<%= Rails.env %>
+
+# Use bin/rails credentials:edit to set the Azure Storage secret (as azure_storage:storage_access_key)
+# microsoft:
+#   service: AzureStorage
+#   storage_account_name: your_account_name
+#   storage_access_key: <%= Rails.application.credentials.dig(:azure_storage, :storage_access_key) %>
+#   container: your_container_name-<%= Rails.env %>
+
+# mirror:
+#   service: Mirror
+#   primary: local
+#   mirrors: [ amazon, google, microsoft ]
+</file>
+
+<file path="db/migrate/20251116171202_create_polls.rb">
+class CreatePolls < ActiveRecord::Migration[7.0]
+  def change
+    create_table :polls do |t|
+      t.references :user, null: false, foreign_key: true
+      t.string :title
+      t.string :status
+      t.json :options
+
+      t.timestamps
+    end
+  end
+end
+</file>
+
+<file path="db/migrate/20251116171212_create_votes.rb">
+class CreateVotes < ActiveRecord::Migration[7.0]
+  def change
+    create_table :votes do |t|
+      t.references :user, null: false, foreign_key: true
+      t.references :poll, null: false, foreign_key: true
+      t.string :chosen_option
+
+      t.timestamps
+    end
+    # 複合キー (user_id と poll_id の組み合わせは一意) を設定
+    add_index :votes, [:user_id, :poll_id], unique: true
+  end
+end
+</file>
+
+<file path="db/migrate/20251116171357_create_users.rb">
+class CreateUsers < ActiveRecord::Migration[7.0]
+  def change
+    create_table :users do |t|
+      t.string :email
+      t.string :password_digest
+
+      t.timestamps
+    end
+  end
+end
+</file>
+
+<file path="db/migrate/20251117155006_create_choices.rb">
+class CreateChoices < ActiveRecord::Migration[7.0]
+  def change
+    create_table :choices do |t|
+      # 選択肢の内容
+      t.string :content, null: false
+      
+      # 外部キー: どのPollに属するか (Pollモデルとの関連付け)
+      # foreign_key: true と null: false を設定
+      t.references :poll, null: false, foreign_key: true
+
+      t.timestamps
+    end
+  end
+end
+</file>
+
+<file path="db/migrate/20251211235814_add_service_name_to_active_storage_blobs.active_storage.rb">
+# This migration comes from active_storage (originally 20190112182829)
+class AddServiceNameToActiveStorageBlobs < ActiveRecord::Migration[6.0]
+  def up
+    return unless table_exists?(:active_storage_blobs)
+
+    unless column_exists?(:active_storage_blobs, :service_name)
+      add_column :active_storage_blobs, :service_name, :string
+
+      if configured_service = ActiveStorage::Blob.service.name
+        ActiveStorage::Blob.unscoped.update_all(service_name: configured_service)
+      end
+
+      change_column :active_storage_blobs, :service_name, :string, null: false
+    end
+  end
+
+  def down
+    return unless table_exists?(:active_storage_blobs)
+
+    remove_column :active_storage_blobs, :service_name
+  end
+end
+</file>
+
+<file path="db/migrate/20251211235815_create_active_storage_variant_records.active_storage.rb">
+# This migration comes from active_storage (originally 20191206030411)
+class CreateActiveStorageVariantRecords < ActiveRecord::Migration[6.0]
+  def change
+    return unless table_exists?(:active_storage_blobs)
+
+    # Use Active Record's configured type for primary key
+    create_table :active_storage_variant_records, id: primary_key_type, if_not_exists: true do |t|
+      t.belongs_to :blob, null: false, index: false, type: blobs_primary_key_type
+      t.string :variation_digest, null: false
+
+      t.index %i[ blob_id variation_digest ], name: "index_active_storage_variant_records_uniqueness", unique: true
+      t.foreign_key :active_storage_blobs, column: :blob_id
+    end
+  end
+
+  private
+    def primary_key_type
+      config = Rails.configuration.generators
+      config.options[config.orm][:primary_key_type] || :primary_key
+    end
+
+    def blobs_primary_key_type
+      pkey_name = connection.primary_key(:active_storage_blobs)
+      pkey_column = connection.columns(:active_storage_blobs).find { |c| c.name == pkey_name }
+      pkey_column.bigint? ? :bigint : pkey_column.type
+    end
+end
+</file>
+
+<file path="db/migrate/20251211235816_remove_not_null_on_active_storage_blobs_checksum.active_storage.rb">
+# This migration comes from active_storage (originally 20211119233751)
+class RemoveNotNullOnActiveStorageBlobsChecksum < ActiveRecord::Migration[6.0]
+  def change
+    return unless table_exists?(:active_storage_blobs)
+
+    change_column_null(:active_storage_blobs, :checksum, true)
+  end
+end
+</file>
+
+<file path="db/migrate/20260112160703_add_choice_id_to_votes.rb">
+class AddChoiceIdToVotes < ActiveRecord::Migration[8.1]
+  def change
+    add_reference :votes, :choice, null: false, foreign_key: true
+  end
+end
+</file>
+
+<file path="db/migrate/20260112163254_add_description_to_polls.rb">
+class AddDescriptionToPolls < ActiveRecord::Migration[8.1]
+  def change
+    add_column :polls, :description, :text
+  end
+end
+</file>
+
+<file path="db/schema.rb">
+# This file is auto-generated from the current state of the database. Instead
+# of editing this file, please use the migrations feature of Active Record to
+# incrementally modify your database, and then regenerate this schema definition.
+#
+# This file is the source Rails uses to define your schema when running `bin/rails
+# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
+# be faster and is potentially less error prone than running all of your
+# migrations from scratch. Old migrations may fail to apply correctly if those
+# migrations use external dependencies or application code.
+#
+# It's strongly recommended that you check this file into your version control system.
+
+ActiveRecord::Schema[8.1].define(version: 2026_01_12_163254) do
+  create_table "choices", force: :cascade do |t|
+    t.string "content", null: false
+    t.datetime "created_at", null: false
+    t.integer "poll_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["poll_id"], name: "index_choices_on_poll_id"
+  end
+
+  create_table "polls", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.json "options"
+    t.string "status"
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["user_id"], name: "index_polls_on_user_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "email"
+    t.string "password_digest"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "votes", force: :cascade do |t|
+    t.integer "choice_id", null: false
+    t.string "chosen_option"
+    t.datetime "created_at", null: false
+    t.integer "poll_id", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["choice_id"], name: "index_votes_on_choice_id"
+    t.index ["poll_id"], name: "index_votes_on_poll_id"
+    t.index ["user_id", "poll_id"], name: "index_votes_on_user_id_and_poll_id", unique: true
+    t.index ["user_id"], name: "index_votes_on_user_id"
+  end
+
+  add_foreign_key "choices", "polls"
+  add_foreign_key "polls", "users"
+  add_foreign_key "votes", "choices"
+  add_foreign_key "votes", "polls"
+  add_foreign_key "votes", "users"
+end
+</file>
+
+<file path="db/seeds.rb">
+# このファイルは、rails db:seed コマンドを実行したときに実行されます。
+# 🚨 【修正】エラー耐性を高めるため、強制終了 (!) を含むメソッドを削除しました。
+# 🚨 【修正】Voteモデルの属性名を仕様書に合わせ 'chosen_option' に変更しました。
+
+# ===============================================
+# 1. ユーザーの作成
+# ===============================================
+
+puts "初期ユーザーを作成中..."
+
+user_data = [
+  { email: "admin@example.com", password: "password", password_confirmation: "password" },
+  { email: "voter1@example.com", password: "password", password_confirmation: "password" }
+]
+
+# find_or_create_by を使用 (既に存在する可能性を考慮し、バリデーション失敗時も例外を投げない)
+users = user_data.map do |data|
+  User.find_or_create_by(email: data[:email]) do |user|
+    # パスワードが必須の場合に備えて設定
+    user.password = data[:password]
+    user.password_confirmation = data[:password_confirmation]
+  end
+end
+
+# ユーザーが存在しない場合に備えて nil チェック
+admin_user = users.first
+voter_user = users.last
+
+unless admin_user&.persisted? && voter_user&.persisted?
+  # ここで失敗する場合は、Userモデルのバリデーションが厳しすぎる可能性があります
+  puts "========================================================"
+  puts "🚨 ユーザー作成失敗: Userモデルのバリデーションを確認してください 🚨"
+  # 失敗したレコードのエラーメッセージを出力（デバッグ用）
+  users.each do |user|
+    puts "Email: #{user.email}, Errors: #{user.errors.full_messages.join(', ')}" unless user.persisted?
+  end
+  puts "========================================================"
+  # 強制終了する代わりに、アンケート作成をスキップ
+  puts "ユーザーが作成できなかったため、シードの残りの処理をスキップします。"
+  return
+end
+
+puts "ユーザー作成完了: #{users.count} 名"
+
+
+# ===============================================
+# 2. アンケートと選択肢の作成
+# ===============================================
+
+puts "初期アンケートを作成中..."
+
+# Poll.choices.build に対応する属性は、Choiceモデルの属性である必要があります。
+poll_data = [
+  {
+    title: "リモートワーク、週何日派ですか？",
+    status: "公開中",
+    choices_attributes: [
+      { content: "週5日（フルリモート）" },
+      { content: "週2〜3日（ハイブリッド）" },
+      { content: "週1日以下（ほぼ出社）" },
+      { content: "出社のみ" }
+    ]
+  },
+  {
+    title: "次に行くなら海？山？",
+    status: "公開中",
+    choices_attributes: [
+      { content: "海派！" },
+      { content: "山派！" },
+      { content: "インドア派..." }
+    ]
+  },
+]
+
+polls = poll_data.map do |data|
+  # find_or_create_by を使用
+  Poll.find_or_create_by(title: data[:title]) do |poll|
+    poll.user = admin_user
+    poll.status = data[:status]
+    poll.choices_attributes = data[:choices_attributes]
+  end
+end
+
+unless polls.all?(&:persisted?)
+  puts "========================================================"
+  puts "🚨 アンケート作成失敗: PollまたはChoiceモデルのバリデーションを確認してください 🚨"
+  # 失敗したレコードのエラーメッセージを出力（デバッグ用）
+  polls.each do |poll|
+    puts "Title: #{poll.title}, Errors: #{poll.errors.full_messages.join(', ')}" unless poll.persisted?
+  end
+  puts "========================================================"
+end
+
+puts "アンケート作成完了: #{polls.count} 件"
+
+
+# ===============================================
+# 3. ダミー投票の作成
+# ===============================================
+
+puts "ダミー投票を作成中..."
+
+first_poll = Poll.where(status: "公開中").first
+first_choice = first_poll&.choices&.first
+
+if first_poll && voter_user && first_choice
+  # find_or_create_by を使用し、複合キー制約によるエラーを防ぐ
+  Vote.find_or_create_by(user: voter_user, poll: first_poll) do |vote|
+    # 🚨 Voteモデルの属性名 'chosen_option' を使用
+    vote.chosen_option = first_choice.content
+  end
+end
+
+puts "初期データ投入が完了しました。"
+</file>
+
+<file path="lib/tasks/.keep">
+
+</file>
+
+<file path="log/.keep">
+
+</file>
+
+<file path="public/400.html">
+<!doctype html>
+
+<html lang="en">
+
+  <head>
+
+    <title>The server cannot process the request due to a client error (400 Bad Request)</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width">
+    <meta name="robots" content="noindex, nofollow">
+
+    <style>
+
+      *, *::before, *::after {
+        box-sizing: border-box;
+      }
+
+      * {
+        margin: 0;
+      }
+
+      html {
+        font-size: 16px;
+      }
+
+      body {
+        background: #FFF;
+        color: #261B23;
+        display: grid;
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Aptos, Roboto, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        font-size: clamp(1rem, 2.5vw, 2rem);
+        -webkit-font-smoothing: antialiased;
+        font-style: normal;
+        font-weight: 400;
+        letter-spacing: -0.0025em;
+        line-height: 1.4;
+        min-height: 100dvh;
+        place-items: center;
+        text-rendering: optimizeLegibility;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      #error-description {
+        fill: #d30001;
+      }
+
+      #error-id {
+        fill: #f0eff0;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #101010;
+          color: #e0e0e0;
+        }
+
+        #error-description {
+          fill: #FF6161;
+        }
+
+        #error-id {
+          fill: #2c2c2c;
+        }
+      }
+
+      a {
+        color: inherit;
+        font-weight: 700;
+        text-decoration: underline;
+        text-underline-offset: 0.0925em;
+      }
+
+      b, strong {
+        font-weight: 700;
+      }
+
+      i, em {
+        font-style: italic;
+      }
+
+      main {
+        display: grid;
+        gap: 1em;
+        padding: 2em;
+        place-items: center;
+        text-align: center;
+      }
+
+      main header {
+        width: min(100%, 12em);
+      }
+
+      main header svg {
+        height: auto;
+        max-width: 100%;
+        width: 100%;
+      }
+
+      main article {
+        width: min(100%, 30em);
+      }
+
+      main article p {
+        font-size: 75%;
+      }
+
+      main article br {
+        display: none;
+
+        @media(min-width: 48em) {
+          display: inline;
+        }
+      }
+
+    </style>
+
+  </head>
+
+  <body>
+
+    <!-- This file lives in public/400.html -->
+
+    <main>
+      <header>
+        <svg height="172" viewBox="0 0 480 172" width="480" xmlns="http://www.w3.org/2000/svg"><path d="m124.48 3.00509-45.6889 100.02991h26.2239v-28.1168h38.119v28.1168h21.628v35.145h-21.628v30.82h-37.308v-30.82h-72.1833v-31.901l50.2851-103.27391zm115.583 168.69891c-40.822 0-64.884-35.146-64.884-85.7015 0-50.5554 24.062-85.700907 64.884-85.700907 40.823 0 64.884 35.145507 64.884 85.700907 0 50.5555-24.061 85.7015-64.884 85.7015zm0-133.2831c-17.572 0-22.709 21.8984-22.709 47.5816 0 25.6835 5.137 47.5815 22.709 47.5815 17.303 0 22.71-21.898 22.71-47.5815 0-25.6832-5.407-47.5816-22.71-47.5816zm140.456 133.2831c-40.823 0-64.884-35.146-64.884-85.7015 0-50.5554 24.061-85.700907 64.884-85.700907 40.822 0 64.884 35.145507 64.884 85.700907 0 50.5555-24.062 85.7015-64.884 85.7015zm0-133.2831c-17.573 0-22.71 21.8984-22.71 47.5816 0 25.6835 5.137 47.5815 22.71 47.5815 17.302 0 22.709-21.898 22.709-47.5815 0-25.6832-5.407-47.5816-22.709-47.5816z" id="error-id"/><path d="m123.606 85.4445c3.212 1.0523 5.538 4.2089 5.538 8.0301 0 6.1472-4.209 9.5254-11.298 9.5254h-15.617v-34.0033h14.565c7.089 0 11.353 3.1566 11.353 9.2484 0 3.6551-2.049 6.3134-4.541 7.1994zm-12.904-2.9905h5.095c2.603 0 3.988-.9968 3.988-3.1013 0-2.1044-1.385-3.0459-3.988-3.0459h-5.095zm0 6.6456v6.5902h5.981c2.492 0 3.877-1.3291 3.877-3.2674 0-2.049-1.385-3.3228-3.877-3.3228zm43.786 13.9004h-8.362v-1.274c-.831.831-3.323 1.717-5.981 1.717-4.929 0-9.083-2.769-9.083-8.0301 0-4.818 4.154-7.9193 9.581-7.9193 2.049 0 4.486.6646 5.483 1.3845v-1.606c0-1.606-.942-2.9905-3.046-2.9905-1.606 0-2.548.7199-2.935 1.8275h-8.197c.72-4.8181 4.985-8.6393 11.409-8.6393 7.088 0 11.131 3.7659 11.131 10.2453zm-8.362-6.9779v-1.4399c-.554-1.0522-2.049-1.7167-3.655-1.7167-1.717 0-3.434.7199-3.434 2.3813 0 1.7168 1.717 2.4367 3.434 2.4367 1.606 0 3.101-.6645 3.655-1.6614zm27.996 6.9779v-1.994c-1.163 1.329-3.599 2.548-6.147 2.548-7.199 0-11.131-5.8151-11.131-13.0145s3.932-13.0143 11.131-13.0143c2.548 0 4.984 1.2184 6.147 2.5475v-13.0697h8.695v35.997zm0-9.1931v-6.5902c-.664-1.3291-2.159-2.326-3.821-2.326-2.99 0-4.763 2.4368-4.763 5.6488s1.773 5.5934 4.763 5.5934c1.717 0 3.157-.9415 3.821-2.326zm35.471-2.049h-3.101v11.2421h-8.806v-34.0033h15.285c7.31 0 12.35 4.1535 12.35 11.5744 0 5.1503-2.603 8.6947-6.757 10.2453l7.975 12.1836h-9.858zm-3.101-15.2849v8.1962h5.538c3.156 0 4.596-1.606 4.596-4.0981s-1.44-4.0981-4.596-4.0981zm36.957 17.8323h8.03c-.886 5.7597-5.206 9.2487-11.685 9.2487-7.643 0-12.682-5.2613-12.682-13.0145 0-7.6978 5.316-13.0143 12.515-13.0143 7.643 0 11.962 5.095 11.962 12.5159v2.1598h-16.115c.277 2.9905 1.827 4.5965 4.32 4.5965 1.772 0 3.156-.7753 3.655-2.4921zm-3.822-10.0237c-2.049 0-3.433 1.2737-3.987 3.5997h7.532c-.111-2.0491-1.385-3.5997-3.545-3.5997zm30.98 27.5234v-10.799c-1.163 1.329-3.6 2.548-6.147 2.548-7.2 0-11.132-5.9259-11.132-13.0145 0-7.144 3.932-13.0143 11.132-13.0143 2.547 0 4.984 1.2184 6.147 2.5475v-1.9937h8.695v33.726zm0-17.9981v-6.5902c-.665-1.3291-2.105-2.326-3.821-2.326-2.991 0-4.763 2.4368-4.763 5.6488s1.772 5.5934 4.763 5.5934c1.661 0 3.156-.9415 3.821-2.326zm36.789-15.7279v24.921h-8.695v-2.16c-1.329 1.551-3.821 2.714-6.646 2.714-5.482 0-8.75-3.5999-8.75-9.1379v-16.3371h8.64v14.288c0 2.1045.996 3.5997 3.212 3.5997 1.606 0 3.101-1.0522 3.544-2.769v-15.1187zm19.084 16.2263h8.03c-.886 5.7597-5.206 9.2487-11.685 9.2487-7.643 0-12.682-5.2613-12.682-13.0145 0-7.6978 5.316-13.0143 12.515-13.0143 7.643 0 11.963 5.095 11.963 12.5159v2.1598h-16.116c.277 2.9905 1.828 4.5965 4.32 4.5965 1.772 0 3.156-.7753 3.655-2.4921zm-3.822-10.0237c-2.049 0-3.433 1.2737-3.987 3.5997h7.532c-.111-2.0491-1.385-3.5997-3.545-3.5997zm13.428 11.0206h8.474c.387 1.3845 1.606 2.1598 3.156 2.1598 1.44 0 2.548-.5538 2.548-1.7168 0-.9414-.72-1.2737-1.939-1.5506l-4.873-.9969c-4.154-.886-6.867-2.8797-6.867-7.2547 0-5.3165 4.762-8.4178 10.633-8.4178 6.812 0 10.522 3.1567 11.297 8.0855h-8.03c-.277-1.0522-1.052-1.9937-3.046-1.9937-1.273 0-2.326.5538-2.326 1.6614 0 .7753.554 1.163 1.717 1.3845l4.929 1.163c4.541 1.0522 6.978 3.4335 6.978 7.4763 0 5.3168-4.818 8.2518-10.91 8.2518-6.369 0-10.965-2.88-11.741-8.2518zm27.538-.8861v-9.5807h-3.655v-6.7564h3.655v-6.8671h8.584v6.8671h5.205v6.7564h-5.205v8.307c0 1.9383.941 2.769 2.658 2.769.941 0 1.993-.2216 2.769-.5538v7.3654c-.997.443-2.88.775-4.818.775-5.871 0-9.193-2.769-9.193-9.0819z" id="error-description"/></svg>
+      </header>
+      <article>
+        <p><strong>The server cannot process the request due to a client error.</strong> Please check the request and try again. If you're the application owner check the logs for more information.</p>
+      </article>
+    </main>
+
+  </body>
+
+</html>
+</file>
+
+<file path="public/404.html">
+<!doctype html>
+
+<html lang="en">
+
+  <head>
+
+    <title>The page you were looking for doesn't exist (404 Not found)</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width">
+    <meta name="robots" content="noindex, nofollow">
+
+    <style>
+
+      *, *::before, *::after {
+        box-sizing: border-box;
+      }
+
+      * {
+        margin: 0;
+      }
+
+      html {
+        font-size: 16px;
+      }
+
+      body {
+        background: #FFF;
+        color: #261B23;
+        display: grid;
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Aptos, Roboto, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        font-size: clamp(1rem, 2.5vw, 2rem);
+        -webkit-font-smoothing: antialiased;
+        font-style: normal;
+        font-weight: 400;
+        letter-spacing: -0.0025em;
+        line-height: 1.4;
+        min-height: 100dvh;
+        place-items: center;
+        text-rendering: optimizeLegibility;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      #error-description {
+        fill: #d30001;
+      }
+
+      #error-id {
+        fill: #f0eff0;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #101010;
+          color: #e0e0e0;
+        }
+
+        #error-description {
+          fill: #FF6161;
+        }
+
+        #error-id {
+          fill: #2c2c2c;
+        }
+      }
+
+      a {
+        color: inherit;
+        font-weight: 700;
+        text-decoration: underline;
+        text-underline-offset: 0.0925em;
+      }
+
+      b, strong {
+        font-weight: 700;
+      }
+
+      i, em {
+        font-style: italic;
+      }
+
+      main {
+        display: grid;
+        gap: 1em;
+        padding: 2em;
+        place-items: center;
+        text-align: center;
+      }
+
+      main header {
+        width: min(100%, 12em);
+      }
+
+      main header svg {
+        height: auto;
+        max-width: 100%;
+        width: 100%;
+      }
+
+      main article {
+        width: min(100%, 30em);
+      }
+
+      main article p {
+        font-size: 75%;
+      }
+
+      main article br {
+        display: none;
+
+        @media(min-width: 48em) {
+          display: inline;
+        }
+      }
+
+    </style>
+
+  </head>
+
+  <body>
+
+    <!-- This file lives in public/404.html -->
+
+    <main>
+      <header>
+        <svg height="172" viewBox="0 0 480 172" width="480" xmlns="http://www.w3.org/2000/svg"><path d="m124.48 3.00509-45.6889 100.02991h26.2239v-28.1168h38.119v28.1168h21.628v35.145h-21.628v30.82h-37.308v-30.82h-72.1833v-31.901l50.2851-103.27391zm115.583 168.69891c-40.822 0-64.884-35.146-64.884-85.7015 0-50.5554 24.062-85.700907 64.884-85.700907 40.823 0 64.884 35.145507 64.884 85.700907 0 50.5555-24.061 85.7015-64.884 85.7015zm0-133.2831c-17.572 0-22.709 21.8984-22.709 47.5816 0 25.6835 5.137 47.5815 22.709 47.5815 17.303 0 22.71-21.898 22.71-47.5815 0-25.6832-5.407-47.5816-22.71-47.5816zm165.328-35.41581-45.689 100.02991h26.224v-28.1168h38.119v28.1168h21.628v35.145h-21.628v30.82h-37.308v-30.82h-72.184v-31.901l50.285-103.27391z" id="error-id"/><path d="m157.758 68.9967v34.0033h-7.199l-14.233-19.8814v19.8814h-8.584v-34.0033h8.307l13.125 18.7184v-18.7184zm28.454 21.5428c0 7.6978-5.15 13.0145-12.737 13.0145-7.532 0-12.738-5.3167-12.738-13.0145s5.206-13.0143 12.738-13.0143c7.587 0 12.737 5.3165 12.737 13.0143zm-8.528 0c0-3.4336-1.496-5.8703-4.209-5.8703-2.659 0-4.154 2.4367-4.154 5.8703s1.495 5.8149 4.154 5.8149c2.713 0 4.209-2.3813 4.209-5.8149zm13.184 3.8766v-9.5807h-3.655v-6.7564h3.655v-6.8671h8.584v6.8671h5.205v6.7564h-5.205v8.307c0 1.9383.941 2.769 2.658 2.769.941 0 1.994-.2216 2.769-.5538v7.3654c-.997.443-2.88.775-4.818.775-5.87 0-9.193-2.769-9.193-9.0819zm37.027 8.5839h-8.806v-34.0033h23.924v7.6978h-15.118v6.7564h13.9v7.5316h-13.9zm41.876-12.4605c0 7.6978-5.15 13.0145-12.737 13.0145-7.532 0-12.738-5.3167-12.738-13.0145s5.206-13.0143 12.738-13.0143c7.587 0 12.737 5.3165 12.737 13.0143zm-8.529 0c0-3.4336-1.495-5.8703-4.208-5.8703-2.659 0-4.154 2.4367-4.154 5.8703s1.495 5.8149 4.154 5.8149c2.713 0 4.208-2.3813 4.208-5.8149zm35.337-12.4605v24.921h-8.695v-2.16c-1.329 1.551-3.821 2.714-6.646 2.714-5.482 0-8.75-3.5999-8.75-9.1379v-16.3371h8.64v14.288c0 2.1045.997 3.5997 3.212 3.5997 1.606 0 3.101-1.0522 3.544-2.769v-15.1187zm4.076 24.921v-24.921h8.694v2.1598c1.385-1.5506 3.822-2.7136 6.701-2.7136 5.538 0 8.806 3.5997 8.806 9.1377v16.3371h-8.639v-14.2327c0-2.049-1.053-3.5443-3.268-3.5443-1.717 0-3.156.9969-3.6 2.7136v15.0634zm44.113 0v-1.994c-1.163 1.329-3.6 2.548-6.147 2.548-7.2 0-11.132-5.8151-11.132-13.0145s3.932-13.0143 11.132-13.0143c2.547 0 4.984 1.2184 6.147 2.5475v-13.0697h8.695v35.997zm0-9.1931v-6.5902c-.665-1.3291-2.16-2.326-3.821-2.326-2.991 0-4.763 2.4368-4.763 5.6488s1.772 5.5934 4.763 5.5934c1.717 0 3.156-.9415 3.821-2.326z" id="error-description"/></svg>
+      </header>
+      <article>
+        <p><strong>The page you were looking for doesn't exist.</strong> You may have mistyped the address or the page may have moved. If you're the application owner check the logs for more information.</p>
+      </article>
+    </main>
+
+  </body>
+
+</html>
+</file>
+
+<file path="public/406-unsupported-browser.html">
+<!doctype html>
+
+<html lang="en">
+
+  <head>
+
+    <title>Your browser is not supported (406 Not Acceptable)</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width">
+    <meta name="robots" content="noindex, nofollow">
+
+    <style>
+
+      *, *::before, *::after {
+        box-sizing: border-box;
+      }
+
+      * {
+        margin: 0;
+      }
+
+      html {
+        font-size: 16px;
+      }
+
+      body {
+        background: #FFF;
+        color: #261B23;
+        display: grid;
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Aptos, Roboto, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        font-size: clamp(1rem, 2.5vw, 2rem);
+        -webkit-font-smoothing: antialiased;
+        font-style: normal;
+        font-weight: 400;
+        letter-spacing: -0.0025em;
+        line-height: 1.4;
+        min-height: 100dvh;
+        place-items: center;
+        text-rendering: optimizeLegibility;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      #error-description {
+        fill: #d30001;
+      }
+
+      #error-id {
+        fill: #f0eff0;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #101010;
+          color: #e0e0e0;
+        }
+
+        #error-description {
+          fill: #FF6161;
+        }
+
+        #error-id {
+          fill: #2c2c2c;
+        }
+      }
+
+      a {
+        color: inherit;
+        font-weight: 700;
+        text-decoration: underline;
+        text-underline-offset: 0.0925em;
+      }
+
+      b, strong {
+        font-weight: 700;
+      }
+
+      i, em {
+        font-style: italic;
+      }
+
+      main {
+        display: grid;
+        gap: 1em;
+        padding: 2em;
+        place-items: center;
+        text-align: center;
+      }
+
+      main header {
+        width: min(100%, 12em);
+      }
+
+      main header svg {
+        height: auto;
+        max-width: 100%;
+        width: 100%;
+      }
+
+      main article {
+        width: min(100%, 30em);
+      }
+
+      main article p {
+        font-size: 75%;
+      }
+
+      main article br {
+        display: none;
+
+        @media(min-width: 48em) {
+          display: inline;
+        }
+      }
+
+    </style>
+
+  </head>
+
+  <body>
+
+    <!-- This file lives in public/406-unsupported-browser.html -->
+
+    <main>
+      <header>
+        <svg height="172" viewBox="0 0 480 172" width="480" xmlns="http://www.w3.org/2000/svg"><path d="m124.48 3.00509-45.6889 100.02991h26.2239v-28.1168h38.119v28.1168h21.628v35.145h-21.628v30.82h-37.308v-30.82h-72.1833v-31.901l50.2851-103.27391zm115.583 168.69891c-40.822 0-64.884-35.146-64.884-85.7015 0-50.5554 24.062-85.700907 64.884-85.700907 40.823 0 64.884 35.145507 64.884 85.700907 0 50.5555-24.061 85.7015-64.884 85.7015zm0-133.2831c-17.572 0-22.709 21.8984-22.709 47.5816 0 25.6835 5.137 47.5815 22.709 47.5815 17.303 0 22.71-21.898 22.71-47.5815 0-25.6832-5.407-47.5816-22.71-47.5816zm202.906 9.7326h-41.093c-2.433-7.2994-7.84-12.4361-17.302-12.4361-16.221 0-25.413 17.5728-25.954 34.8752v1.3517c5.137-7.0291 16.221-12.4361 30.82-12.4361 33.524 0 54.881 24.0612 54.881 53.7998 0 33.253-23.791 58.396-61.64 58.396-21.628 0-39.741-10.003-50.825-27.576-9.733-14.599-13.788-32.442-13.788-54.3406 0-51.9072 24.331-89.485807 66.236-89.485807 32.712 0 53.258 18.654107 58.665 47.851907zm-82.727 66.2355c0 13.247 9.463 22.439 22.71 22.439 12.977 0 22.439-9.192 22.439-22.439 0-13.517-9.462-22.7091-22.439-22.7091-13.247 0-22.71 9.1921-22.71 22.7091z" id="error-id"/><path d="m100.761 68.9967v34.0033h-7.1991l-14.2326-19.8814v19.8814h-8.5839v-34.0033h8.307l13.125 18.7184v-18.7184zm28.454 21.5428c0 7.6978-5.15 13.0145-12.737 13.0145-7.532 0-12.738-5.3167-12.738-13.0145s5.206-13.0143 12.738-13.0143c7.587 0 12.737 5.3165 12.737 13.0143zm-8.529 0c0-3.4336-1.495-5.8703-4.208-5.8703-2.659 0-4.154 2.4367-4.154 5.8703s1.495 5.8149 4.154 5.8149c2.713 0 4.208-2.3813 4.208-5.8149zm13.185 3.8766v-9.5807h-3.655v-6.7564h3.655v-6.8671h8.584v6.8671h5.205v6.7564h-5.205v8.307c0 1.9383.941 2.769 2.658 2.769.941 0 1.994-.2216 2.769-.5538v7.3654c-.997.443-2.88.775-4.818.775-5.87 0-9.193-2.769-9.193-9.0819zm39.02-25.4194h9.083l12.958 34.0033h-9.027l-2.436-6.5902h-12.35l-2.381 6.5902h-8.806zm4.431 10.5222-3.489 9.5807h6.978zm17.44 11.0206c0-7.6978 5.095-13.0143 12.572-13.0143 6.701 0 10.854 3.9874 11.574 9.8023h-8.418c-.221-1.4953-1.384-2.6029-3.156-2.6029-2.437 0-3.988 2.2706-3.988 5.8149s1.551 5.7595 3.988 5.7595c1.772 0 2.935-1.0522 3.156-2.5475h8.418c-.72 5.7596-4.873 9.8025-11.574 9.8025-7.477 0-12.572-5.3167-12.572-13.0145zm25.676 0c0-7.6978 5.095-13.0143 12.572-13.0143 6.701 0 10.854 3.9874 11.574 9.8023h-8.418c-.221-1.4953-1.384-2.6029-3.156-2.6029-2.437 0-3.988 2.2706-3.988 5.8149s1.551 5.7595 3.988 5.7595c1.772 0 2.935-1.0522 3.156-2.5475h8.418c-.72 5.7596-4.873 9.8025-11.574 9.8025-7.477 0-12.572-5.3167-12.572-13.0145zm42.013 3.7658h8.031c-.887 5.7597-5.206 9.2487-11.686 9.2487-7.642 0-12.682-5.2613-12.682-13.0145 0-7.6978 5.317-13.0143 12.516-13.0143 7.643 0 11.962 5.095 11.962 12.5159v2.1598h-16.115c.277 2.9905 1.827 4.5965 4.319 4.5965 1.773 0 3.157-.7753 3.655-2.4921zm-3.821-10.0237c-2.049 0-3.433 1.2737-3.987 3.5997h7.532c-.111-2.0491-1.385-3.5997-3.545-3.5997zm23.4 16.7244v10.799h-8.694v-33.726h8.694v1.9937c1.163-1.3291 3.6-2.5475 6.148-2.5475 7.199 0 11.131 5.8703 11.131 13.0143 0 7.0886-3.932 13.0145-11.131 13.0145-2.548 0-4.985-1.219-6.148-2.548zm0-13.7893v6.5902c.665 1.3845 2.16 2.326 3.822 2.326 2.99 0 4.762-2.3814 4.762-5.5934s-1.772-5.6488-4.762-5.6488c-1.717 0-3.157.9969-3.822 2.326zm21.892 7.1994v-9.5807h-3.655v-6.7564h3.655v-6.8671h8.584v6.8671h5.206v6.7564h-5.206v8.307c0 1.9383.941 2.769 2.658 2.769.942 0 1.994-.2216 2.769-.5538v7.3654c-.997.443-2.88.775-4.818.775-5.87 0-9.193-2.769-9.193-9.0819zm39.458 8.5839h-8.363v-1.274c-.83.831-3.322 1.717-5.981 1.717-4.928 0-9.082-2.769-9.082-8.0301 0-4.818 4.154-7.9193 9.581-7.9193 2.049 0 4.486.6646 5.482 1.3845v-1.606c0-1.606-.941-2.9905-3.045-2.9905-1.606 0-2.548.7199-2.936 1.8275h-8.196c.72-4.8181 4.984-8.6393 11.408-8.6393 7.089 0 11.132 3.7659 11.132 10.2453zm-8.363-6.9779v-1.4399c-.553-1.0522-2.049-1.7167-3.655-1.7167-1.716 0-3.433.7199-3.433 2.3813 0 1.7168 1.717 2.4367 3.433 2.4367 1.606 0 3.102-.6645 3.655-1.6614zm20.742 4.9839v1.994h-8.694v-35.997h8.694v13.0697c1.163-1.3291 3.6-2.5475 6.148-2.5475 7.199 0 11.131 5.8149 11.131 13.0143s-3.932 13.0145-11.131 13.0145c-2.548 0-4.985-1.219-6.148-2.548zm0-13.7893v6.5902c.665 1.3845 2.105 2.326 3.822 2.326 2.99 0 4.762-2.3814 4.762-5.5934s-1.772-5.6488-4.762-5.6488c-1.662 0-3.157.9969-3.822 2.326zm28.759-20.2137v35.997h-8.695v-35.997zm19.172 27.3023h8.03c-.886 5.7597-5.206 9.2487-11.685 9.2487-7.643 0-12.682-5.2613-12.682-13.0145 0-7.6978 5.316-13.0143 12.516-13.0143 7.642 0 11.962 5.095 11.962 12.5159v2.1598h-16.116c.277 2.9905 1.828 4.5965 4.32 4.5965 1.772 0 3.157-.7753 3.655-2.4921zm-3.821-10.0237c-2.049 0-3.434 1.2737-3.988 3.5997h7.532c-.111-2.0491-1.384-3.5997-3.544-3.5997z" id="error-description"/></svg>
+      </header>
+      <article>
+        <p><strong>Your browser is not supported.</strong><br> Please upgrade your browser to continue.</p>
+      </article>
+    </main>
+
+  </body>
+
+</html>
+</file>
+
+<file path="public/422.html">
+<!doctype html>
+
+<html lang="en">
+
+  <head>
+
+    <title>The change you wanted was rejected (422 Unprocessable Entity)</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width">
+    <meta name="robots" content="noindex, nofollow">
+
+    <style>
+
+      *, *::before, *::after {
+        box-sizing: border-box;
+      }
+
+      * {
+        margin: 0;
+      }
+
+      html {
+        font-size: 16px;
+      }
+
+      body {
+        background: #FFF;
+        color: #261B23;
+        display: grid;
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Aptos, Roboto, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        font-size: clamp(1rem, 2.5vw, 2rem);
+        -webkit-font-smoothing: antialiased;
+        font-style: normal;
+        font-weight: 400;
+        letter-spacing: -0.0025em;
+        line-height: 1.4;
+        min-height: 100dvh;
+        place-items: center;
+        text-rendering: optimizeLegibility;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      #error-description {
+        fill: #d30001;
+      }
+
+      #error-id {
+        fill: #f0eff0;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #101010;
+          color: #e0e0e0;
+        }
+
+        #error-description {
+          fill: #FF6161;
+        }
+
+        #error-id {
+          fill: #2c2c2c;
+        }
+      }
+
+      a {
+        color: inherit;
+        font-weight: 700;
+        text-decoration: underline;
+        text-underline-offset: 0.0925em;
+      }
+
+      b, strong {
+        font-weight: 700;
+      }
+
+      i, em {
+        font-style: italic;
+      }
+
+      main {
+        display: grid;
+        gap: 1em;
+        padding: 2em;
+        place-items: center;
+        text-align: center;
+      }
+
+      main header {
+        width: min(100%, 12em);
+      }
+
+      main header svg {
+        height: auto;
+        max-width: 100%;
+        width: 100%;
+      }
+
+      main article {
+        width: min(100%, 30em);
+      }
+
+      main article p {
+        font-size: 75%;
+      }
+
+      main article br {
+        display: none;
+
+        @media(min-width: 48em) {
+          display: inline;
+        }
+      }
+
+    </style>
+
+  </head>
+
+  <body>
+
+    <!-- This file lives in public/422.html -->
+
+    <main>
+      <header>
+        <svg height="172" viewBox="0 0 480 172" width="480" xmlns="http://www.w3.org/2000/svg"><path d="m124.48 3.00509-45.6889 100.02991h26.2239v-28.1168h38.119v28.1168h21.628v35.145h-21.628v30.82h-37.308v-30.82h-72.1833v-31.901l50.2851-103.27391zm130.453 51.63681c0-8.9215-6.218-15.4099-15.681-15.4099-10.273 0-15.95 7.5698-16.491 16.4913h-44.608c3.244-30.8199 25.683-55.421707 61.099-55.421707 36.498 0 59.477 20.816907 59.477 51.636807 0 21.3577-14.869 36.7676-31.901 52.7186l-27.305 27.035h59.747v37.308h-120.306v-27.846l57.044-56.7736c11.084-11.8954 18.925-20.0059 18.925-29.7385zm140.455 0c0-8.9215-6.218-15.4099-15.68-15.4099-10.274 0-15.951 7.5698-16.492 16.4913h-44.608c3.245-30.8199 25.684-55.421707 61.1-55.421707 36.497 0 59.477 20.816907 59.477 51.636807 0 21.3577-14.87 36.7676-31.902 52.7186l-27.305 27.035h59.747v37.308h-120.305v-27.846l57.043-56.7736c11.085-11.8954 18.925-20.0059 18.925-29.7385z" id="error-id"/><path d="m19.3936 103.554c-8.9715 0-14.84183-5.0952-14.84183-14.4544v-20.1029h8.86083v19.3276c0 4.8181 2.2706 7.3102 5.981 7.3102 3.6551 0 5.9257-2.4921 5.9257-7.3102v-19.3276h8.8608v20.1583c0 9.3038-5.8149 14.399-14.7865 14.399zm18.734-.554v-24.921h8.6947v2.1598c1.3845-1.5506 3.8212-2.7136 6.701-2.7136 5.538 0 8.8054 3.5997 8.8054 9.1377v16.3371h-8.6393v-14.2327c0-2.049-1.0522-3.5443-3.2674-3.5443-1.7168 0-3.1567.9969-3.5997 2.7136v15.0634zm36.8584-1.994v10.799h-8.6946v-33.726h8.6946v1.9937c1.163-1.3291 3.5997-2.5475 6.1472-2.5475 7.1994 0 11.1314 5.8703 11.1314 13.0143 0 7.0886-3.932 13.0145-11.1314 13.0145-2.5475 0-4.9842-1.219-6.1472-2.548zm0-13.7893v6.5902c.6646 1.3845 2.1599 2.326 3.8213 2.326 2.9905 0 4.7626-2.3814 4.7626-5.5934s-1.7721-5.6488-4.7626-5.6488c-1.7168 0-3.1567.9969-3.8213 2.326zm36.789-9.2485v8.3624c-1.052-.5538-2.215-.7753-3.6-.7753-2.381 0-3.987 1.0522-4.43 2.8244v14.6203h-8.6949v-24.921h8.6949v2.2152c1.218-1.6614 3.156-2.769 5.648-2.769 1.108 0 1.994.2215 2.382.443zm26.769 12.5713c0 7.6978-5.15 13.0145-12.737 13.0145-7.532 0-12.738-5.3167-12.738-13.0145s5.206-13.0143 12.738-13.0143c7.587 0 12.737 5.3165 12.737 13.0143zm-8.528 0c0-3.4336-1.496-5.8703-4.209-5.8703-2.659 0-4.154 2.4367-4.154 5.8703s1.495 5.8149 4.154 5.8149c2.713 0 4.209-2.3813 4.209-5.8149zm10.352 0c0-7.6978 5.095-13.0143 12.571-13.0143 6.701 0 10.855 3.9874 11.574 9.8023h-8.417c-.222-1.4953-1.385-2.6029-3.157-2.6029-2.437 0-3.987 2.2706-3.987 5.8149s1.55 5.7595 3.987 5.7595c1.772 0 2.935-1.0522 3.157-2.5475h8.417c-.719 5.7596-4.873 9.8025-11.574 9.8025-7.476 0-12.571-5.3167-12.571-13.0145zm42.013 3.7658h8.03c-.886 5.7597-5.206 9.2487-11.685 9.2487-7.643 0-12.682-5.2613-12.682-13.0145 0-7.6978 5.316-13.0143 12.516-13.0143 7.642 0 11.962 5.095 11.962 12.5159v2.1598h-16.116c.277 2.9905 1.828 4.5965 4.32 4.5965 1.772 0 3.156-.7753 3.655-2.4921zm-3.821-10.0237c-2.049 0-3.434 1.2737-3.988 3.5997h7.532c-.111-2.0491-1.385-3.5997-3.544-3.5997zm13.428 11.0206h8.473c.387 1.3845 1.606 2.1598 3.156 2.1598 1.44 0 2.548-.5538 2.548-1.7168 0-.9414-.72-1.2737-1.938-1.5506l-4.874-.9969c-4.153-.886-6.867-2.8797-6.867-7.2547 0-5.3165 4.763-8.4178 10.633-8.4178 6.812 0 10.522 3.1567 11.297 8.0855h-8.03c-.277-1.0522-1.052-1.9937-3.046-1.9937-1.273 0-2.326.5538-2.326 1.6614 0 .7753.554 1.163 1.717 1.3845l4.929 1.163c4.541 1.0522 6.978 3.4335 6.978 7.4763 0 5.3168-4.818 8.2518-10.91 8.2518-6.369 0-10.965-2.88-11.74-8.2518zm24.269 0h8.474c.387 1.3845 1.606 2.1598 3.156 2.1598 1.44 0 2.548-.5538 2.548-1.7168 0-.9414-.72-1.2737-1.939-1.5506l-4.873-.9969c-4.154-.886-6.867-2.8797-6.867-7.2547 0-5.3165 4.763-8.4178 10.633-8.4178 6.812 0 10.522 3.1567 11.297 8.0855h-8.03c-.277-1.0522-1.052-1.9937-3.046-1.9937-1.273 0-2.326.5538-2.326 1.6614 0 .7753.554 1.163 1.717 1.3845l4.929 1.163c4.541 1.0522 6.978 3.4335 6.978 7.4763 0 5.3168-4.818 8.2518-10.91 8.2518-6.369 0-10.965-2.88-11.741-8.2518zm47.918 7.6978h-8.363v-1.274c-.831.831-3.323 1.717-5.981 1.717-4.929 0-9.082-2.769-9.082-8.0301 0-4.818 4.153-7.9193 9.581-7.9193 2.049 0 4.485.6646 5.482 1.3845v-1.606c0-1.606-.941-2.9905-3.046-2.9905-1.606 0-2.547.7199-2.935 1.8275h-8.196c.72-4.8181 4.984-8.6393 11.408-8.6393 7.089 0 11.132 3.7659 11.132 10.2453zm-8.363-6.9779v-1.4399c-.554-1.0522-2.049-1.7167-3.655-1.7167-1.717 0-3.434.7199-3.434 2.3813 0 1.7168 1.717 2.4367 3.434 2.4367 1.606 0 3.101-.6645 3.655-1.6614zm20.742 4.9839v1.994h-8.695v-35.997h8.695v13.0697c1.163-1.3291 3.6-2.5475 6.147-2.5475 7.2 0 11.132 5.8149 11.132 13.0143s-3.932 13.0145-11.132 13.0145c-2.547 0-4.984-1.219-6.147-2.548zm0-13.7893v6.5902c.665 1.3845 2.105 2.326 3.821 2.326 2.991 0 4.763-2.3814 4.763-5.5934s-1.772-5.6488-4.763-5.6488c-1.661 0-3.156.9969-3.821 2.326zm28.759-20.2137v35.997h-8.695v-35.997zm19.172 27.3023h8.03c-.886 5.7597-5.206 9.2487-11.685 9.2487-7.643 0-12.682-5.2613-12.682-13.0145 0-7.6978 5.316-13.0143 12.515-13.0143 7.643 0 11.962 5.095 11.962 12.5159v2.1598h-16.115c.277 2.9905 1.827 4.5965 4.32 4.5965 1.772 0 3.156-.7753 3.655-2.4921zm-3.822-10.0237c-2.049 0-3.433 1.2737-3.987 3.5997h7.532c-.111-2.0491-1.385-3.5997-3.545-3.5997zm25.461-15.2849h24.311v7.6424h-15.561v5.3165h14.232v7.4763h-14.232v5.8703h15.561v7.6978h-24.311zm27.942 34.0033v-24.921h8.694v2.1598c1.385-1.5506 3.822-2.7136 6.701-2.7136 5.538 0 8.806 3.5997 8.806 9.1377v16.3371h-8.639v-14.2327c0-2.049-1.053-3.5443-3.268-3.5443-1.717 0-3.157.9969-3.6 2.7136v15.0634zm29.991-8.5839v-9.5807h-3.655v-6.7564h3.655v-6.8671h8.584v6.8671h5.206v6.7564h-5.206v8.307c0 1.9383.941 2.769 2.658 2.769.942 0 1.994-.2216 2.769-.5538v7.3654c-.997.443-2.88.775-4.818.775-5.87 0-9.193-2.769-9.193-9.0819zm26.161-16.3371v24.921h-8.694v-24.921zm.61-6.7564c0 2.8244-2.271 4.652-4.929 4.652s-4.929-1.8276-4.929-4.652c0-2.8797 2.271-4.7073 4.929-4.7073s4.929 1.8276 4.929 4.7073zm5.382 23.0935v-9.5807h-3.655v-6.7564h3.655v-6.8671h8.584v6.8671h5.206v6.7564h-5.206v8.307c0 1.9383.941 2.769 2.658 2.769.941 0 1.994-.2216 2.769-.5538v7.3654c-.997.443-2.88.775-4.818.775-5.87 0-9.193-2.769-9.193-9.0819zm29.22 17.3889h-8.584l3.655-9.414-9.303-24.312h9.026l4.763 14.1773 4.652-14.1773h8.639z" id="error-description"/></svg>
+      </header>
+      <article>
+        <p><strong>The change you wanted was rejected.</strong> Maybe you tried to change something you didn't have access to. If you're the application owner check the logs for more information.</p>
+      </article>
+    </main>
+
+  </body>
+
+</html>
+</file>
+
+<file path="public/500.html">
+<!doctype html>
+
+<html lang="en">
+
+  <head>
+
+    <title>We're sorry, but something went wrong (500 Internal Server Error)</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width">
+    <meta name="robots" content="noindex, nofollow">
+
+    <style>
+
+      *, *::before, *::after {
+        box-sizing: border-box;
+      }
+
+      * {
+        margin: 0;
+      }
+
+      html {
+        font-size: 16px;
+      }
+
+      body {
+        background: #FFF;
+        color: #261B23;
+        display: grid;
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Aptos, Roboto, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        font-size: clamp(1rem, 2.5vw, 2rem);
+        -webkit-font-smoothing: antialiased;
+        font-style: normal;
+        font-weight: 400;
+        letter-spacing: -0.0025em;
+        line-height: 1.4;
+        min-height: 100dvh;
+        place-items: center;
+        text-rendering: optimizeLegibility;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      #error-description {
+        fill: #d30001;
+      }
+
+      #error-id {
+        fill: #f0eff0;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #101010;
+          color: #e0e0e0;
+        }
+
+        #error-description {
+          fill: #FF6161;
+        }
+
+        #error-id {
+          fill: #2c2c2c;
+        }
+      }
+
+      a {
+        color: inherit;
+        font-weight: 700;
+        text-decoration: underline;
+        text-underline-offset: 0.0925em;
+      }
+
+      b, strong {
+        font-weight: 700;
+      }
+
+      i, em {
+        font-style: italic;
+      }
+
+      main {
+        display: grid;
+        gap: 1em;
+        padding: 2em;
+        place-items: center;
+        text-align: center;
+      }
+
+      main header {
+        width: min(100%, 12em);
+      }
+
+      main header svg {
+        height: auto;
+        max-width: 100%;
+        width: 100%;
+      }
+
+      main article {
+        width: min(100%, 30em);
+      }
+
+      main article p {
+        font-size: 75%;
+      }
+
+      main article br {
+        display: none;
+
+        @media(min-width: 48em) {
+          display: inline;
+        }
+      }
+
+    </style>
+
+  </head>
+
+  <body>
+
+    <!-- This file lives in public/500.html -->
+
+    <main>
+      <header>
+        <svg height="172" viewBox="0 0 480 172" width="480" xmlns="http://www.w3.org/2000/svg"><path d="m101.23 93.8427c-8.1103 0-15.4098 3.7849-19.7354 8.3813h-36.2269v-99.21891h103.8143v37.03791h-68.3984v24.8722c5.1366-2.7035 15.1396-5.9477 24.6014-5.9477 35.146 0 56.233 22.7094 56.233 55.4215 0 34.605-23.791 57.315-60.558 57.315-37.8492 0-61.64-22.169-63.8028-55.963h42.9857c1.0814 10.814 9.1919 19.195 21.6281 19.195 11.355 0 19.465-8.381 19.465-20.547 0-11.625-7.299-20.5463-20.006-20.5463zm138.833 77.8613c-40.822 0-64.884-35.146-64.884-85.7015 0-50.5554 24.062-85.700907 64.884-85.700907 40.823 0 64.884 35.145507 64.884 85.700907 0 50.5555-24.061 85.7015-64.884 85.7015zm0-133.2831c-17.572 0-22.709 21.8984-22.709 47.5816 0 25.6835 5.137 47.5815 22.709 47.5815 17.303 0 22.71-21.898 22.71-47.5815 0-25.6832-5.407-47.5816-22.71-47.5816zm140.456 133.2831c-40.823 0-64.884-35.146-64.884-85.7015 0-50.5554 24.061-85.700907 64.884-85.700907 40.822 0 64.884 35.145507 64.884 85.700907 0 50.5555-24.062 85.7015-64.884 85.7015zm0-133.2831c-17.573 0-22.71 21.8984-22.71 47.5816 0 25.6835 5.137 47.5815 22.71 47.5815 17.302 0 22.709-21.898 22.709-47.5815 0-25.6832-5.407-47.5816-22.709-47.5816z" id="error-id"/><path d="m23.1377 68.9967v34.0033h-8.9162v-34.0033zm4.3157 34.0033v-24.921h8.6947v2.1598c1.3845-1.5506 3.8212-2.7136 6.701-2.7136 5.538 0 8.8054 3.5997 8.8054 9.1377v16.3371h-8.6393v-14.2327c0-2.049-1.0522-3.5443-3.2674-3.5443-1.7168 0-3.1567.9969-3.5997 2.7136v15.0634zm29.9913-8.5839v-9.5807h-3.655v-6.7564h3.655v-6.8671h8.5839v6.8671h5.2058v6.7564h-5.2058v8.307c0 1.9383.9415 2.769 2.6583 2.769.9414 0 1.9937-.2216 2.769-.5538v7.3654c-.9969.443-2.8798.775-4.8181.775-5.8703 0-9.1931-2.769-9.1931-9.0819zm32.3666-.1108h8.0301c-.8861 5.7597-5.2057 9.2487-11.6852 9.2487-7.6424 0-12.682-5.2613-12.682-13.0145 0-7.6978 5.3165-13.0143 12.5159-13.0143 7.6424 0 11.9621 5.095 11.9621 12.5159v2.1598h-16.1156c.2769 2.9905 1.8275 4.5965 4.3196 4.5965 1.7722 0 3.1567-.7753 3.6551-2.4921zm-3.8212-10.0237c-2.0491 0-3.4336 1.2737-3.9874 3.5997h7.5317c-.1107-2.0491-1.3845-3.5997-3.5443-3.5997zm31.4299-6.3134v8.3624c-1.052-.5538-2.215-.7753-3.599-.7753-2.382 0-3.988 1.0522-4.431 2.8244v14.6203h-8.694v-24.921h8.694v2.2152c1.219-1.6614 3.157-2.769 5.649-2.769 1.108 0 1.994.2215 2.381.443zm2.949 25.0318v-24.921h8.694v2.1598c1.385-1.5506 3.821-2.7136 6.701-2.7136 5.538 0 8.806 3.5997 8.806 9.1377v16.3371h-8.64v-14.2327c0-2.049-1.052-3.5443-3.267-3.5443-1.717 0-3.157.9969-3.6 2.7136v15.0634zm50.371 0h-8.363v-1.274c-.83.831-3.323 1.717-5.981 1.717-4.929 0-9.082-2.769-9.082-8.0301 0-4.818 4.153-7.9193 9.581-7.9193 2.049 0 4.485.6646 5.482 1.3845v-1.606c0-1.606-.941-2.9905-3.046-2.9905-1.606 0-2.547.7199-2.935 1.8275h-8.196c.72-4.8181 4.984-8.6393 11.408-8.6393 7.089 0 11.132 3.7659 11.132 10.2453zm-8.363-6.9779v-1.4399c-.554-1.0522-2.049-1.7167-3.655-1.7167-1.717 0-3.433.7199-3.433 2.3813 0 1.7168 1.716 2.4367 3.433 2.4367 1.606 0 3.101-.6645 3.655-1.6614zm20.742-29.0191v35.997h-8.694v-35.997zm13.036 25.9178h9.248c.72 2.326 2.714 3.489 5.483 3.489 2.713 0 4.596-1.163 4.596-3.2674 0-1.6061-1.052-2.326-3.212-2.8244l-6.534-1.3845c-4.985-1.1076-8.751-3.7105-8.751-9.47 0-6.6456 5.538-11.0206 13.07-11.0206 8.307 0 13.014 4.5411 13.956 10.4114h-8.695c-.72-1.8829-2.27-3.3228-5.205-3.3228-2.548 0-4.265 1.1076-4.265 2.9905 0 1.4953 1.052 2.326 2.825 2.7137l6.645 1.5506c5.815 1.3845 9.027 4.5412 9.027 9.8023 0 6.9778-5.87 10.9654-13.291 10.9654-8.141 0-13.679-3.9322-14.897-10.6332zm46.509 1.3845h8.031c-.887 5.7597-5.206 9.2487-11.686 9.2487-7.642 0-12.682-5.2613-12.682-13.0145 0-7.6978 5.317-13.0143 12.516-13.0143 7.643 0 11.962 5.095 11.962 12.5159v2.1598h-16.115c.277 2.9905 1.827 4.5965 4.319 4.5965 1.773 0 3.157-.7753 3.655-2.4921zm-3.821-10.0237c-2.049 0-3.433 1.2737-3.987 3.5997h7.532c-.111-2.0491-1.385-3.5997-3.545-3.5997zm31.431-6.3134v8.3624c-1.053-.5538-2.216-.7753-3.6-.7753-2.381 0-3.988 1.0522-4.431 2.8244v14.6203h-8.694v-24.921h8.694v2.2152c1.219-1.6614 3.157-2.769 5.649-2.769 1.108 0 1.994.2215 2.382.443zm18.288 25.0318h-7.809l-9.47-24.921h8.861l4.763 14.288 4.652-14.288h8.528zm25.614-8.6947h8.03c-.886 5.7597-5.206 9.2487-11.685 9.2487-7.642 0-12.682-5.2613-12.682-13.0145 0-7.6978 5.316-13.0143 12.516-13.0143 7.642 0 11.962 5.095 11.962 12.5159v2.1598h-16.116c.277 2.9905 1.828 4.5965 4.32 4.5965 1.772 0 3.157-.7753 3.655-2.4921zm-3.821-10.0237c-2.049 0-3.434 1.2737-3.988 3.5997h7.532c-.111-2.0491-1.384-3.5997-3.544-3.5997zm31.43-6.3134v8.3624c-1.052-.5538-2.215-.7753-3.6-.7753-2.381 0-3.987 1.0522-4.43 2.8244v14.6203h-8.695v-24.921h8.695v2.2152c1.218-1.6614 3.157-2.769 5.649-2.769 1.107 0 1.993.2215 2.381.443zm13.703-8.9715h24.312v7.6424h-15.562v5.3165h14.232v7.4763h-14.232v5.8703h15.562v7.6978h-24.312zm44.667 8.9715v8.3624c-1.052-.5538-2.215-.7753-3.6-.7753-2.381 0-3.987 1.0522-4.43 2.8244v14.6203h-8.695v-24.921h8.695v2.2152c1.218-1.6614 3.156-2.769 5.648-2.769 1.108 0 1.994.2215 2.382.443zm19.673 0v8.3624c-1.053-.5538-2.216-.7753-3.6-.7753-2.381 0-3.987 1.0522-4.43 2.8244v14.6203h-8.695v-24.921h8.695v2.2152c1.218-1.6614 3.156-2.769 5.648-2.769 1.108 0 1.994.2215 2.382.443zm26.769 12.5713c0 7.6978-5.15 13.0145-12.737 13.0145-7.532 0-12.738-5.3167-12.738-13.0145s5.206-13.0143 12.738-13.0143c7.587 0 12.737 5.3165 12.737 13.0143zm-8.529 0c0-3.4336-1.495-5.8703-4.208-5.8703-2.659 0-4.154 2.4367-4.154 5.8703s1.495 5.8149 4.154 5.8149c2.713 0 4.208-2.3813 4.208-5.8149zm28.082-12.5713v8.3624c-1.052-.5538-2.215-.7753-3.6-.7753-2.381 0-3.987 1.0522-4.43 2.8244v14.6203h-8.695v-24.921h8.695v2.2152c1.218-1.6614 3.157-2.769 5.649-2.769 1.107 0 1.993.2215 2.381.443z" id="error-description"/></svg>
+      </header>
+      <article>
+        <p><strong>We're sorry, but something went wrong.</strong><br> If you're the application owner check the logs for more information.</p>
+      </article>
+    </main>
+
+  </body>
+
+</html>
+</file>
+
+<file path="public/icon.svg">
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="256" cy="256" r="256" fill="red"/>
+</svg>
+</file>
+
+<file path="public/robots.txt">
+# See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+</file>
+
+<file path="script/.keep">
+
+</file>
+
+<file path="storage/.keep">
+
+</file>
+
+<file path="test/controllers/.keep">
+
+</file>
+
+<file path="test/controllers/home_controller_test.rb">
+require "test_helper"
+
+class HomeControllerTest < ActionDispatch::IntegrationTest
+  test "should get index" do
+    get home_index_url
+    assert_response :success
+  end
+end
+</file>
+
+<file path="test/controllers/polls_controller_test.rb">
+require "test_helper"
+
+class PollsControllerTest < ActionDispatch::IntegrationTest
+  test "should get index" do
+    get polls_index_url
+    assert_response :success
+  end
+
+  test "should get show" do
+    get polls_show_url
+    assert_response :success
+  end
+
+  test "should get new" do
+    get polls_new_url
+    assert_response :success
+  end
+
+  test "should get result" do
+    get polls_result_url
+    assert_response :success
+  end
+end
+</file>
+
+<file path="test/controllers/sessions_controller_test.rb">
+require "test_helper"
+
+class SessionsControllerTest < ActionDispatch::IntegrationTest
+  test "should get new" do
+    get sessions_new_url
+    assert_response :success
+  end
+
+  test "should get create" do
+    get sessions_create_url
+    assert_response :success
+  end
+
+  test "should get destroy" do
+    get sessions_destroy_url
+    assert_response :success
+  end
+end
+</file>
+
+<file path="test/controllers/static_pages_controller_test.rb">
+require "test_helper"
+
+class StaticPagesControllerTest < ActionDispatch::IntegrationTest
+  test "should get help" do
+    get static_pages_help_url
+    assert_response :success
+  end
+end
+</file>
+
+<file path="test/controllers/users_controller_test.rb">
+require "test_helper"
+
+class UsersControllerTest < ActionDispatch::IntegrationTest
+  test "should get new" do
+    get users_new_url
+    assert_response :success
+  end
+
+  test "should get create" do
+    get users_create_url
+    assert_response :success
+  end
+end
+</file>
+
+<file path="test/fixtures/files/.keep">
+
+</file>
+
+<file path="test/fixtures/polls.yml">
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  title: MyString
+  status: MyString
+  options: 
+
+two:
+  user: two
+  title: MyString
+  status: MyString
+  options:
+</file>
+
+<file path="test/fixtures/users.yml">
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  email: MyString
+  password_digest: MyString
+
+two:
+  email: MyString
+  password_digest: MyString
+</file>
+
+<file path="test/fixtures/votes.yml">
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  poll: one
+  chosen_option: MyString
+
+two:
+  user: two
+  poll: two
+  chosen_option: MyString
+</file>
+
+<file path="test/helpers/.keep">
+
+</file>
+
+<file path="test/integration/.keep">
+
+</file>
+
+<file path="test/mailers/.keep">
+
+</file>
+
+<file path="test/models/.keep">
+
+</file>
+
+<file path="test/models/poll_test.rb">
+require "test_helper"
+
+class PollTest < ActiveSupport::TestCase
+  # test "the truth" do
+  #   assert true
+  # end
+end
+</file>
+
+<file path="test/models/user_test.rb">
+require "test_helper"
+
+class UserTest < ActiveSupport::TestCase
+  # test "the truth" do
+  #   assert true
+  # end
+end
+</file>
+
+<file path="test/models/vote_test.rb">
+require "test_helper"
+
+class VoteTest < ActiveSupport::TestCase
+  # test "the truth" do
+  #   assert true
+  # end
+end
+</file>
+
+<file path="test/system/.keep">
+
+</file>
+
+<file path="test/application_system_test_case.rb">
+require "test_helper"
+
+class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
+  driven_by :selenium, using: :headless_chrome, screen_size: [ 1400, 1400 ]
+end
+</file>
+
+<file path="test/test_helper.rb">
+ENV["RAILS_ENV"] ||= "test"
+require_relative "../config/environment"
+require "rails/test_help"
+
+module ActiveSupport
+  class TestCase
+    # Run tests in parallel with specified workers
+    parallelize(workers: :number_of_processors)
+
+    # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
+    fixtures :all
+
+    # Add more helper methods to be used by all tests here...
+  end
+end
+</file>
+
+<file path=".dockerignore">
+# See https://docs.docker.com/engine/reference/builder/#dockerignore-file for more about ignoring files.
+
+# Ignore git directory.
+/.git/
+/.gitignore
+
+# Ignore bundler config.
+/.bundle
+
+# Ignore all environment files.
+/.env*
+
+# Ignore all default key files.
+/config/master.key
+/config/credentials/*.key
+
+# Ignore all logfiles and tempfiles.
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+
+# Ignore pidfiles, but keep the directory.
+/tmp/pids/*
+!/tmp/pids/.keep
+
+# Ignore storage (uploaded files in development and any SQLite databases).
+/storage/*
+!/storage/.keep
+/tmp/storage/*
+!/tmp/storage/.keep
+
+# Ignore assets.
+/node_modules/
+/app/assets/builds/*
+!/app/assets/builds/.keep
+/public/assets
+
+# Ignore CI service files.
+/.github
+
+# Ignore development files
+/.devcontainer
+
+# Ignore Docker-related files
+/.dockerignore
+/Dockerfile*
+</file>
+
+<file path=".gitattributes">
+# See https://git-scm.com/docs/gitattributes for more about git attribute files.
+
+# Mark the database schema as having been generated.
+db/schema.rb linguist-generated
+
+# Mark any vendored files as having been vendored.
+vendor/* linguist-vendored
+config/credentials/*.yml.enc diff=rails_credentials
+config/credentials.yml.enc diff=rails_credentials
+</file>
+
+<file path=".gitignore">
+# See https://help.github.com/articles/ignoring-files for more about ignoring files.
+#
+# Temporary files generated by your text editor or operating system
+# belong in git's global ignore instead:
+# `$XDG_CONFIG_HOME/git/ignore` or `~/.config/git/ignore`
+
+# Ignore bundler config.
+/.bundle
+
+# Ignore all environment files.
+/.env*
+
+# Ignore all logfiles and tempfiles.
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+
+# Ignore pidfiles, but keep the directory.
+/tmp/pids/*
+!/tmp/pids/
+!/tmp/pids/.keep
+
+# Ignore storage (uploaded files in development and any SQLite databases).
+/storage/*
+!/storage/.keep
+/tmp/storage/*
+!/tmp/storage/
+!/tmp/storage/.keep
+
+/public/assets
+
+# Ignore master key for decrypting credentials and more.
+/config/master.key
+
+/app/assets/builds/*
+!/app/assets/builds/.keep
+
+/node_modules
+</file>
+
+<file path=".rubocop.yml">
+# Omakase Ruby styling for Rails
+inherit_gem: { rubocop-rails-omakase: rubocop.yml }
+
+# Overwrite or add rules to create your own house style
+#
+# # Use `[a, [b, c]]` not `[ a, [ b, c ] ]`
+# Layout/SpaceInsideArrayLiteralBrackets:
+#   Enabled: false
+</file>
+
+<file path=".ruby-version">
+ruby-3.4.1
+</file>
+
+<file path="config.ru">
+# This file is used by Rack-based servers to start the application.
+
+require_relative "config/environment"
+
+run Rails.application
+Rails.application.load_server
+</file>
+
+<file path="Dockerfile">
+# syntax=docker/dockerfile:1
+# check=error=true
+
+# This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
+# docker build -t poll_app .
+# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name poll_app poll_app
+
+# For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
+
+# Make sure RUBY_VERSION matches the Ruby version in .ruby-version
+ARG RUBY_VERSION=3.4.1
+FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
+
+# Rails app lives here
+WORKDIR /rails
+
+# Install base packages
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y curl libjemalloc2 libvips sqlite3 && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+# Set production environment
+ENV RAILS_ENV="production" \
+    BUNDLE_DEPLOYMENT="1" \
+    BUNDLE_PATH="/usr/local/bundle" \
+    BUNDLE_WITHOUT="development"
+
+# Throw-away build stage to reduce size of final image
+FROM base AS build
+
+# Install packages needed to build gems
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y build-essential git pkg-config && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+# Install application gems
+COPY Gemfile Gemfile.lock ./
+RUN bundle install && \
+    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
+    bundle exec bootsnap precompile --gemfile
+
+# Copy application code
+COPY . .
+
+# Precompile bootsnap code for faster boot times
+RUN bundle exec bootsnap precompile app/ lib/
+
+# Dockerfile: 52行目付近
+# 修正前: RUN ./bin/rails assets:precompile
+
+# ✅ 修正後 (RAILS_ENVを一時的に開発環境にする)
+# 開発環境ではSECRET_KEY_BASEのチェックが緩いため、ビルドが通る可能性が高い
+# ただし、実行環境ではRAILS_ENV=productionを使用するため問題なし。
+RUN RAILS_ENV=development ./bin/rails assets:precompile
+
+
+
+# Final stage for app image
+FROM base
+
+# Copy built artifacts: gems, application
+COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
+COPY --from=build /rails /rails
+
+# Run and own only the runtime files as a non-root user for security
+RUN groupadd --system --gid 1000 rails && \
+    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
+    chown -R rails:rails db log storage tmp
+USER 1000:1000
+
+# Entrypoint prepares the database.
+ENTRYPOINT ["/rails/bin/docker-entrypoint"]
+
+# Start server via Thruster by default, this can be overwritten at runtime
+EXPOSE 80
+CMD ["./bin/thrust", "./bin/rails", "server"]
+</file>
+
+<file path="Gemfile">
+source "https://rubygems.org"
+
+# Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
+gem "rails", "~> 8.0"
+# The modern asset pipeline for Rails [https://github.com/rails/propshaft]
+gem "propshaft"
+# Use the Puma web server [https://github.com/puma/puma]
+gem "puma", "~> 6.0"
+# Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
+gem "importmap-rails"
+# Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
+gem "turbo-rails"
+# Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
+gem "stimulus-rails"
+# Build JSON APIs with ease [https://github.com/rails/jbuilder]
+gem "jbuilder"
+
+# Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
+gem "bcrypt", "~> 3.1.7"
+
+# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
+gem "tzinfo-data", platforms: %i[ windows jruby ]
+
+# Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
+gem "solid_cache"
+gem "solid_queue"
+gem "solid_cable"
+
+# Reduces boot times through caching; required in config/boot.rb
+gem "bootsnap", require: false
+
+# Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
+gem "kamal", require: false
+
+# Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
+gem "thruster", require: false
+
+# Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
+# gem "image_processing", "~> 1.2"
+
+# --- 🚨 データベースアダプターの修正ゾーン 🚨 ---
+
+# Codespaces (開発) およびテスト環境では SQLite を使用
+group :development, :test do
+  # 🚨 【修正】Rails 8 が要求するバージョン (>= 2.1) に対応するため、バージョン指定を (~> 2.0) に引き上げます 🚨
+  gem "sqlite3", ">= 2.1" 
+
+  # デバッグ用
+  gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
+
+  # Static analysis for security vulnerabilities [https://brakemanscanne...
+  gem "brakeman", require: false
+
+  # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
+  gem "rubocop-rails-omakase", require: false
+
+  # Use console on exceptions pages [https://github.com/rails/web-console]
+  gem "web-console"
+
+  # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
+  gem "capybara"
+  gem "selenium-webdriver"
+end
+
+# Render (本番) 環境では PostgreSQL を使用
+group :production do
+  gem "pg", "~> 1.1"
+end
+
+# --- ---------------------------------- ---
+gem "jsbundling-rails", "~> 1.3"
+</file>
+
+<file path="package.json">
+{
+  "name": "poll-app",
+  "private": true,
+  "dependencies": {
+    "@hotwired/stimulus": "^3.2.2",
+    "@hotwired/turbo-rails": "^8.0.4",
+    "bootstrap": "^5.3.3",
+    "@popperjs/core": "^2.11.8"
+  },
+  "devDependencies": {
+    "esbuild": "^0.23.0"
+  },
+  "scripts": {
+    "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=/assets"
+  }
+}
+</file>
+
+<file path="Procfile.dev">
+web: env RUBY_DEBUG_OPEN=true bin/rails server
+js: yarn build --watch
+</file>
+
+<file path="Rakefile">
+# Add your own tasks in files placed in lib/tasks ending in .rake,
+# for example lib/tasks/capistrano.rake, and they will automatically be available to Rake.
+
+require_relative "config/application"
+
+Rails.application.load_tasks
+</file>
+
+<file path="README.md">
+# README
+
+This README would normally document whatever steps are necessary to get the
+application up and running.
+
+Things you may want to cover:
+
+* Ruby version
+
+* System dependencies
+
+* Configuration
+
+* Database creation
+
+* Database initialization
+
+* How to run the test suite
+
+* Services (job queues, cache servers, search engines, etc.)
+
+* Deployment instructions
+
+* ...
+</file>
+
+</files>

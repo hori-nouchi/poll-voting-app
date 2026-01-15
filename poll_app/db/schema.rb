@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_11_235816) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_12_163254) do
   create_table "choices", force: :cascade do |t|
     t.string "content", null: false
     t.datetime "created_at", null: false
@@ -21,6 +21,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_11_235816) do
 
   create_table "polls", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.text "description"
     t.json "options"
     t.string "status"
     t.string "title"
@@ -37,11 +38,13 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_11_235816) do
   end
 
   create_table "votes", force: :cascade do |t|
+    t.integer "choice_id", null: false
     t.string "chosen_option"
     t.datetime "created_at", null: false
     t.integer "poll_id", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.index ["choice_id"], name: "index_votes_on_choice_id"
     t.index ["poll_id"], name: "index_votes_on_poll_id"
     t.index ["user_id", "poll_id"], name: "index_votes_on_user_id_and_poll_id", unique: true
     t.index ["user_id"], name: "index_votes_on_user_id"
@@ -49,6 +52,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_11_235816) do
 
   add_foreign_key "choices", "polls"
   add_foreign_key "polls", "users"
+  add_foreign_key "votes", "choices"
   add_foreign_key "votes", "polls"
   add_foreign_key "votes", "users"
 end

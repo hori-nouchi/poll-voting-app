@@ -1,29 +1,41 @@
 <h2><%= @poll.title %></h2>
 <p class="text-secondary">
-    作成者: <%= @poll.user.email %> | 
-    作成日時: <%= l @poll.created_at, format: :short %>
+  作成者: <%= @poll.user.email %> | 
+  作成日時: <%= l @poll.created_at, format: :short %>
 </p>
 
 <div class="card p-4 shadow-sm">
-    <h4 class="card-title mb-3">投票フォーム</h4>
+  <h4 class="card-title mb-3">投票フォーム</h4>
 
-    <%# 🚨 修正点: data: { turbo: false } を追加し、Turboの非同期処理を無効化しています 🚨 %>
-    <%= form_with(url: vote_poll_path(@poll), method: :post, data: { turbo: false }) do %>
-        
-        <p class="mb-3">いずれか一つの選択肢を選んで投票してください。</p>
-        
-        <% @poll.choices.each_with_index do |choice, index| %>
-            <div class="form-check mb-2">
-                <input class="form-check-input" type="radio" name="chosen_option" id="option_<%= index %>" value="<%= choice.id %>" required>
-                <label class="form-check-label" for="option_<%= index %>">
-                    <%= choice.content %>
-                </label>
-            </div>
-        <% end %>
-
-        <hr>
-        <button type="submit" class="btn btn-primary btn-lg mt-3">投票する</button>
-    <% end %>
+  <%# Turboの非同期処理によるリダイレクトの不具合を防ぐため data: { turbo: false } を維持 %>
+  <%= form_with(url: vote_poll_path(@poll), method: :post, data: { turbo: false }) do |f| %>
     
-    <p class="mt-3 text-danger"><small>※ 投票は一回限りです。</small></p>
+    <p class="mb-3">いずれか一つの選択肢を選んで投票してください。</p>
+    
+    <div class="poll-choices">
+      <% @poll.choices.each do |choice| %>
+        <div class="form-check mb-2">
+          <% # ラジオボタン。name属性を :choice_id とすることで、コントローラーで params[:choice_id] として取得可能 %>
+          <%= radio_button_tag :choice_id, choice.id, false, 
+              id: "choice_#{choice.id}", 
+              class: "form-check-input", 
+              required: true %>
+          
+          <% # ラベルをクリックしてもラジオボタンが選択されるように id を紐付け %>
+          <%= label_tag "choice_#{choice.id}", choice.content, class: "form-check-label" %>
+        </div>
+      <% end %>
+    </div>
+
+    <hr>
+    <div class="actions">
+      <%= submit_tag "投票する", class: "btn btn-primary btn-lg mt-3" %>
+    </div>
+  <% end %>
+  
+  <p class="mt-3 text-danger"><small>※ 投票は一回限りです。</small></p>
+</div>
+
+<div class="mt-4">
+  <%= link_to '一覧に戻る', polls_path, class: "btn btn-outline-secondary" %>
 </div>
