@@ -1,4 +1,4 @@
-class CreateDiaries < ActiveRecord::Migration[8.1]
+class CreateDiaries < ActiveRecord::Migration[8.0]
   def change
     create_table :diaries do |t|
       t.date :diary_date
