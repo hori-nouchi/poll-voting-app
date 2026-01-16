@@ -60,4 +60,4 @@ USER 1000:1000
 # 1. アセットプリコンパイル（起動時ならMASTER_KEYが読み込める）
 # 2. DBマイグレーション
 # 3. サーバー起動（Thruster経由。パスが通っていない場合を考慮してbundle execを使用）
-CMD ["/bin/sh", "-c", "bundle exec rails assets:precompile && bundle exec rails db:migrate && bundle exec thruster bin/rails server"]
+CMD ["/bin/sh", "-c", "export RAILS_ENV=production && bundle exec rails assets:precompile && bundle exec rails db:migrate && ./bin/thrust ./bin/rails server"]
