@@ -39,19 +39,25 @@ RUN bundle install && \
 
 COPY . .
 
-# ★ここから assets:precompile を削除しました
-# ビルド中ではなく、本番起動時に実行するようにします
-
 # 実行用イメージ
 FROM base
 
+# railsユーザーを作成
 RUN groupadd --system --gid 1000 rails && \
     useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash
-USER 1000:1000
 
+# 必要なディレクトリを作成し権限を付与
+RUN mkdir -p db log storage tmp
+RUN chown -R rails:rails db log storage tmp
+
+# ビルドステージから成果物をコピー
 COPY --chown=rails:rails --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --chown=rails:rails --from=build /rails /rails
 
-# 起動コマンドを修正：起動時にアセットコンパイルとマイグレーションを同時に行う
-# これにより、管理画面の RAILS_MASTER_KEY を正しく読み込めます
-CMD ["/bin/sh", "-c", "bundle exec rails assets:precompile && bundle exec rails db:migrate && ./bin/thrust ./bin/rails server"]
+USER 1000:1000
+
+# 起動コマンド：
+# 1. アセットプリコンパイル（起動時ならMASTER_KEYが読み込める）
+# 2. DBマイグレーション
+# 3. サーバー起動（Thruster経由。パスが通っていない場合を考慮してbundle execを使用）
+CMD ["/bin/sh", "-c", "bundle exec rails assets:precompile && bundle exec rails db:migrate && bundle exec thruster bin/rails server"]
