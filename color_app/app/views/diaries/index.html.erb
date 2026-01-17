@@ -1,5 +1,5 @@
 <style>
-  /* 既存のスタイルはそのまま、フッター周りだけ微調整 */
+  /* 既存のスタイルはそのまま */
   body {
     background-color: #ffffff;
     font-family: sans-serif;
@@ -73,7 +73,7 @@
     margin-top: 4px;
   }
 
-  /* フッターのデザインを少しリッチに */
+  /* フッターのデザイン */
   .footer {
     text-align: center;
     padding: 30px 20px;
@@ -94,14 +94,13 @@
 
   .help-link, .auth-link {
     color: #88a4d4;
-    cursor: pointer;
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: bold;
   }
 
   .auth-link.logout {
-    color: #ffb7c5; /* ログアウトは少し赤っぽく */
+    color: #ffb7c5;
   }
 </style>
 
@@ -126,16 +125,15 @@
 
   <div class="footer">
     <div class="footer-links">
-      <span class="help-link" onclick="alert('日記の色を選んで保存するだけ！\n一覧の色はあなたが選んだ気分を反映しています。')">ヘルプ</span>
+      <%# 修正ポイント: alertを削除し、help_path へのリンクに変更 %>
+      <%= link_to "ヘルプ", help_path, class: "help-link" %>
       
       <% if user_signed_in? %>
-        <!-- ログイン中の表示：メールアドレスではなくニックネームを表示 -->
         <span style="font-size: 0.8rem; color: #bbb;">
           <%= current_user.name.presence || "ユーザー" %> さん
         </span>
         <%= link_to "ログアウト", destroy_user_session_path, data: { turbo_method: :delete }, class: "auth-link logout" %>
       <% else %>
-        <!-- 未ログインの表示 -->
         <%= link_to "ログイン", new_user_session_path, class: "auth-link" %>
       <% end %>
     </div>
